@@ -13,27 +13,58 @@
       <div class="studio-brand">
         <div>
           <h1>Moiitee Studio</h1>
-          <p style="font-size:12px;color:#94a3b8;margin-top:2px;">모이티 감성 모바일 청첩장 웹 스튜디오</p>
+          <p style="font-size:12px;color:#787168;margin-top:2px;">모이티 감성 모바일 청첩장 웹 스튜디오</p>
         </div>
-        <span class="studio-badge">MOBILE-FIRST v2.0</span>
+        <span class="studio-badge">BRIGHT v2.1</span>
       </div>
 
-      <!-- 1. Cover Style Selector -->
+      <!-- 1. Cover Style Selector (with Visual Thumbnails) -->
       <section class="editor-section">
         <div class="editor-section-title">1. 시그니처 커버 디자인 선택</div>
-        <div class="style-grid">
-          <button type="button" class="style-btn active" data-cover-style="duo">
-            01. 듀오 프레임
-            <span style="display:block;font-size:10px;opacity:0.75;margin-top:2px;">모이티 대표 2분할 컷</span>
-          </button>
-          <button type="button" class="style-btn" data-cover-style="magazine">
-            02. 매거진 풀화면
-            <span style="display:block;font-size:10px;opacity:0.75;margin-top:2px;">시네마틱 화보형</span>
-          </button>
-          <button type="button" class="style-btn" data-cover-style="arch">
-            03. 아치 & 액자
-            <span style="display:block;font-size:10px;opacity:0.75;margin-top:2px;">미니멀 갤러리 매트</span>
-          </button>
+        <div class="cover-cards-stack">
+          <div class="cover-card active" data-cover-style="duo">
+            <div class="cover-mini-thumb">
+              <div class="mini-duo-grid">
+                <div class="mini-duo-left"></div>
+                <div class="mini-duo-right">
+                  <div class="mini-duo-right-img"></div>
+                  <div class="mini-duo-right-date">28 NOV</div>
+                </div>
+              </div>
+            </div>
+            <div class="cover-card-info">
+              <span class="cover-card-title">01. 듀오 프레임</span>
+              <span class="cover-card-desc">전신 컷 + 디테일 컷 2장과 날짜 블록</span>
+              <span class="cover-card-badge">모이티 대표 스타일</span>
+            </div>
+          </div>
+
+          <div class="cover-card" data-cover-style="magazine">
+            <div class="cover-mini-thumb">
+              <div class="mini-mag-cover">
+                <div class="mini-mag-overlay">
+                  <span class="mini-mag-text">Save the Date</span>
+                  <span class="mini-mag-text" style="font-size:6px;">2026.11.28</span>
+                </div>
+              </div>
+            </div>
+            <div class="cover-card-info">
+              <span class="cover-card-title">02. 매거진 풀화면</span>
+              <span class="cover-card-desc">시네마틱 화보형 풀스크린 사진과 영문 세리프</span>
+            </div>
+          </div>
+
+          <div class="cover-card" data-cover-style="arch">
+            <div class="cover-mini-thumb">
+              <div class="mini-arch-box">
+                <div class="mini-arch-img"></div>
+              </div>
+            </div>
+            <div class="cover-card-info">
+              <span class="cover-card-title">03. 아치 &amp; 갤러리 액자</span>
+              <span class="cover-card-desc">미니멀 화이트 여백과 아치형 곡선 프레임</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -129,20 +160,105 @@
         </div>
       </section>
 
-      <!-- 5. Photos Management -->
+      <!-- 5. Numbered Photo Slot Management -->
       <section class="editor-section">
-        <div class="editor-section-title">5. 감성 웨딩 사진 등록</div>
-        <div class="form-group">
-          <label for="inpCoverFile">메인 대표 사진 (전신/메인 커버)</label>
-          <input type="file" id="inpCoverFile" accept="image/*" />
-        </div>
-        <div class="form-group">
-          <label for="inpDetailFile">서브 디테일 사진 (듀오 커버용 손잡은컷/베일컷)</label>
-          <input type="file" id="inpDetailFile" accept="image/*" />
-        </div>
-        <div class="form-group">
-          <label for="inpGalleryFiles">포토 갤러리 사진 (최대 6장)</label>
-          <input type="file" id="inpGalleryFiles" accept="image/*" multiple />
+        <div class="editor-section-title">5. 감성 웨딩 사진 위치별 등록</div>
+        <div class="photo-slots-list">
+          <!-- Slot 1 -->
+          <div class="photo-slot-card">
+            <div class="slot-left">
+              <span class="slot-num-badge">1</span>
+              <img id="deskSlotThumb1" class="slot-thumb" src="./sample_wedding_cover.jpg" alt="1번 메인 커버" />
+              <div class="slot-info">
+                <span class="slot-name">메인 대표 사진</span>
+                <span class="slot-sub">전신 메인 화보 커버</span>
+              </div>
+            </div>
+            <label class="btn-slot-upload">
+              변경
+              <input type="file" id="inpSlot1" accept="image/*" />
+            </label>
+          </div>
+
+          <!-- Slot 2 -->
+          <div class="photo-slot-card">
+            <div class="slot-left">
+              <span class="slot-num-badge">2</span>
+              <img id="deskSlotThumb2" class="slot-thumb" src="./sample_duo_detail.jpg" alt="2번 디테일 컷" />
+              <div class="slot-info">
+                <span class="slot-name">서브 디테일 사진</span>
+                <span class="slot-sub">듀오 커버 손/반지 컷</span>
+              </div>
+            </div>
+            <label class="btn-slot-upload">
+              변경
+              <input type="file" id="inpSlot2" accept="image/*" />
+            </label>
+          </div>
+
+          <!-- Slot 3 -->
+          <div class="photo-slot-card">
+            <div class="slot-left">
+              <span class="slot-num-badge">3</span>
+              <img id="deskSlotThumb3" class="slot-thumb" src="./sample_gallery_1.jpg" alt="3번 갤러리 1" />
+              <div class="slot-info">
+                <span class="slot-name">갤러리 사진 1</span>
+                <span class="slot-sub">포토 갤러리 첫번째</span>
+              </div>
+            </div>
+            <label class="btn-slot-upload">
+              변경
+              <input type="file" id="inpSlot3" accept="image/*" />
+            </label>
+          </div>
+
+          <!-- Slot 4 -->
+          <div class="photo-slot-card">
+            <div class="slot-left">
+              <span class="slot-num-badge">4</span>
+              <img id="deskSlotThumb4" class="slot-thumb" src="./sample_gallery_2.jpg" alt="4번 갤러리 2" />
+              <div class="slot-info">
+                <span class="slot-name">갤러리 사진 2</span>
+                <span class="slot-sub">포토 갤러리 두번째</span>
+              </div>
+            </div>
+            <label class="btn-slot-upload">
+              변경
+              <input type="file" id="inpSlot4" accept="image/*" />
+            </label>
+          </div>
+
+          <!-- Slot 5 -->
+          <div class="photo-slot-card">
+            <div class="slot-left">
+              <span class="slot-num-badge">5</span>
+              <img id="deskSlotThumb5" class="slot-thumb" src="./sample_gallery_3.jpg" alt="5번 갤러리 3" />
+              <div class="slot-info">
+                <span class="slot-name">갤러리 사진 3</span>
+                <span class="slot-sub">포토 갤러리 세번째</span>
+              </div>
+            </div>
+            <label class="btn-slot-upload">
+              변경
+              <input type="file" id="inpSlot5" accept="image/*" />
+            </label>
+          </div>
+
+          <!-- Slot 6 -->
+          <div class="photo-slot-card">
+            <div class="slot-left">
+              <span class="slot-num-badge">6</span>
+              <img id="deskSlotThumb6" class="slot-thumb" src="./sample_gallery_4.jpg" alt="6번 갤러리 4" />
+              <div class="slot-info">
+                <span class="slot-name">갤러리 사진 4</span>
+                <span class="slot-sub">포토 갤러리 네번째</span>
+              </div>
+            </div>
+            <label class="btn-slot-upload">
+              변경
+              <input type="file" id="inpSlot6" accept="image/*" />
+            </label>
+          </div>
         </div>
       </section>
 
@@ -416,11 +532,11 @@
        MOBILE BOTTOM DOCK & SLIDE-UP BOTTOM SHEET
        ============================================== -->
   <nav class="mobile-dock" id="mobileDock">
-    <button type="button" class="dock-btn active" data-tab="preview" id="dockBtnPreview">
+    <button type="button" class="dock-btn" data-tab="preview" id="dockBtnPreview">
       <span class="dock-icon">👁️</span>
       <span class="dock-label">미리보기</span>
     </button>
-    <button type="button" class="dock-btn" data-tab="cover" id="dockBtnCover">
+    <button type="button" class="dock-btn active" data-tab="cover" id="dockBtnCover">
       <span class="dock-icon">🎨</span>
       <span class="dock-label">커버선택</span>
     </button>
@@ -515,6 +631,9 @@
       </div>
     </div>
   </div>
+
+  <!-- FLOATING RETURN TO EDIT BUTTON (FOR FULLSCREEN PREVIEW MODE) -->
+  <button type="button" class="btn-return-edit" id="btnReturnEdit">✏️ 편집 화면으로 돌아가기</button>
 
   <div id="toastMsg" class="toast-msg">복사되었습니다.</div>
   <script src="./app.js"></script>

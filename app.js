@@ -1,13 +1,13 @@
 /**
- * Atelier Wedding - Moiitee Style Mobile-First Self-Builder Engine
+ * Atelier Wedding - Moiitee Style Mobile-First Self-Builder Engine (Bright Mode)
  * Inspired by: moiitee.com & Instagram @moiitee_official
  * Features:
- * - Mobile-First Bottom Sheet & Dock Navigation
- * - 3 Signature Covers (Duo Asymmetrical, Magazine Full-bleed, Arch Mat)
+ * - Visual Cover Selector with Layout Thumbnails (Duo, Magazine, Arch)
+ * - Numbered Photo Slot Management (1번 메인, 2번 디테일, 3~6번 갤러리)
+ * - Fullscreen Guest Preview with Floating Return Button
+ * - Auto-open Cover Selector on Mobile First Load
  * - URL State Serialization (Zero-Server Instant Public Link)
- * - Native Mobile Web Share API (KakaoTalk / Messages / Instagram)
- * - Dynamic Monthly Calendar & D-Day, RSVP Attendance Form
- * - 1-Click Standalone HTML Exporter
+ * - Native Mobile Web Share API & Standalone HTML Exporter
  */
 
 const GREETING_PRESETS = {
@@ -133,7 +133,7 @@ function deserializeState(encodedStr) {
 
 function checkUrlMode() {
   const hash = window.location.hash;
-  if (!hash) return;
+  if (!hash) return false;
 
   if (hash.includes("view")) {
     document.body.classList.add("guest-mode");
@@ -143,6 +143,7 @@ function checkUrlMode() {
   if (match && match[1]) {
     deserializeState(match[1]);
   }
+  return hash.includes("view");
 }
 
 function generateShareUrl() {
@@ -160,6 +161,11 @@ function renderAll() {
   if (!wrapper) return;
 
   wrapper.setAttribute("data-cover-style", state.coverStyle);
+
+  // Update active state in desktop cover cards
+  document.querySelectorAll(".cover-card").forEach(c => {
+    c.classList.toggle("active", c.getAttribute("data-cover-style") === state.coverStyle);
+  });
 
   const parts = state.weddingDate.split("-").map(Number);
   const year = parts[0] || 2026;
@@ -212,6 +218,20 @@ function renderAll() {
   const archVenueSummary = document.getElementById("archVenueSummary");
   if (archDateSummary) archDateSummary.textContent = `${year}년 ${month}월 ${day}일 ${state.weddingTime}`;
   if (archVenueSummary) archVenueSummary.textContent = `${state.venueName} ${state.venueHall}`;
+
+  // Update Desktop Slot Thumbnails
+  const d1 = document.getElementById("deskSlotThumb1");
+  const d2 = document.getElementById("deskSlotThumb2");
+  const d3 = document.getElementById("deskSlotThumb3");
+  const d4 = document.getElementById("deskSlotThumb4");
+  const d5 = document.getElementById("deskSlotThumb5");
+  const d6 = document.getElementById("deskSlotThumb6");
+  if (d1) d1.src = state.coverPhoto;
+  if (d2) d2.src = state.detailPhoto;
+  if (d3) d3.src = state.galleryPhotos[0] || state.coverPhoto;
+  if (d4) d4.src = state.galleryPhotos[1] || state.coverPhoto;
+  if (d5) d5.src = state.galleryPhotos[2] || state.coverPhoto;
+  if (d6) d6.src = state.galleryPhotos[3] || state.coverPhoto;
 
   // Greeting & Family
   const viewGreetingText = document.getElementById("viewGreetingText");
@@ -338,8 +358,8 @@ function renderCalendar(year, month, day) {
 }
 
 /* ===================================================
-   INTERACTION HANDLERS & MODALS
-   ================================================== */
+   INTERACTION HANDLERS & TOAST
+   =================================================== */
 
 function showToast(msg) {
   const el = document.getElementById("toastMsg");
@@ -408,19 +428,54 @@ function openBottomSheet(tabType) {
   if (tabType === "cover") {
     sheetTitle.textContent = "🎨 커버 디자인 선택";
     sheetBody.innerHTML = `
-      <div class="style-grid" style="grid-template-columns: 1fr;">
-        <button type="button" class="style-btn ${state.coverStyle === 'duo' ? 'active' : ''}" data-sheet-cover="duo" style="padding:14px;text-align:left;">
-          <strong>01. 듀오 프레임 (모이티 대표 스타일)</strong>
-          <span style="display:block;font-size:11px;opacity:0.8;margin-top:4px;">전신 사진 + 디테일 컷 2장과 감성 날짜 블록</span>
-        </button>
-        <button type="button" class="style-btn ${state.coverStyle === 'magazine' ? 'active' : ''}" data-sheet-cover="magazine" style="padding:14px;text-align:left;">
-          <strong>02. 매거진 풀화면</strong>
-          <span style="display:block;font-size:11px;opacity:0.8;margin-top:4px;">시네마틱 화보형 풀블리드 사진과 영문 세리프</span>
-        </button>
-        <button type="button" class="style-btn ${state.coverStyle === 'arch' ? 'active' : ''}" data-sheet-cover="arch" style="padding:14px;text-align:left;">
-          <strong>03. 아치 & 갤러리 액자</strong>
-          <span style="display:block;font-size:11px;opacity:0.8;margin-top:4px;">미니멀 화이트 액자 여백과 아치형 곡선 프레임</span>
-        </button>
+      <p style="font-size:12.5px;color:#787168;margin-bottom:6px;">부부의 결혼사진이 가장 돋보이는 커버 레이아웃을 선택하세요.</p>
+      <div class="cover-cards-stack">
+        <!-- Duo Card -->
+        <div class="cover-card ${state.coverStyle === 'duo' ? 'active' : ''}" data-sheet-cover="duo">
+          <div class="cover-mini-thumb">
+            <div class="mini-duo-grid">
+              <div class="mini-duo-left"></div>
+              <div class="mini-duo-right">
+                <div class="mini-duo-right-img"></div>
+                <div class="mini-duo-right-date">28 NOV</div>
+              </div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">01. 듀오 프레임 (모이티 대표 스타일)</span>
+            <span class="cover-card-desc">전신 메인컷 + 반지/베일 컷 2장과 감성 날짜 블록</span>
+            <span class="cover-card-badge">인기 추천</span>
+          </div>
+        </div>
+
+        <!-- Magazine Card -->
+        <div class="cover-card ${state.coverStyle === 'magazine' ? 'active' : ''}" data-sheet-cover="magazine">
+          <div class="cover-mini-thumb">
+            <div class="mini-mag-cover">
+              <div class="mini-mag-overlay">
+                <span class="mini-mag-text">Save the Date</span>
+                <span class="mini-mag-text" style="font-size:6px;">2026.11.28</span>
+              </div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">02. 매거진 풀화면</span>
+            <span class="cover-card-desc">시네마틱 화보형 풀스크린 사진과 영문 세리프</span>
+          </div>
+        </div>
+
+        <!-- Arch Card -->
+        <div class="cover-card ${state.coverStyle === 'arch' ? 'active' : ''}" data-sheet-cover="arch">
+          <div class="cover-mini-thumb">
+            <div class="mini-arch-box">
+              <div class="mini-arch-img"></div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">03. 아치 &amp; 갤러리 액자</span>
+            <span class="cover-card-desc">미니멀 화이트 여백과 아치형 곡선 프레임</span>
+          </div>
+        </div>
       </div>
     `;
 
@@ -435,27 +490,36 @@ function openBottomSheet(tabType) {
   } else if (tabType === "info") {
     sheetTitle.textContent = "✍️ 예식 정보 및 인사말 편집";
     sheetBody.innerHTML = `
-      <div class="form-row">
-        <div class="form-group"><label>신랑 이름</label><input type="text" id="mGroom" value="${state.groomName}" /></div>
-        <div class="form-group"><label>신부 이름</label><input type="text" id="mBride" value="${state.brideName}" /></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>예식 날짜</label><input type="date" id="mDate" value="${state.weddingDate}" /></div>
-        <div class="form-group"><label>예식 시간</label><input type="text" id="mTime" value="${state.weddingTime}" /></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>웨딩홀 이름</label><input type="text" id="mVenue" value="${state.venueName}" /></div>
-        <div class="form-group"><label>층 / 홀</label><input type="text" id="mHall" value="${state.venueHall}" /></div>
-      </div>
+      <div class="form-group"><label>신랑 이름</label><input type="text" id="mGroom" value="${state.groomName}" /></div>
+      <div class="form-group"><label>신부 이름</label><input type="text" id="mBride" value="${state.brideName}" /></div>
+      <div class="form-group"><label>예식 날짜</label><input type="date" id="mDate" value="${state.weddingDate}" /></div>
+      <div class="form-group"><label>예식 시간 표기</label><input type="text" id="mTime" value="${state.weddingTime}" /></div>
+      <div class="form-group"><label>웨딩홀 이름</label><input type="text" id="mVenue" value="${state.venueName}" /></div>
+      <div class="form-group"><label>층수 / 홀</label><input type="text" id="mHall" value="${state.venueHall}" /></div>
       <div class="form-group"><label>도로명 주소</label><input type="text" id="mAddr" value="${state.venueAddress}" /></div>
       <div class="form-group"><label>신랑측 계좌번호</label><input type="text" id="mGroomAcc" value="${state.groomAccount}" /></div>
       <div class="form-group"><label>신부측 계좌번호</label><input type="text" id="mBrideAcc" value="${state.brideAccount}" /></div>
       <div class="form-group">
         <label>초대 인사말</label>
-        <textarea id="mGreeting" rows="4">${state.greeting}</textarea>
+        <div class="preset-chips" style="margin-bottom:6px;">
+          <button type="button" class="chip-btn" id="mPresetWarm">따뜻형</button>
+          <button type="button" class="chip-btn" id="mPresetClassic">격식형</button>
+          <button type="button" class="chip-btn" id="mPresetModern">담백형</button>
+        </div>
+        <textarea id="mGreeting" rows="5">${state.greeting}</textarea>
       </div>
       <button type="button" class="btn-primary" id="btnSaveMobileInfo" style="margin-top:8px;">수정사항 저장하기</button>
     `;
+
+    document.getElementById("mPresetWarm")?.addEventListener("click", () => {
+      document.getElementById("mGreeting").value = GREETING_PRESETS.warm;
+    });
+    document.getElementById("mPresetClassic")?.addEventListener("click", () => {
+      document.getElementById("mGreeting").value = GREETING_PRESETS.classic;
+    });
+    document.getElementById("mPresetModern")?.addEventListener("click", () => {
+      document.getElementById("mGreeting").value = GREETING_PRESETS.modern;
+    });
 
     document.getElementById("btnSaveMobileInfo")?.addEventListener("click", () => {
       state.groomName = document.getElementById("mGroom").value;
@@ -470,59 +534,137 @@ function openBottomSheet(tabType) {
       state.greeting = document.getElementById("mGreeting").value;
       renderAll();
       closeBottomSheet();
-      showToast("청첩장 정보가 업데이트되었습니다.");
+      showToast("청첩장 정보가 저장되었습니다.");
     });
   } else if (tabType === "photo") {
-    sheetTitle.textContent = "📷 웨딩 사진 변경 (폰 앨범)";
+    sheetTitle.textContent = "📷 웨딩 사진 번호별 등록";
     sheetBody.innerHTML = `
-      <div class="form-group">
-        <label>메인 대표 사진 (전신/메인 커버)</label>
-        <input type="file" id="mCoverFile" accept="image/*" />
-      </div>
-      <div class="form-group">
-        <label>서브 디테일 사진 (듀오 커버 손/반지 컷)</label>
-        <input type="file" id="mDetailFile" accept="image/*" />
-      </div>
-      <div class="form-group">
-        <label>포토 갤러리 사진 (최대 6장)</label>
-        <input type="file" id="mGalleryFiles" accept="image/*" multiple />
+      <p style="font-size:12.5px;color:#787168;margin-bottom:4px;">위치 번호(1~6번)를 확인하고 원하는 사진을 스마트폰 앨범에서 변경하세요.</p>
+      <div class="photo-slots-list">
+        <!-- Slot 1 -->
+        <div class="photo-slot-card">
+          <div class="slot-left">
+            <span class="slot-num-badge">1</span>
+            <img class="slot-thumb" src="${state.coverPhoto}" alt="1번 메인" />
+            <div class="slot-info">
+              <span class="slot-name">메인 대표 사진</span>
+              <span class="slot-sub">전신 메인 화보 커버</span>
+            </div>
+          </div>
+          <label class="btn-slot-upload">
+            변경
+            <input type="file" id="mSlot1" accept="image/*" />
+          </label>
+        </div>
+
+        <!-- Slot 2 -->
+        <div class="photo-slot-card">
+          <div class="slot-left">
+            <span class="slot-num-badge">2</span>
+            <img class="slot-thumb" src="${state.detailPhoto}" alt="2번 디테일" />
+            <div class="slot-info">
+              <span class="slot-name">서브 디테일 사진</span>
+              <span class="slot-sub">듀오 커버 손/반지 컷</span>
+            </div>
+          </div>
+          <label class="btn-slot-upload">
+            변경
+            <input type="file" id="mSlot2" accept="image/*" />
+          </label>
+        </div>
+
+        <!-- Slot 3 -->
+        <div class="photo-slot-card">
+          <div class="slot-left">
+            <span class="slot-num-badge">3</span>
+            <img class="slot-thumb" src="${state.galleryPhotos[0] || state.coverPhoto}" alt="3번 갤러리 1" />
+            <div class="slot-info">
+              <span class="slot-name">갤러리 사진 1</span>
+              <span class="slot-sub">포토 갤러리 첫번째</span>
+            </div>
+          </div>
+          <label class="btn-slot-upload">
+            변경
+            <input type="file" id="mSlot3" accept="image/*" />
+          </label>
+        </div>
+
+        <!-- Slot 4 -->
+        <div class="photo-slot-card">
+          <div class="slot-left">
+            <span class="slot-num-badge">4</span>
+            <img class="slot-thumb" src="${state.galleryPhotos[1] || state.coverPhoto}" alt="4번 갤러리 2" />
+            <div class="slot-info">
+              <span class="slot-name">갤러리 사진 2</span>
+              <span class="slot-sub">포토 갤러리 두번째</span>
+            </div>
+          </div>
+          <label class="btn-slot-upload">
+            변경
+            <input type="file" id="mSlot4" accept="image/*" />
+          </label>
+        </div>
+
+        <!-- Slot 5 -->
+        <div class="photo-slot-card">
+          <div class="slot-left">
+            <span class="slot-num-badge">5</span>
+            <img class="slot-thumb" src="${state.galleryPhotos[2] || state.coverPhoto}" alt="5번 갤러리 3" />
+            <div class="slot-info">
+              <span class="slot-name">갤러리 사진 3</span>
+              <span class="slot-sub">포토 갤러리 세번째</span>
+            </div>
+          </div>
+          <label class="btn-slot-upload">
+            변경
+            <input type="file" id="mSlot5" accept="image/*" />
+          </label>
+        </div>
+
+        <!-- Slot 6 -->
+        <div class="photo-slot-card">
+          <div class="slot-left">
+            <span class="slot-num-badge">6</span>
+            <img class="slot-thumb" src="${state.galleryPhotos[3] || state.coverPhoto}" alt="6번 갤러리 4" />
+            <div class="slot-info">
+              <span class="slot-name">갤러리 사진 4</span>
+              <span class="slot-sub">포토 갤러리 네번째</span>
+            </div>
+          </div>
+          <label class="btn-slot-upload">
+            변경
+            <input type="file" id="mSlot6" accept="image/*" />
+          </label>
+        </div>
       </div>
     `;
 
-    document.getElementById("mCoverFile")?.addEventListener("change", async (e) => {
-      if (e.target.files && e.target.files[0]) {
-        showToast("메인 사진을 처리 중입니다...");
-        state.coverPhoto = await compressImageFile(e.target.files[0]);
-        renderAll();
-        closeBottomSheet();
-      }
-    });
+    const bindSlot = (id, callback) => {
+      document.getElementById(id)?.addEventListener("change", async (e) => {
+        if (e.target.files && e.target.files[0]) {
+          showToast("사진을 압축 처리 중입니다...");
+          const compressed = await compressImageFile(e.target.files[0]);
+          callback(compressed);
+          renderAll();
+          openBottomSheet("photo");
+          showToast("사진이 교체되었습니다.");
+        }
+      });
+    };
 
-    document.getElementById("mDetailFile")?.addEventListener("change", async (e) => {
-      if (e.target.files && e.target.files[0]) {
-        showToast("서브 사진을 처리 중입니다...");
-        state.detailPhoto = await compressImageFile(e.target.files[0]);
-        renderAll();
-        closeBottomSheet();
-      }
-    });
-
-    document.getElementById("mGalleryFiles")?.addEventListener("change", async (e) => {
-      if (e.target.files && e.target.files.length > 0) {
-        showToast("갤러리 사진을 처리 중입니다...");
-        const files = Array.from(e.target.files).slice(0, 6);
-        state.galleryPhotos = await Promise.all(files.map(f => compressImageFile(f)));
-        renderAll();
-        closeBottomSheet();
-      }
-    });
+    bindSlot("mSlot1", img => state.coverPhoto = img);
+    bindSlot("mSlot2", img => state.detailPhoto = img);
+    bindSlot("mSlot3", img => state.galleryPhotos[0] = img);
+    bindSlot("mSlot4", img => state.galleryPhotos[1] = img);
+    bindSlot("mSlot5", img => state.galleryPhotos[2] = img);
+    bindSlot("mSlot6", img => state.galleryPhotos[3] = img);
   }
 }
 
 function closeBottomSheet() {
   sheetBackdrop?.classList.remove("show");
   document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
-  document.getElementById("dockBtnPreview")?.classList.add("active");
+  document.getElementById("dockBtnCover")?.classList.add("active");
 }
 
 /* ===================================================
@@ -553,11 +695,10 @@ async function shareToKakaoOrNative() {
       showToast("공유 창이 열렸습니다.");
       return;
     } catch (e) {
-      // User cancelled or unsupported
+      // User cancelled
     }
   }
 
-  // Fallback to clipboard
   copyText(publicUrl, "청첩장 링크가 복사되었습니다. 카카오톡에 붙여넣으세요!");
 }
 
@@ -628,7 +769,7 @@ ${cssText}
       border-radius: 0 !important;
       box-shadow: 0 0 40px rgba(0,0,0,0.06) !important;
     }
-    .mobile-dock, .editor-sidebar { display: none !important; }
+    .mobile-dock, .editor-sidebar, .btn-return-edit { display: none !important; }
   </style>
 </head>
 <body class="guest-mode">
@@ -718,18 +859,17 @@ ${phoneInner}
    =================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Check if opened with #view or state data in URL
-  checkUrlMode();
+  const isGuestMode = checkUrlMode();
 
   const inpGreeting = document.getElementById("inpGreeting");
   if (inpGreeting) inpGreeting.value = state.greeting;
 
-  // Desktop cover selector
-  document.querySelectorAll(".style-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".style-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      state.coverStyle = btn.getAttribute("data-cover-style");
+  // Desktop Visual Cover Cards Click
+  document.querySelectorAll(".cover-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      document.querySelectorAll(".cover-card").forEach(c => c.classList.remove("active"));
+      card.classList.add("active");
+      state.coverStyle = card.getAttribute("data-cover-style");
       renderAll();
     });
   });
@@ -774,51 +914,63 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Desktop Image uploads
-  document.getElementById("inpCoverFile")?.addEventListener("change", async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      showToast("메인 사진을 압축 중입니다...");
-      state.coverPhoto = await compressImageFile(e.target.files[0]);
-      renderAll();
-    }
-  });
+  // Desktop Slot Upload Listeners
+  const bindDesktopSlot = (id, callback) => {
+    document.getElementById(id)?.addEventListener("change", async (e) => {
+      if (e.target.files && e.target.files[0]) {
+        showToast("사진을 압축 처리 중입니다...");
+        const compressed = await compressImageFile(e.target.files[0]);
+        callback(compressed);
+        renderAll();
+        showToast("사진이 교체되었습니다.");
+      }
+    });
+  };
 
-  document.getElementById("inpDetailFile")?.addEventListener("change", async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      showToast("서브 사진을 압축 중입니다...");
-      state.detailPhoto = await compressImageFile(e.target.files[0]);
-      renderAll();
-    }
-  });
-
-  document.getElementById("inpGalleryFiles")?.addEventListener("change", async (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      showToast("갤러리 사진을 압축 중입니다...");
-      const files = Array.from(e.target.files).slice(0, 6);
-      state.galleryPhotos = await Promise.all(files.map(f => compressImageFile(f)));
-      renderAll();
-    }
-  });
+  bindDesktopSlot("inpSlot1", img => state.coverPhoto = img);
+  bindDesktopSlot("inpSlot2", img => state.detailPhoto = img);
+  bindDesktopSlot("inpSlot3", img => state.galleryPhotos[0] = img);
+  bindDesktopSlot("inpSlot4", img => state.galleryPhotos[1] = img);
+  bindDesktopSlot("inpSlot5", img => state.galleryPhotos[2] = img);
+  bindDesktopSlot("inpSlot6", img => state.galleryPhotos[3] = img);
 
   // Mobile Bottom Dock Buttons
+  // 1. [미리보기] -> Fullscreen Guest View Toggle
   document.getElementById("dockBtnPreview")?.addEventListener("click", () => {
     closeBottomSheet();
+    document.body.classList.add("guest-preview");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    showToast("하객에게 보이는 실제 전체화면 모드입니다.");
   });
+
+  // Floating Return-to-Edit button
+  document.getElementById("btnReturnEdit")?.addEventListener("click", () => {
+    document.body.classList.remove("guest-preview");
+    showToast("편집 모드로 돌아왔습니다.");
+  });
+
+  // 2. [커버선택]
   document.getElementById("dockBtnCover")?.addEventListener("click", () => {
     document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
     document.getElementById("dockBtnCover").classList.add("active");
     openBottomSheet("cover");
   });
+
+  // 3. [내용편집]
   document.getElementById("dockBtnInfo")?.addEventListener("click", () => {
     document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
     document.getElementById("dockBtnInfo").classList.add("active");
     openBottomSheet("info");
   });
+
+  // 4. [사진변경]
   document.getElementById("dockBtnPhoto")?.addEventListener("click", () => {
     document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
     document.getElementById("dockBtnPhoto").classList.add("active");
     openBottomSheet("photo");
   });
+
+  // 5. [링크생성]
   document.getElementById("dockBtnShare")?.addEventListener("click", () => {
     openShareModal();
   });
@@ -879,7 +1031,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showToast(bgmPlaying ? "배경음악이 재생됩니다." : "배경음악이 일시정지되었습니다.");
   });
 
-  // HTML Export & Viewer Toggle
+  // HTML Export & Desktop Viewer Toggle
   document.getElementById("btnDownloadHtml")?.addEventListener("click", downloadStandaloneInvitation);
   document.getElementById("btnToggleViewer")?.addEventListener("click", () => {
     document.body.classList.toggle("viewer-only");
@@ -888,11 +1040,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && document.body.classList.contains("viewer-only")) {
+    if (e.key === "Escape") {
       document.body.classList.remove("viewer-only");
+      document.body.classList.remove("guest-preview");
     }
   });
 
   // Initial Render
   renderAll();
+
+  // Initial mobile entry: open cover selection drawer automatically so user picks cover first!
+  if (!isGuestMode && window.innerWidth <= 860) {
+    setTimeout(() => {
+      openBottomSheet("cover");
+    }, 250);
+  }
 });
