@@ -132,6 +132,7 @@ const state = {
     }
   ]
 };
+window.state = state;
 
 // PURE STATE: Reset all fields so the user feels like they start on a pristine canvas
 function applyPureState() {
@@ -377,12 +378,51 @@ function generateShareUrl() {
 }
 
 /* ===================================================
-   RENDER ENGINE
+   RENDER ENGINE & PRIVACY EXPIRATION PROTECTION
    =================================================== */
+
+function isWeddingExpired(weddingDateStr) {
+  if (!weddingDateStr) return false;
+  const str = String(weddingDateStr).trim();
+  const parts = str.split("-").map(Number);
+  if (parts.length < 3 || isNaN(parts[0])) return false;
+  const wDate = new Date(parts[0], parts[1] - 1, parts[2], 23, 59, 59);
+  // 30 days after wedding date, automatically expired for privacy protection
+  const expireDate = new Date(wDate.getTime() + (30 * 24 * 60 * 60 * 1000));
+  return new Date() > expireDate;
+}
 
 function renderAll() {
   const wrapper = document.getElementById("invWrapper");
   if (!wrapper) return;
+
+  const isGuestMode = document.body.classList.contains("guest-mode");
+  const isExpired = isWeddingExpired(state.weddingDate);
+
+  // Clean Fallback Strings for Pure State Display
+  const groomDisplayName = state.groomName.trim() || "신랑";
+  const brideDisplayName = state.brideName.trim() || "신부";
+
+  // PRIVACY PROTECTION GATE: If past wedding + 30 days, mask personal info and show graceful finish
+  if (isGuestMode && isExpired) {
+    wrapper.innerHTML = `
+      <div class="wedding-expired-screen">
+        <div class="expired-badge">🛡️ 개인정보 안심 보호 시스템</div>
+        <h2 class="expired-title">예식이 종료되었습니다</h2>
+        <p class="expired-desc">
+          본 모바일 청첩장은 예식이 성황리에 마무리되어<br>
+          <strong>신랑·신부 및 혼주 분들의 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>
+          안전하게 비공개 전환되었습니다.
+        </p>
+        <div class="expired-card">
+          <div class="expired-couple">${groomDisplayName} · ${brideDisplayName}</div>
+          <div class="expired-date">${state.weddingDate.replace(/-/g, ". ")}</div>
+          <p class="expired-thanks">두 사람의 새로운 시작을 함께 축하해 주셔서 진심으로 감사드립니다.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
 
   wrapper.setAttribute("data-cover-style", state.coverStyle);
 
@@ -399,9 +439,6 @@ function renderAll() {
   const dayNameEn = DAY_NAMES_EN[dateObj.getDay()] || "SAT";
   const monNameEn = MONTH_NAMES_EN[month - 1] || "NOV";
 
-  // Clean Fallback Strings for Pure State Display
-  const groomDisplayName = state.groomName.trim() || "신랑";
-  const brideDisplayName = state.brideName.trim() || "신부";
   const coupleNamesSummary = `${groomDisplayName} & ${brideDisplayName}`;
   const coupleNamesDot = `${groomDisplayName} · ${brideDisplayName}`;
   const venueSummary = (state.venueName || state.venueHall) 
@@ -2404,3 +2441,5 @@ window.submitGuestbookEntry = submitGuestbookEntry;
 window.renderMobilePhotoSheet = renderMobilePhotoSheet;
 window.openBottomSheet = openBottomSheet;
 window.closeBottomSheet = closeBottomSheet;
+window.state = state;
+window.renderAll = renderAll;

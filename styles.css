@@ -2675,3 +2675,66 @@ body.guest-mode .editor-sidebar {
 body.guest-mode .phone-mockup {
   padding-bottom: 0 !important;
 }
+
+/* Privacy Expiration Screen (Post-Wedding +30 Days Protection) */
+.wedding-expired-screen {
+  padding: 80px 24px 60px;
+  text-align: center;
+  background: var(--card-bg, #FAF8F5);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.expired-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: #EAE3D5;
+  color: #7A5328;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+  letter-spacing: 0.1em;
+  margin-bottom: 18px;
+}
+.expired-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2B2724;
+  margin-bottom: 12px;
+}
+.expired-desc {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #6E675E;
+  margin-bottom: 30px;
+  max-width: 320px;
+}
+.expired-card {
+  background: #FFFFFF;
+  border: 1px solid #ECE5D8;
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 4px 16px rgba(43, 39, 36, 0.04);
+  width: 100%;
+  max-width: 320px;
+}
+.expired-couple {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2B2724;
+  margin-bottom: 4px;
+}
+.expired-date {
+  font-size: 13px;
+  color: #9E978C;
+  font-family: "Cormorant Garamond", serif;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+.expired-thanks {
+  font-size: 13px;
+  color: #787168;
+  line-height: 1.6;
+}
