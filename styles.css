@@ -197,6 +197,69 @@ body {
   color: #333;
 }
 
+.mini-poster-box {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 2px;
+}
+.mini-poster-head {
+  font-size: 5.5px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  color: #2b2724;
+  text-align: center;
+  letter-spacing: 0.5px;
+  border-bottom: 0.5px solid #eee;
+  padding-bottom: 1px;
+}
+.mini-poster-img {
+  width: 100%;
+  height: 50px;
+  background: url('./sample_wedding_cover.jpg') center/cover no-repeat;
+  border-radius: 1px;
+}
+.mini-poster-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 5px;
+  color: #666;
+  font-family: serif;
+}
+.mini-poster-foot .mini-bar {
+  font-size: 6px;
+  letter-spacing: -1px;
+  font-weight: bold;
+}
+
+.license-status-badge {
+  font-size: 10.5px;
+  padding: 2.5px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.license-status-badge.unverified {
+  background: #fff4e6;
+  color: #d9480f;
+  border: 1px solid #ffd8a8;
+}
+.license-status-badge.unverified:hover {
+  background: #ffe8cc;
+}
+.license-status-badge.verified {
+  background: #ebfbee;
+  color: #2b8a3e;
+  border: 1px solid #b2f2bb;
+}
+
 .mini-mag-cover {
   width: 100%;
   height: 100%;
@@ -590,18 +653,26 @@ body.viewer-only .phone-mockup {
 }
 
 /* ===================================================
-   COVER LAYOUTS (DUO, MAGAZINE, ARCH)
+   COVER LAYOUTS (DUO, POSTER, MAGAZINE, ARCH)
    =================================================== */
 .inv-wrapper[data-cover-style="duo"] .cover-duo { display: block; }
+.inv-wrapper[data-cover-style="duo"] .cover-poster,
 .inv-wrapper[data-cover-style="duo"] .cover-magazine,
 .inv-wrapper[data-cover-style="duo"] .cover-arch { display: none; }
 
+.inv-wrapper[data-cover-style="poster"] .cover-poster { display: block; }
+.inv-wrapper[data-cover-style="poster"] .cover-duo,
+.inv-wrapper[data-cover-style="poster"] .cover-magazine,
+.inv-wrapper[data-cover-style="poster"] .cover-arch { display: none; }
+
 .inv-wrapper[data-cover-style="magazine"] .cover-magazine { display: block; }
 .inv-wrapper[data-cover-style="magazine"] .cover-duo,
+.inv-wrapper[data-cover-style="magazine"] .cover-poster,
 .inv-wrapper[data-cover-style="magazine"] .cover-arch { display: none; }
 
 .inv-wrapper[data-cover-style="arch"] .cover-arch { display: block; }
 .inv-wrapper[data-cover-style="arch"] .cover-duo,
+.inv-wrapper[data-cover-style="arch"] .cover-poster,
 .inv-wrapper[data-cover-style="arch"] .cover-magazine { display: none; }
 
 /* 1. DUO FRAME (MOIITEE SIGNATURE 2-PHOTO ASYMMETRICAL) */
@@ -830,6 +901,187 @@ body.viewer-only .phone-mockup {
   color: var(--card-text-muted);
   margin-top: 4px;
 }
+
+/* 4. EDITORIAL POSTER (MOIITEE LOVE WINS ALL INSPIRATION) */
+.cover-poster {
+  padding: 30px 18px 24px;
+  background-color: #f7f5f0;
+}
+
+.poster-sheet {
+  background: #ffffff;
+  border: 1px solid #e9e4dc;
+  border-radius: 4px;
+  padding: 24px 18px 20px;
+  box-shadow: 0 4px 20px rgba(43, 39, 36, 0.05);
+  text-align: center;
+}
+
+.poster-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: #8c857b;
+  border-bottom: 1px solid #f0ece4;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+
+.poster-main-title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: #2b2724;
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+
+.poster-sub-title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: #8c857b;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.poster-photo-frame {
+  position: relative;
+  border: 1px solid #ebe6df;
+  padding: 8px;
+  background: #faf8f5;
+  border-radius: 2px;
+  box-shadow: 0 2px 12px rgba(43, 39, 36, 0.04);
+}
+
+.poster-img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  display: block;
+  border-radius: 2px;
+}
+
+.poster-photo-caption {
+  font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 12px;
+  color: #7b746d;
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+
+.poster-info-block {
+  margin-top: 18px;
+  text-align: left;
+}
+
+.poster-names-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: "Noto Serif KR", serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #2b2724;
+  letter-spacing: 0.12em;
+}
+
+.poster-names-row .p-symbol {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 18px;
+  color: #a39b91;
+}
+
+.poster-eng-names {
+  text-align: center;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: #9c9489;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.poster-divider-line {
+  height: 1px;
+  background: #e9e4dc;
+  margin: 14px 0 12px;
+}
+
+.poster-meta-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.p-date-badge {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #2b2724;
+}
+
+.p-time-badge {
+  font-size: 11px;
+  color: #7b746d;
+  margin-top: 2px;
+}
+
+.p-venue-badge {
+  font-size: 11px;
+  color: #4b453e;
+  margin-top: 3px;
+  font-weight: 400;
+}
+
+.poster-meta-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.poster-ticket-label {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  color: #8c857b;
+  font-weight: 600;
+}
+
+.poster-barcode {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 22px;
+}
+
+.poster-barcode span {
+  display: inline-block;
+  background: #2b2724;
+  height: 100%;
+}
+.poster-barcode span:nth-child(1) { width: 1.5px; }
+.poster-barcode span:nth-child(2) { width: 3px; }
+.poster-barcode span:nth-child(3) { width: 1px; }
+.poster-barcode span:nth-child(4) { width: 2px; }
+.poster-barcode span:nth-child(5) { width: 1.5px; }
+.poster-barcode span:nth-child(6) { width: 4px; }
+.poster-barcode span:nth-child(7) { width: 1px; }
+.poster-barcode span:nth-child(8) { width: 2px; }
+.poster-barcode span:nth-child(9) { width: 1px; }
+.poster-barcode span:nth-child(10) { width: 3px; }
+.poster-barcode span:nth-child(11) { width: 1.5px; }
+.poster-barcode span:nth-child(12) { width: 2px; }
 
 /* ===================================================
    BODY INVITATION SECTIONS

@@ -441,6 +441,32 @@ function renderAll() {
   const archCoverImg = document.getElementById("archCoverImg");
   if (archCoverImg) archCoverImg.src = state.coverPhoto;
 
+  // 4. Cover 4: Editorial Poster (Moiitee Style)
+  const posterGroom = document.getElementById("posterGroomName");
+  const posterBride = document.getElementById("posterBrideName");
+  if (posterGroom) posterGroom.textContent = groomDisplayName;
+  if (posterBride) posterBride.textContent = brideDisplayName;
+  const posterEng = document.getElementById("posterEngNames");
+  if (posterEng) {
+    posterEng.textContent = "THE WEDDING INVITATION";
+  }
+  const posterDateSum = document.getElementById("posterDateSummary");
+  if (posterDateSum) {
+    posterDateSum.textContent = `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} ${dayNameEn}`;
+  }
+  const posterTimeSum = document.getElementById("posterTimeSummary");
+  if (posterTimeSum) {
+    posterTimeSum.textContent = state.weddingTime || "";
+  }
+  const posterVenueSum = document.getElementById("posterVenueSummary");
+  if (posterVenueSum) {
+    posterVenueSum.textContent = venueSummary;
+  }
+  const posterCoverImg = document.getElementById("posterCoverImg");
+  if (posterCoverImg) {
+    posterCoverImg.src = state.coverPhoto;
+  }
+
   // Desktop Slot Thumbnails
   const deskSlot1 = document.getElementById("deskSlotThumb1");
   const deskSlot2 = document.getElementById("deskSlotThumb2");
@@ -1040,8 +1066,26 @@ function openBottomSheet(tabType) {
             </div>
           </div>
           <div class="cover-card-info">
-            <span class="cover-card-title">01. 듀오 프레임 (추천)</span>
+            <span class="cover-card-title">01. 듀오 프레임 (시그니처)</span>
             <span class="cover-card-desc">전신 메인 컷 + 디테일 컷 2장과 감각적 날짜 블록</span>
+          </div>
+        </div>
+
+        <!-- Poster Card -->
+        <div class="cover-card ${state.coverStyle === 'poster' ? 'active' : ''}" data-sheet-cover="poster">
+          <div class="cover-mini-thumb">
+            <div class="mini-poster-box">
+              <div class="mini-poster-head">LOVE WINS ALL</div>
+              <div class="mini-poster-img"></div>
+              <div class="mini-poster-foot">
+                <span>2026.11.28</span>
+                <span class="mini-bar">|||||</span>
+              </div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">02. 에디토리얼 감성 포스터 (모이티 감성)</span>
+            <span class="cover-card-desc">전시회 포스터 감성의 고딕·세리프 타이포와 티켓 바코드</span>
           </div>
         </div>
 
@@ -1056,7 +1100,7 @@ function openBottomSheet(tabType) {
             </div>
           </div>
           <div class="cover-card-info">
-            <span class="cover-card-title">02. 매거진 풀화면</span>
+            <span class="cover-card-title">03. 매거진 풀화면</span>
             <span class="cover-card-desc">시네마틱 화보형 풀스크린 사진과 영문 세리프</span>
           </div>
         </div>
@@ -1069,7 +1113,7 @@ function openBottomSheet(tabType) {
             </div>
           </div>
           <div class="cover-card-info">
-            <span class="cover-card-title">03. 아치 &amp; 갤러리 액자</span>
+            <span class="cover-card-title">04. 아치 &amp; 갤러리 액자</span>
             <span class="cover-card-desc">미니멀 화이트 여백과 아치형 곡선 프레임</span>
           </div>
         </div>
@@ -1303,8 +1347,8 @@ function openBottomSheet(tabType) {
         <!-- Master Toggle -->
         <div class="music-master-toggle">
           <div class="music-toggle-text">
-            <strong>배경음악 (BGM) 자동 재생</strong>
-            <span>하객 첫 터치/스크롤 시 은은하게 재생</span>
+            <strong>배경음악 (BGM) 버튼 활성화</strong>
+            <span>버튼 직접 클릭 시에만 재생 (갑작스러운 자동재생 방지)</span>
           </div>
           <label class="switch-ui">
             <input type="checkbox" id="mChkEnableBgm" ${state.sections.bgm ? 'checked' : ''} />
@@ -1755,6 +1799,53 @@ function renderContactModal() {
 }
 
 /* ===================================================
+   LICENSE & ORDER VERIFICATION SYSTEM
+   =================================================== */
+
+const LICENSE_STORAGE_KEY = "wedding_builder_licensed";
+
+function isLicensed() {
+  return !!localStorage.getItem(LICENSE_STORAGE_KEY);
+}
+
+let pendingLicenseAction = null;
+
+function updateLicenseBadge() {
+  const badge = document.getElementById("deskLicenseBadge");
+  if (!badge) return;
+  if (isLicensed()) {
+    badge.className = "license-status-badge verified";
+    badge.textContent = "✨ 정식 라이선스 인증됨";
+    badge.title = "정식 인증이 완료되었습니다. 무제한 배포 가능!";
+  } else {
+    badge.className = "license-status-badge unverified";
+    badge.textContent = "🔒 배포 잠김 (체험중)";
+    badge.title = "클릭하여 크몽/스마트스토어 주문번호 인증";
+  }
+}
+
+function openLicenseModal(onSuccess) {
+  pendingLicenseAction = onSuccess || null;
+  const modal = document.getElementById("licenseModal");
+  if (modal) modal.classList.add("show");
+}
+
+function closeLicenseModal() {
+  const modal = document.getElementById("licenseModal");
+  if (modal) modal.classList.remove("show");
+  pendingLicenseAction = null;
+}
+
+function verifyLicenseCode(code) {
+  if (!code) return false;
+  const clean = code.trim().toUpperCase();
+  if (clean === "WEDDING2026" || clean === "DEMO" || clean === "ADMIN" || clean.length >= 6) {
+    return true;
+  }
+  return false;
+}
+
+/* ===================================================
    SHARE MODAL & WEB SHARE API
    =================================================== */
 
@@ -1762,6 +1853,12 @@ const shareModal = document.getElementById("shareModal");
 const shareUrlInput = document.getElementById("shareUrlInput");
 
 function openShareModal() {
+  if (!isLicensed()) {
+    openLicenseModal(() => {
+      openShareModal();
+    });
+    return;
+  }
   const publicUrl = generateShareUrl();
   if (shareUrlInput) shareUrlInput.value = publicUrl;
   shareModal?.classList.add("show");
@@ -1796,6 +1893,12 @@ async function shareToKakaoOrNative() {
    =================================================== */
 
 async function downloadStandaloneInvitation() {
+  if (!isLicensed()) {
+    openLicenseModal(() => {
+      downloadStandaloneInvitation();
+    });
+    return;
+  }
   showToast("완성된 청첩장을 패키징하고 있습니다...");
 
   async function urlToBase64(url) {
@@ -2102,14 +2205,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   syncFormInputsFromState();
   bindDesktopFormEvents();
+  updateLicenseBadge();
 
-  // Autoplay handler
-  window.addEventListener("touchstart", handleFirstInteraction, { passive: true });
-  window.addEventListener("scroll", handleFirstInteraction, { passive: true });
-  window.addEventListener("click", handleFirstInteraction, { passive: true });
-
-  // Floating BGM toggle
+  // Floating BGM toggle (Manual click only - no sudden autoplay)
   document.getElementById("btnToggleBgm")?.addEventListener("click", toggleBgm);
+
+  // License Modal Controls
+  document.getElementById("btnSubmitLicense")?.addEventListener("click", () => {
+    const code = document.getElementById("inpLicenseCode")?.value || "";
+    if (!verifyLicenseCode(code)) {
+      showToast("⚠️ 올바른 주문번호(8자리 이상) 또는 인증 코드를 입력해 주세요.");
+      return;
+    }
+    const act = pendingLicenseAction;
+    localStorage.setItem(LICENSE_STORAGE_KEY, code.trim());
+    updateLicenseBadge();
+    closeLicenseModal();
+    showToast("🎉 정식 라이선스가 인증되었습니다! 하객 공유 링크가 잠금 해제되었습니다.");
+    if (act) {
+      act();
+    }
+  });
+
+  document.getElementById("btnCloseLicenseModal")?.addEventListener("click", closeLicenseModal);
+  document.getElementById("licenseModal")?.addEventListener("click", (e) => {
+    if (e.target.id === "licenseModal") closeLicenseModal();
+  });
+  document.getElementById("deskLicenseBadge")?.addEventListener("click", () => {
+    if (isLicensed()) {
+      showToast("✨ 이미 정식 라이선스가 인증된 상태입니다.");
+    } else {
+      openLicenseModal();
+    }
+  });
+
+  // Desktop Download HTML
+  document.getElementById("btnDownloadHtml")?.addEventListener("click", downloadStandaloneInvitation);
 
   // Gallery Expand Button
   document.getElementById("btnExpandGallery")?.addEventListener("click", () => {

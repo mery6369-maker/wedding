@@ -20,7 +20,10 @@
           <h1>Wedding Studio</h1>
           <p style="font-size:12px;color:#787168;margin-top:2px;">감성 프리미엄 모바일 청첩장 셀프 스튜디오</p>
         </div>
-        <span class="studio-badge">BRIGHT v2.5</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <span class="studio-badge">BRIGHT v2.5</span>
+          <span class="license-status-badge unverified" id="deskLicenseBadge" title="클릭하여 구매 인증">🔒 배포 잠김</span>
+        </div>
       </div>
 
       <!-- Pure State & Sample Toggle Bar -->
@@ -52,9 +55,27 @@
               </div>
             </div>
             <div class="cover-card-info">
-              <span class="cover-card-title">01. 듀오 프레임 (추천)</span>
+              <span class="cover-card-title">01. 듀오 프레임 (시그니처)</span>
               <span class="cover-card-desc">전신 메인 컷 + 디테일 컷 2장과 감각적 날짜 블록</span>
               <span class="cover-card-badge">시그니처 듀오</span>
+            </div>
+          </div>
+
+          <div class="cover-card" data-cover-style="poster">
+            <div class="cover-mini-thumb">
+              <div class="mini-poster-box">
+                <div class="mini-poster-head">LOVE WINS ALL</div>
+                <div class="mini-poster-img"></div>
+                <div class="mini-poster-foot">
+                  <span>2026.11.28</span>
+                  <span class="mini-bar">|||||</span>
+                </div>
+              </div>
+            </div>
+            <div class="cover-card-info">
+              <span class="cover-card-title">02. 에디토리얼 감성 포스터 (모이티 감성)</span>
+              <span class="cover-card-desc">전시회 포스터 감성의 고딕·세리프 타이포와 티켓 바코드</span>
+              <span class="cover-card-badge" style="background:#f4ece1;color:#7a6345;">NEW 포스터 감성</span>
             </div>
           </div>
 
@@ -68,7 +89,7 @@
               </div>
             </div>
             <div class="cover-card-info">
-              <span class="cover-card-title">02. 매거진 풀화면</span>
+              <span class="cover-card-title">03. 매거진 풀화면</span>
               <span class="cover-card-desc">시네마틱 화보형 풀스크린 사진과 영문 세리프</span>
             </div>
           </div>
@@ -80,7 +101,7 @@
               </div>
             </div>
             <div class="cover-card-info">
-              <span class="cover-card-title">03. 아치 &amp; 갤러리 액자</span>
+              <span class="cover-card-title">04. 아치 &amp; 갤러리 액자</span>
               <span class="cover-card-desc">미니멀 화이트 여백과 아치형 곡선 프레임</span>
             </div>
           </div>
@@ -425,7 +446,49 @@
             <div class="duo-bottom-venue" id="duoVenueSummary">웨딩홀 안내</div>
           </header>
 
-          <!-- COVER 2: MAGAZINE FULL-BLEED -->
+          <!-- COVER 2: EDITORIAL POSTER (MOIITEE LOVE WINS ALL STYLE) -->
+          <header class="cover-poster">
+            <div class="poster-sheet">
+              <div class="poster-top-bar">
+                <span class="poster-issue">INVITATION &amp; LOVE EXHIBITION</span>
+                <span class="poster-vol">VOL. 01</span>
+              </div>
+              <h1 class="poster-main-title">LOVE WINS ALL</h1>
+              <div class="poster-sub-title">A PROMISE TO WALK TOGETHER FOREVER</div>
+              
+              <div class="poster-photo-frame">
+                <img id="posterCoverImg" class="poster-img" src="./sample_wedding_cover.jpg" alt="웨딩 포스터 메인" />
+                <div class="poster-photo-caption">Two lives, one heart, endless love</div>
+              </div>
+
+              <div class="poster-info-block">
+                <div class="poster-names-row">
+                  <span class="p-kor-name" id="posterGroomName">신랑</span>
+                  <span class="p-symbol">&amp;</span>
+                  <span class="p-kor-name" id="posterBrideName">신부</span>
+                </div>
+                <div class="poster-eng-names" id="posterEngNames">DOHYUN &amp; SEOYEON</div>
+                
+                <div class="poster-divider-line"></div>
+
+                <div class="poster-meta-grid">
+                  <div class="poster-meta-left">
+                    <div class="p-date-badge" id="posterDateSummary">2026. 11. 28 SATURDAY</div>
+                    <div class="p-time-badge" id="posterTimeSummary">토요일 오후 1:30</div>
+                    <div class="p-venue-badge" id="posterVenueSummary">더채플 앳 청담 6F 커티지홀</div>
+                  </div>
+                  <div class="poster-meta-right">
+                    <div class="poster-ticket-label">ADMIT ONE</div>
+                    <div class="poster-barcode">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <!-- COVER 3: MAGAZINE FULL-BLEED -->
           <header class="cover-magazine">
             <img id="magCoverImg" class="cover-magazine-img" src="./sample_wedding_cover.jpg" alt="웨딩 화보 커버" />
             <div class="cover-magazine-content">
@@ -779,6 +842,40 @@
       </div>
       <div class="modal-body" id="contactModalBody">
         <!-- Rendered dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- LICENSE UNLOCK MODAL (PURCHASE VERIFICATION) -->
+  <div class="modal-backdrop" id="licenseModal">
+    <div class="modal-content modal-license" style="max-width:440px;">
+      <div class="modal-header">
+        <h4>🔒 정식 배포 잠금 해제 (구매 인증)</h4>
+        <button type="button" class="modal-close" id="btnCloseLicenseModal">✕</button>
+      </div>
+      <div class="modal-body" style="padding:20px;">
+        <div style="background:#faf8f5;border:1px solid #ede8e1;border-radius:8px;padding:14px;margin-bottom:16px;">
+          <p style="font-size:13px;line-height:1.6;color:#4b453e;margin:0 0 6px;">
+            <strong>스튜디오 편집 및 실시간 미리보기는 무료입니다.</strong>
+          </p>
+          <p style="font-size:12px;line-height:1.5;color:#8c857b;margin:0;">
+            하객 분들에게 전달할 영구 웹 링크 생성과 카카오톡 공유를 위해 <strong>크몽 / 스마트스토어 주문번호(또는 발급받으신 인증 코드)</strong>를 입력해 주세요.
+          </p>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label for="inpLicenseCode" style="font-size:12.5px;font-weight:600;color:#2b2724;margin-bottom:6px;display:block;">주문번호 또는 인증 코드</label>
+          <input type="text" id="inpLicenseCode" placeholder="예: KM2026-8812 또는 인증번호 입력" style="width:100%;padding:10px 12px;border:1px solid #dcd7ce;border-radius:6px;font-size:13px;box-sizing:border-box;" />
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button type="button" class="btn-primary" id="btnSubmitLicense" style="width:100%;padding:12px;font-size:13.5px;font-weight:600;">🔑 정식 인증 및 잠금 해제</button>
+          <a href="https://kmong.com" target="_blank" rel="noopener" class="btn-secondary" style="width:100%;padding:11px;font-size:12.5px;text-align:center;text-decoration:none;display:block;box-sizing:border-box;">🛒 아직 구매 전이신가요? 크몽에서 1초 구매하기</a>
+        </div>
+
+        <div style="margin-top:14px;padding-top:12px;border-top:1px dashed #e5dfd5;font-size:11px;color:#a39b91;line-height:1.5;">
+          💡 테스트 체험 키: <strong>WEDDING2026</strong> (체험을 원하시면 해당 키를 입력해 잠금을 해제하실 수 있습니다)
+        </div>
       </div>
     </div>
   </div>
