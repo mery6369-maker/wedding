@@ -2,12 +2,12 @@
  * Atelier Wedding - Moiitee Style Mobile-First Self-Builder Engine (Bright Mode)
  * Inspired by: moiitee.com & Instagram @moiitee_official
  * Features:
+ * - Real BGM Audio Player (Auto-play policy, track selector & MP3 upload)
+ * - Photo Gallery up to 20 Photos with Size Limitation & Client-side Compression
+ * - Lightbox Zoom Modal & Progressive Gallery Expand
  * - Visual Cover Selector with Layout Thumbnails (Duo, Magazine, Arch)
- * - Numbered Photo Slot Management (1번 메인, 2번 디테일, 3~6번 갤러리)
- * - Fullscreen Guest Preview with Floating Return Button
- * - Auto-open Cover Selector on Mobile First Load
- * - URL State Serialization (Zero-Server Instant Public Link)
- * - Native Mobile Web Share API & Standalone HTML Exporter
+ * - Numbered Photo Slot Management & Fullscreen Guest Preview
+ * - URL State Serialization & Standalone HTML Exporter
  */
 
 const GREETING_PRESETS = {
@@ -42,6 +42,10 @@ const GREETING_PRESETS = {
 const MONTH_NAMES_EN = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 const DAY_NAMES_EN = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
+const MAX_GALLERY_PHOTOS = 20;
+const MAX_INPUT_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB
+const MAX_AUDIO_FILE_SIZE = 5 * 1024 * 1024;   // 5MB
+
 const state = {
   coverStyle: "duo",
   groomName: "김도윤",
@@ -68,7 +72,10 @@ const state = {
     "./sample_gallery_2.jpg",
     "./sample_gallery_3.jpg",
     "./sample_gallery_4.jpg"
-  ]
+  ],
+  galleryExpanded: false,
+  bgmEnabled: true,
+  bgmTrack: "./audio/romantic_piano.mp3"
 };
 
 /* ===================================================
@@ -94,7 +101,8 @@ function serializeState() {
     tr: state.transport,
     gr: state.greeting,
     ga: state.groomAccount,
-    ba: state.brideAccount
+    ba: state.brideAccount,
+    bgm: state.bgmEnabled ? 1 : 0
   };
   try {
     return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(minimalData)))));
@@ -125,6 +133,7 @@ function deserializeState(encodedStr) {
     if (d.gr) state.greeting = d.gr;
     if (d.ga) state.groomAccount = d.ga;
     if (d.ba) state.brideAccount = d.ba;
+    if (typeof d.bgm !== "undefined") state.bgmEnabled = (d.bgm === 1);
     return true;
   } catch (e) {
     return false;
@@ -222,16 +231,11 @@ function renderAll() {
   // Update Desktop Slot Thumbnails
   const d1 = document.getElementById("deskSlotThumb1");
   const d2 = document.getElementById("deskSlotThumb2");
-  const d3 = document.getElementById("deskSlotThumb3");
-  const d4 = document.getElementById("deskSlotThumb4");
-  const d5 = document.getElementById("deskSlotThumb5");
-  const d6 = document.getElementById("deskSlotThumb6");
   if (d1) d1.src = state.coverPhoto;
   if (d2) d2.src = state.detailPhoto;
-  if (d3) d3.src = state.galleryPhotos[0] || state.coverPhoto;
-  if (d4) d4.src = state.galleryPhotos[1] || state.coverPhoto;
-  if (d5) d5.src = state.galleryPhotos[2] || state.coverPhoto;
-  if (d6) d6.src = state.galleryPhotos[3] || state.coverPhoto;
+
+  // Render Desktop Gallery Management Grid & Badge
+  renderDesktopGalleryGrid();
 
   // Greeting & Family
   const viewGreetingText = document.getElementById("viewGreetingText");
@@ -256,16 +260,8 @@ function renderAll() {
   // Calendar & D-Day
   renderCalendar(year, month, day);
 
-  // Gallery
-  const viewGalleryGrid = document.getElementById("viewGalleryGrid");
-  if (viewGalleryGrid) {
-    viewGalleryGrid.innerHTML = state.galleryPhotos
-      .map((src, i) => `
-        <div class="gallery-item">
-          <img src="${src}" alt="웨딩 갤러리 사진 ${i + 1}" loading="lazy" />
-        </div>
-      `).join("");
-  }
+  // Invitation Gallery
+  renderInvitationGallery();
 
   // Location & Navigation
   const viewLocName = document.getElementById("viewLocName");
@@ -303,6 +299,78 @@ function renderAll() {
   if (linkCallBride) linkCallBride.href = `tel:${state.bridePhone}`;
   if (linkSmsBride) linkSmsBride.href = `sms:${state.bridePhone}`;
 }
+
+/* ===================================================
+   DESKTOP & INVITATION GALLERY RENDERERS
+   =================================================== */
+
+function renderDesktopGalleryGrid() {
+  const badge = document.getElementById("deskGalleryCountBadge");
+  if (badge) badge.textContent = `현재 ${state.galleryPhotos.length} / ${MAX_GALLERY_PHOTOS}장`;
+
+  const container = document.getElementById("deskGalleryGrid");
+  if (!container) return;
+
+  container.innerHTML = state.galleryPhotos.map((src, idx) => `
+    <div class="gallery-manage-item">
+      <img src="${src}" alt="갤러리 ${idx + 1}" />
+      <span class="gallery-manage-idx">${idx + 1}</span>
+      <button type="button" class="gallery-manage-del" onclick="deleteGalleryPhoto(${idx})" title="삭제">✕</button>
+    </div>
+  `).join("");
+}
+
+function renderInvitationGallery() {
+  const viewGalleryGrid = document.getElementById("viewGalleryGrid");
+  const expandWrap = document.getElementById("galleryExpandWrap");
+  const countSpan = document.getElementById("galleryTotalCount");
+  if (!viewGalleryGrid) return;
+
+  const total = state.galleryPhotos.length;
+  if (countSpan) countSpan.textContent = String(total);
+
+  const shouldLimit = (total > 6 && !state.galleryExpanded);
+  const visiblePhotos = shouldLimit ? state.galleryPhotos.slice(0, 6) : state.galleryPhotos;
+
+  viewGalleryGrid.innerHTML = visiblePhotos.map((src, i) => `
+    <div class="gallery-item" onclick="openLightbox('${src}')">
+      <img src="${src}" alt="웨딩 갤러리 사진 ${i + 1}" loading="lazy" />
+    </div>
+  `).join("");
+
+  if (expandWrap) {
+    if (total > 6) {
+      expandWrap.style.display = "block";
+      const btn = document.getElementById("btnExpandGallery");
+      if (btn) {
+        btn.textContent = state.galleryExpanded 
+          ? "접기 ▴" 
+          : `사진 전체보기 (총 ${total}장 펼치기) ▾`;
+      }
+    } else {
+      expandWrap.style.display = "none";
+    }
+  }
+}
+
+window.deleteGalleryPhoto = function(idx) {
+  if (state.galleryPhotos.length <= 1) {
+    showToast("최소 1장의 갤러리 사진은 유지해야 합니다.");
+    return;
+  }
+  state.galleryPhotos.splice(idx, 1);
+  renderAll();
+  showToast("사진이 삭제되었습니다.");
+};
+
+window.openLightbox = function(src) {
+  const modal = document.getElementById("lightboxModal");
+  const img = document.getElementById("lightboxImg");
+  if (modal && img) {
+    img.src = src;
+    modal.classList.add("show");
+  }
+};
 
 function renderCalendar(year, month, day) {
   const viewCalDateHeading = document.getElementById("viewCalDateHeading");
@@ -391,13 +459,17 @@ function submitRsvp() {
   showToast("참석 정보가 전달되었습니다.");
 }
 
-function compressImageFile(file, maxWidth = 1200, quality = 0.86) {
+function compressImageFile(file, maxWidth = 1200, quality = 0.82) {
+  if (file.size > MAX_INPUT_IMAGE_SIZE) {
+    showToast("파일 크기가 15MB를 초과하여 자동 압축할 수 없습니다.");
+    return Promise.reject(new Error("File too large"));
+  }
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (ev) => {
       const img = new Image();
       img.onload = () => {
-        const scale = Math.min(1, maxWidth / img.width);
+        const scale = Math.min(1, maxWidth / Math.max(img.width, img.height));
         const canvas = document.createElement("canvas");
         canvas.width = Math.round(img.width * scale);
         canvas.height = Math.round(img.height * scale);
@@ -411,6 +483,56 @@ function compressImageFile(file, maxWidth = 1200, quality = 0.86) {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+/* ===================================================
+   BACKGROUND MUSIC (BGM) AUDIO ENGINE
+   =================================================== */
+
+const bgmAudio = document.getElementById("weddingBgmAudio");
+const bgmBtn = document.getElementById("btnToggleBgm");
+const bgmIcon = document.getElementById("bgmIcon");
+let isBgmPlaying = false;
+let hasUserInteracted = false;
+
+function playBgm() {
+  if (!state.bgmEnabled || !bgmAudio) return;
+  bgmAudio.play().then(() => {
+    isBgmPlaying = true;
+    bgmBtn?.classList.add("playing");
+    if (bgmIcon) bgmIcon.textContent = "🔊";
+  }).catch(() => {
+    // Autoplay blocked until interaction
+  });
+}
+
+function pauseBgm() {
+  if (!bgmAudio) return;
+  bgmAudio.pause();
+  isBgmPlaying = false;
+  bgmBtn?.classList.remove("playing");
+  if (bgmIcon) bgmIcon.textContent = "🎵";
+}
+
+function toggleBgm() {
+  if (isBgmPlaying) {
+    pauseBgm();
+    showToast("배경음악이 일시정지되었습니다.");
+  } else {
+    playBgm();
+    showToast("배경음악이 재생됩니다.");
+  }
+}
+
+// Browser policy autoplay trigger on first interaction
+function handleFirstInteraction() {
+  if (hasUserInteracted) return;
+  hasUserInteracted = true;
+  if (state.bgmEnabled && !isBgmPlaying) {
+    playBgm();
+  }
+  document.removeEventListener("click", handleFirstInteraction);
+  document.removeEventListener("touchstart", handleFirstInteraction);
 }
 
 /* ===================================================
@@ -537,128 +659,174 @@ function openBottomSheet(tabType) {
       showToast("청첩장 정보가 저장되었습니다.");
     });
   } else if (tabType === "photo") {
-    sheetTitle.textContent = "📷 웨딩 사진 번호별 등록";
+    sheetTitle.textContent = "📷 웨딩 사진 관리 (최대 20장)";
+    renderMobilePhotoSheet();
+  } else if (tabType === "music") {
+    sheetTitle.textContent = "🎵 배경음악(BGM) 설정";
     sheetBody.innerHTML = `
-      <p style="font-size:12.5px;color:#787168;margin-bottom:4px;">위치 번호(1~6번)를 확인하고 원하는 사진을 스마트폰 앨범에서 변경하세요.</p>
-      <div class="photo-slots-list">
-        <!-- Slot 1 -->
-        <div class="photo-slot-card">
-          <div class="slot-left">
-            <span class="slot-num-badge">1</span>
-            <img class="slot-thumb" src="${state.coverPhoto}" alt="1번 메인" />
-            <div class="slot-info">
-              <span class="slot-name">메인 대표 사진</span>
-              <span class="slot-sub">전신 메인 화보 커버</span>
-            </div>
-          </div>
-          <label class="btn-slot-upload">
-            변경
-            <input type="file" id="mSlot1" accept="image/*" />
-          </label>
-        </div>
-
-        <!-- Slot 2 -->
-        <div class="photo-slot-card">
-          <div class="slot-left">
-            <span class="slot-num-badge">2</span>
-            <img class="slot-thumb" src="${state.detailPhoto}" alt="2번 디테일" />
-            <div class="slot-info">
-              <span class="slot-name">서브 디테일 사진</span>
-              <span class="slot-sub">듀오 커버 손/반지 컷</span>
-            </div>
-          </div>
-          <label class="btn-slot-upload">
-            변경
-            <input type="file" id="mSlot2" accept="image/*" />
-          </label>
-        </div>
-
-        <!-- Slot 3 -->
-        <div class="photo-slot-card">
-          <div class="slot-left">
-            <span class="slot-num-badge">3</span>
-            <img class="slot-thumb" src="${state.galleryPhotos[0] || state.coverPhoto}" alt="3번 갤러리 1" />
-            <div class="slot-info">
-              <span class="slot-name">갤러리 사진 1</span>
-              <span class="slot-sub">포토 갤러리 첫번째</span>
-            </div>
-          </div>
-          <label class="btn-slot-upload">
-            변경
-            <input type="file" id="mSlot3" accept="image/*" />
-          </label>
-        </div>
-
-        <!-- Slot 4 -->
-        <div class="photo-slot-card">
-          <div class="slot-left">
-            <span class="slot-num-badge">4</span>
-            <img class="slot-thumb" src="${state.galleryPhotos[1] || state.coverPhoto}" alt="4번 갤러리 2" />
-            <div class="slot-info">
-              <span class="slot-name">갤러리 사진 2</span>
-              <span class="slot-sub">포토 갤러리 두번째</span>
-            </div>
-          </div>
-          <label class="btn-slot-upload">
-            변경
-            <input type="file" id="mSlot4" accept="image/*" />
-          </label>
-        </div>
-
-        <!-- Slot 5 -->
-        <div class="photo-slot-card">
-          <div class="slot-left">
-            <span class="slot-num-badge">5</span>
-            <img class="slot-thumb" src="${state.galleryPhotos[2] || state.coverPhoto}" alt="5번 갤러리 3" />
-            <div class="slot-info">
-              <span class="slot-name">갤러리 사진 3</span>
-              <span class="slot-sub">포토 갤러리 세번째</span>
-            </div>
-          </div>
-          <label class="btn-slot-upload">
-            변경
-            <input type="file" id="mSlot5" accept="image/*" />
-          </label>
-        </div>
-
-        <!-- Slot 6 -->
-        <div class="photo-slot-card">
-          <div class="slot-left">
-            <span class="slot-num-badge">6</span>
-            <img class="slot-thumb" src="${state.galleryPhotos[3] || state.coverPhoto}" alt="6번 갤러리 4" />
-            <div class="slot-info">
-              <span class="slot-name">갤러리 사진 4</span>
-              <span class="slot-sub">포토 갤러리 네번째</span>
-            </div>
-          </div>
-          <label class="btn-slot-upload">
-            변경
-            <input type="file" id="mSlot6" accept="image/*" />
-          </label>
-        </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;">
+          <input type="checkbox" id="mChkEnableBgm" ${state.bgmEnabled ? 'checked' : ''} style="width:18px;height:18px;" />
+          배경음악 사용하기
+        </label>
       </div>
+      <div class="form-group">
+        <label>음악 트랙 선택</label>
+        <select id="mSelBgmTrack">
+          <option value="romantic_piano">01. 따뜻한 로맨틱 피아노 (기본)</option>
+          <option value="custom">02. 내 MP3 직접 등록 (5MB 이하)</option>
+        </select>
+      </div>
+      <div class="form-group" id="mCustomUploadWrap" style="display:none;">
+        <label>내 MP3 파일 선택</label>
+        <input type="file" id="mInpCustomAudio" accept="audio/*" />
+      </div>
+      <div style="background:#faf8f5;border-radius:8px;padding:12px;font-size:12px;color:#787168;line-height:1.6;">
+        💡 <strong>팁</strong>: 모바일 브라우저 정책상 하객이 화면을 처음 터치하거나 스크롤할 때 음악이 은은하게 시작됩니다.
+      </div>
+      <button type="button" class="btn-primary" id="btnSaveMusicSettings">설정 저장 및 재생 테스트</button>
     `;
 
-    const bindSlot = (id, callback) => {
-      document.getElementById(id)?.addEventListener("change", async (e) => {
-        if (e.target.files && e.target.files[0]) {
-          showToast("사진을 압축 처리 중입니다...");
-          const compressed = await compressImageFile(e.target.files[0]);
-          callback(compressed);
-          renderAll();
-          openBottomSheet("photo");
-          showToast("사진이 교체되었습니다.");
-        }
-      });
-    };
+    const selTrack = document.getElementById("mSelBgmTrack");
+    const uploadWrap = document.getElementById("mCustomUploadWrap");
+    selTrack?.addEventListener("change", () => {
+      uploadWrap.style.display = (selTrack.value === "custom") ? "block" : "none";
+    });
 
-    bindSlot("mSlot1", img => state.coverPhoto = img);
-    bindSlot("mSlot2", img => state.detailPhoto = img);
-    bindSlot("mSlot3", img => state.galleryPhotos[0] = img);
-    bindSlot("mSlot4", img => state.galleryPhotos[1] = img);
-    bindSlot("mSlot5", img => state.galleryPhotos[2] = img);
-    bindSlot("mSlot6", img => state.galleryPhotos[3] = img);
+    document.getElementById("btnSaveMusicSettings")?.addEventListener("click", () => {
+      state.bgmEnabled = document.getElementById("mChkEnableBgm").checked;
+      if (!state.bgmEnabled) {
+        pauseBgm();
+        showToast("배경음악이 꺼졌습니다.");
+      } else {
+        if (selTrack.value === "romantic_piano") {
+          state.bgmTrack = "./audio/romantic_piano.mp3";
+          if (bgmAudio) bgmAudio.src = state.bgmTrack;
+          playBgm();
+          showToast("로맨틱 피아노가 설정되었습니다.");
+        }
+      }
+      closeBottomSheet();
+    });
+
+    document.getElementById("mInpCustomAudio")?.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        if (file.size > MAX_AUDIO_FILE_SIZE) {
+          showToast("음악 파일 크기는 5MB 이하만 가능합니다.");
+          e.target.value = "";
+          return;
+        }
+        const audioUrl = URL.createObjectURL(file);
+        state.bgmTrack = audioUrl;
+        if (bgmAudio) bgmAudio.src = audioUrl;
+        playBgm();
+        showToast("업로드한 MP3 음악으로 설정되었습니다.");
+        closeBottomSheet();
+      }
+    });
   }
+}
+
+function renderMobilePhotoSheet() {
+  sheetBody.innerHTML = `
+    <div class="photo-slots-list">
+      <!-- Slot 1 -->
+      <div class="photo-slot-card">
+        <div class="slot-left">
+          <span class="slot-num-badge">1</span>
+          <img class="slot-thumb" src="${state.coverPhoto}" alt="1번 메인" />
+          <div class="slot-info">
+            <span class="slot-name">메인 대표 사진</span>
+            <span class="slot-sub">전신 메인 화보 커버</span>
+          </div>
+        </div>
+        <label class="btn-slot-upload">
+          변경
+          <input type="file" id="mSlot1" accept="image/*" />
+        </label>
+      </div>
+
+      <!-- Slot 2 -->
+      <div class="photo-slot-card">
+        <div class="slot-left">
+          <span class="slot-num-badge">2</span>
+          <img class="slot-thumb" src="${state.detailPhoto}" alt="2번 디테일" />
+          <div class="slot-info">
+            <span class="slot-name">서브 디테일 사진</span>
+            <span class="slot-sub">듀오 커버 손/반지 컷</span>
+          </div>
+        </div>
+        <label class="btn-slot-upload">
+          변경
+          <input type="file" id="mSlot2" accept="image/*" />
+        </label>
+      </div>
+    </div>
+
+    <!-- 20-Photo Gallery Management -->
+    <div style="border-top:1px dashed #e8e3d8;padding-top:12px;margin-top:6px;">
+      <div class="gallery-manage-header">
+        <strong>포토 갤러리 관리</strong>
+        <span class="gallery-count-badge">현재 ${state.galleryPhotos.length} / ${MAX_GALLERY_PHOTOS}장</span>
+      </div>
+      <p style="font-size:11.5px;color:#8c857b;margin-top:2px;margin-bottom:8px;">
+        스마트폰에서 여러 장을 한 번에 선택해 등록할 수 있습니다.
+      </p>
+      <label class="btn-primary" style="display:block;text-align:center;padding:10px;font-size:12.5px;cursor:pointer;margin-bottom:8px;">
+        ➕ 갤러리 사진 추가하기 (다중 선택 가능)
+        <input type="file" id="mInpAddGallery" accept="image/*" multiple style="display:none;" />
+      </label>
+      <div class="gallery-manage-grid" id="mGalleryGrid">
+        ${state.galleryPhotos.map((src, idx) => `
+          <div class="gallery-manage-item">
+            <img src="${src}" alt="갤러리 ${idx + 1}" />
+            <span class="gallery-manage-idx">${idx + 1}</span>
+            <button type="button" class="gallery-manage-del" onclick="deleteGalleryPhoto(${idx}); renderMobilePhotoSheet();">✕</button>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+
+  document.getElementById("mSlot1")?.addEventListener("change", async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      showToast("1번 메인 사진을 압축 중입니다...");
+      state.coverPhoto = await compressImageFile(e.target.files[0]);
+      renderAll();
+      renderMobilePhotoSheet();
+      showToast("1번 메인 사진이 교체되었습니다.");
+    }
+  });
+
+  document.getElementById("mSlot2")?.addEventListener("change", async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      showToast("2번 서브 사진을 압축 중입니다...");
+      state.detailPhoto = await compressImageFile(e.target.files[0]);
+      renderAll();
+      renderMobilePhotoSheet();
+      showToast("2번 서브 사진이 교체되었습니다.");
+    }
+  });
+
+  document.getElementById("mInpAddGallery")?.addEventListener("change", async (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const remainingSlots = MAX_GALLERY_PHOTOS - state.galleryPhotos.length;
+      if (remainingSlots <= 0) {
+        showToast("갤러리 사진은 최대 20장까지만 등록 가능합니다.");
+        return;
+      }
+
+      const files = Array.from(e.target.files).slice(0, remainingSlots);
+      showToast(`사진 ${files.length}장을 고화질 압축 중입니다...`);
+      const compressedList = await Promise.all(files.map(f => compressImageFile(f).catch(() => null)));
+      const validOnes = compressedList.filter(Boolean);
+      state.galleryPhotos.push(...validOnes);
+      renderAll();
+      renderMobilePhotoSheet();
+      showToast(`${validOnes.length}장의 사진이 갤러리에 추가되었습니다!`);
+    }
+  });
 }
 
 function closeBottomSheet() {
@@ -695,7 +863,7 @@ async function shareToKakaoOrNative() {
       showToast("공유 창이 열렸습니다.");
       return;
     } catch (e) {
-      // User cancelled
+      // Cancelled
     }
   }
 
@@ -802,6 +970,11 @@ ${phoneInner}
     </div>
   </div>
 
+  <div class="lightbox-modal" id="lightboxModal">
+    <button type="button" class="lightbox-close" onclick="document.getElementById('lightboxModal').classList.remove('show')">✕</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="확대 사진" />
+  </div>
+
   <div id="toastMsg" class="toast-msg">복사되었습니다.</div>
 
   <script>
@@ -831,6 +1004,14 @@ ${phoneInner}
       document.getElementById("rsvpForm").style.display = "none";
       document.getElementById("rsvpConfirm").style.display = "block";
       showToast("참석 정보가 전달되었습니다.");
+    };
+    window.openLightbox = function(src) {
+      const modal = document.getElementById("lightboxModal");
+      const img = document.getElementById("lightboxImg");
+      if (modal && img) {
+        img.src = src;
+        modal.classList.add("show");
+      }
     };
   </script>
 </body>
@@ -914,25 +1095,104 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Desktop Slot Upload Listeners
-  const bindDesktopSlot = (id, callback) => {
-    document.getElementById(id)?.addEventListener("change", async (e) => {
-      if (e.target.files && e.target.files[0]) {
-        showToast("사진을 압축 처리 중입니다...");
-        const compressed = await compressImageFile(e.target.files[0]);
-        callback(compressed);
-        renderAll();
-        showToast("사진이 교체되었습니다.");
-      }
-    });
-  };
+  // Desktop Slot 1 & 2
+  document.getElementById("inpSlot1")?.addEventListener("change", async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      showToast("1번 대표 사진을 압축 중입니다...");
+      state.coverPhoto = await compressImageFile(e.target.files[0]);
+      renderAll();
+      showToast("1번 대표 사진이 교체되었습니다.");
+    }
+  });
 
-  bindDesktopSlot("inpSlot1", img => state.coverPhoto = img);
-  bindDesktopSlot("inpSlot2", img => state.detailPhoto = img);
-  bindDesktopSlot("inpSlot3", img => state.galleryPhotos[0] = img);
-  bindDesktopSlot("inpSlot4", img => state.galleryPhotos[1] = img);
-  bindDesktopSlot("inpSlot5", img => state.galleryPhotos[2] = img);
-  bindDesktopSlot("inpSlot6", img => state.galleryPhotos[3] = img);
+  document.getElementById("inpSlot2")?.addEventListener("change", async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      showToast("2번 서브 사진을 압축 중입니다...");
+      state.detailPhoto = await compressImageFile(e.target.files[0]);
+      renderAll();
+      showToast("2번 서브 사진이 교체되었습니다.");
+    }
+  });
+
+  // Desktop Add Gallery Photos (Up to 20)
+  document.getElementById("inpAddGalleryPhotos")?.addEventListener("change", async (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const remainingSlots = MAX_GALLERY_PHOTOS - state.galleryPhotos.length;
+      if (remainingSlots <= 0) {
+        showToast("갤러리 사진은 최대 20장까지만 등록 가능합니다.");
+        return;
+      }
+      const files = Array.from(e.target.files).slice(0, remainingSlots);
+      showToast(`사진 ${files.length}장을 고화질 압축 중입니다...`);
+      const compressedList = await Promise.all(files.map(f => compressImageFile(f).catch(() => null)));
+      const validOnes = compressedList.filter(Boolean);
+      state.galleryPhotos.push(...validOnes);
+      renderAll();
+      showToast(`${validOnes.length}장의 사진이 추가되었습니다.`);
+    }
+  });
+
+  // Expand / Collapse Gallery in Invitation
+  document.getElementById("btnExpandGallery")?.addEventListener("click", () => {
+    state.galleryExpanded = !state.galleryExpanded;
+    renderInvitationGallery();
+  });
+
+  // Lightbox Close
+  document.getElementById("btnLightboxClose")?.addEventListener("click", () => {
+    document.getElementById("lightboxModal")?.classList.remove("show");
+  });
+  document.getElementById("lightboxModal")?.addEventListener("click", (e) => {
+    if (e.target === document.getElementById("lightboxModal")) {
+      document.getElementById("lightboxModal")?.classList.remove("show");
+    }
+  });
+
+  // Desktop BGM Controls
+  const chkBgm = document.getElementById("chkEnableBgm");
+  const selBgm = document.getElementById("selBgmTrack");
+  const customAudioWrap = document.getElementById("customAudioUploadWrap");
+  const inpCustomAudio = document.getElementById("inpCustomAudio");
+
+  chkBgm?.addEventListener("change", (e) => {
+    state.bgmEnabled = e.target.checked;
+    if (!state.bgmEnabled) pauseBgm();
+    else playBgm();
+  });
+
+  selBgm?.addEventListener("change", (e) => {
+    if (e.target.value === "custom") {
+      customAudioWrap.style.display = "block";
+    } else {
+      customAudioWrap.style.display = "none";
+      state.bgmTrack = "./audio/romantic_piano.mp3";
+      if (bgmAudio) bgmAudio.src = state.bgmTrack;
+      if (state.bgmEnabled) playBgm();
+    }
+  });
+
+  inpCustomAudio?.addEventListener("change", (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > MAX_AUDIO_FILE_SIZE) {
+        showToast("음악 파일 크기는 5MB 이하만 업로드 가능합니다.");
+        e.target.value = "";
+        return;
+      }
+      const audioUrl = URL.createObjectURL(file);
+      state.bgmTrack = audioUrl;
+      if (bgmAudio) bgmAudio.src = audioUrl;
+      if (state.bgmEnabled) playBgm();
+      showToast("내 MP3 파일이 설정되었습니다.");
+    }
+  });
+
+  // Floating BGM button
+  bgmBtn?.addEventListener("click", toggleBgm);
+
+  // Autoplay trigger on first touch/click
+  document.addEventListener("click", handleFirstInteraction, { once: true });
+  document.addEventListener("touchstart", handleFirstInteraction, { once: true });
 
   // Mobile Bottom Dock Buttons
   // 1. [미리보기] -> Fullscreen Guest View Toggle
@@ -963,14 +1223,21 @@ document.addEventListener("DOMContentLoaded", () => {
     openBottomSheet("info");
   });
 
-  // 4. [사진변경]
+  // 4. [사진(20장)]
   document.getElementById("dockBtnPhoto")?.addEventListener("click", () => {
     document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
     document.getElementById("dockBtnPhoto").classList.add("active");
     openBottomSheet("photo");
   });
 
-  // 5. [링크생성]
+  // 5. [음악]
+  document.getElementById("dockBtnMusic")?.addEventListener("click", () => {
+    document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("dockBtnMusic").classList.add("active");
+    openBottomSheet("music");
+  });
+
+  // 6. [링크생성]
   document.getElementById("dockBtnShare")?.addEventListener("click", () => {
     openShareModal();
   });
@@ -1023,14 +1290,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === contactModal) contactModal.classList.remove("show");
   });
 
-  // BGM
-  let bgmPlaying = false;
-  document.getElementById("btnToggleBgm")?.addEventListener("click", () => {
-    bgmPlaying = !bgmPlaying;
-    document.getElementById("bgmIcon").textContent = bgmPlaying ? "🔊" : "🎵";
-    showToast(bgmPlaying ? "배경음악이 재생됩니다." : "배경음악이 일시정지되었습니다.");
-  });
-
   // HTML Export & Desktop Viewer Toggle
   document.getElementById("btnDownloadHtml")?.addEventListener("click", downloadStandaloneInvitation);
   document.getElementById("btnToggleViewer")?.addEventListener("click", () => {
@@ -1043,6 +1302,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Escape") {
       document.body.classList.remove("viewer-only");
       document.body.classList.remove("guest-preview");
+      document.getElementById("lightboxModal")?.classList.remove("show");
     }
   });
 
