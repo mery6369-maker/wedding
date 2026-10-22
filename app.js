@@ -49,6 +49,7 @@ const state = {
   groomMother: "박정숙",
   groomMotherDeceased: false,
   groomRelation: "장남",
+  groomRelationCustom: "",
   groomFatherPhone: "010-1111-2222",
   groomMotherPhone: "",
 
@@ -59,6 +60,7 @@ const state = {
   brideMother: "최은영",
   brideMotherDeceased: false,
   brideRelation: "장녀",
+  brideRelationCustom: "",
   brideFatherPhone: "010-3333-4444",
   brideMotherPhone: "",
 
@@ -140,6 +142,7 @@ function applyPureState() {
   state.groomMother = "";
   state.groomMotherDeceased = false;
   state.groomRelation = "장남";
+  state.groomRelationCustom = "";
   state.groomFatherPhone = "";
   state.groomMotherPhone = "";
 
@@ -150,6 +153,7 @@ function applyPureState() {
   state.brideMother = "";
   state.brideMotherDeceased = false;
   state.brideRelation = "장녀";
+  state.brideRelationCustom = "";
   state.brideFatherPhone = "";
   state.brideMotherPhone = "";
 
@@ -184,6 +188,7 @@ function applySampleState() {
   state.groomMother = "박정숙";
   state.groomMotherDeceased = false;
   state.groomRelation = "장남";
+  state.groomRelationCustom = "";
   state.groomFatherPhone = "010-1111-2222";
   state.groomMotherPhone = "";
 
@@ -194,6 +199,7 @@ function applySampleState() {
   state.brideMother = "최은영";
   state.brideMotherDeceased = false;
   state.brideRelation = "장녀";
+  state.brideRelationCustom = "";
   state.brideFatherPhone = "010-3333-4444";
   state.brideMotherPhone = "";
 
@@ -243,6 +249,7 @@ function serializeState() {
     gm: state.groomMother,
     gmd: state.groomMotherDeceased ? 1 : 0,
     grl: state.groomRelation,
+    grc: state.groomRelationCustom,
     gfp: state.groomFatherPhone,
     gmp: state.groomMotherPhone,
 
@@ -253,6 +260,7 @@ function serializeState() {
     bm: state.brideMother,
     bmd: state.brideMotherDeceased ? 1 : 0,
     brl: state.brideRelation,
+    brc: state.brideRelationCustom,
     bfp: state.brideFatherPhone,
     bmp: state.brideMotherPhone,
 
@@ -296,6 +304,7 @@ function deserializeState(encodedStr) {
     if (typeof d.gm !== "undefined") state.groomMother = d.gm;
     if (typeof d.gmd !== "undefined") state.groomMotherDeceased = (d.gmd === 1);
     if (typeof d.grl !== "undefined") state.groomRelation = d.grl;
+    if (typeof d.grc !== "undefined") state.groomRelationCustom = d.grc;
     if (typeof d.gfp !== "undefined") state.groomFatherPhone = d.gfp;
     if (typeof d.gmp !== "undefined") state.groomMotherPhone = d.gmp;
 
@@ -306,6 +315,7 @@ function deserializeState(encodedStr) {
     if (typeof d.bm !== "undefined") state.brideMother = d.bm;
     if (typeof d.bmd !== "undefined") state.brideMotherDeceased = (d.bmd === 1);
     if (typeof d.brl !== "undefined") state.brideRelation = d.brl;
+    if (typeof d.brc !== "undefined") state.brideRelationCustom = d.brc;
     if (typeof d.bfp !== "undefined") state.brideFatherPhone = d.bfp;
     if (typeof d.bmp !== "undefined") state.brideMotherPhone = d.bmp;
 
@@ -454,11 +464,19 @@ function renderAll() {
     const brideMotherText = (state.brideMotherDeceased ? '<span class="deceased-badge">故</span>' : '') + (state.brideMother || '');
     const brideParentsJoined = [brideFatherText, brideMotherText].filter(Boolean).join(' · ');
 
+    const groomRelText = (state.groomRelation === 'custom')
+      ? (state.groomRelationCustom || '아들')
+      : (state.groomRelation || '아들');
+
+    const brideRelText = (state.brideRelation === 'custom')
+      ? (state.brideRelationCustom || '딸')
+      : (state.brideRelation || '딸');
+
     let html = '';
     if (groomParentsJoined || state.groomName) {
       html += `
         <div class="parent-line">
-          ${groomParentsJoined ? `<span class="parent-names">${groomParentsJoined}</span> <span class="parent-rel">의 ${state.groomRelation || '아들'}</span>` : ''}
+          ${groomParentsJoined ? `<span class="parent-names">${groomParentsJoined}</span> <span class="parent-rel">의 ${groomRelText}</span>` : ''}
           <span class="child-name">${groomDisplayName}</span>
         </div>
       `;
@@ -466,7 +484,7 @@ function renderAll() {
     if (brideParentsJoined || state.brideName) {
       html += `
         <div class="parent-line">
-          ${brideParentsJoined ? `<span class="parent-names">${brideParentsJoined}</span> <span class="parent-rel">의 ${state.brideRelation || '딸'}</span>` : ''}
+          ${brideParentsJoined ? `<span class="parent-names">${brideParentsJoined}</span> <span class="parent-rel">의 ${brideRelText}</span>` : ''}
           <span class="child-name">${brideDisplayName}</span>
         </div>
       `;
@@ -1062,8 +1080,8 @@ function openBottomSheet(tabType) {
       btn.addEventListener("click", () => {
         state.coverStyle = btn.getAttribute("data-sheet-cover");
         renderAll();
-        closeBottomSheet();
-        showToast("커버 디자인이 변경되었습니다.");
+        showToast("커버가 선택되었습니다. 사용할 기능(ON/OFF)을 선택해 주세요.");
+        openBottomSheet("sections");
       });
     });
   } else if (tabType === "info") {
@@ -1103,9 +1121,16 @@ function openBottomSheet(tabType) {
               <option value="장남" ${state.groomRelation === '장남' ? 'selected' : ''}>장남</option>
               <option value="차남" ${state.groomRelation === '차남' ? 'selected' : ''}>차남</option>
               <option value="삼남" ${state.groomRelation === '삼남' ? 'selected' : ''}>삼남</option>
+              <option value="사남" ${state.groomRelation === '사남' ? 'selected' : ''}>사남</option>
               <option value="막내" ${state.groomRelation === '막내' ? 'selected' : ''}>막내</option>
+              <option value="외아들" ${state.groomRelation === '외아들' ? 'selected' : ''}>외아들</option>
               <option value="아들" ${state.groomRelation === '아들' ? 'selected' : ''}>아들</option>
+              <option value="조카" ${state.groomRelation === '조카' ? 'selected' : ''}>조카</option>
+              <option value="동생" ${state.groomRelation === '동생' ? 'selected' : ''}>동생</option>
+              <option value="형제" ${state.groomRelation === '형제' ? 'selected' : ''}>형제</option>
+              <option value="custom" ${state.groomRelation === 'custom' ? 'selected' : ''}>기타 (직접 입력)</option>
             </select>
+            <input type="text" id="mGroomRelationCustom" value="${state.groomRelationCustom || ''}" placeholder="직접 입력 (예: 손자, 조카 등)" style="${state.groomRelation === 'custom' ? 'display:block;' : 'display:none;'}margin-top:6px;" />
           </div>
           <div class="form-group">
             <label>아버님 연락처(선택)</label>
@@ -1141,9 +1166,16 @@ function openBottomSheet(tabType) {
               <option value="장녀" ${state.brideRelation === '장녀' ? 'selected' : ''}>장녀</option>
               <option value="차녀" ${state.brideRelation === '차녀' ? 'selected' : ''}>차녀</option>
               <option value="삼녀" ${state.brideRelation === '삼녀' ? 'selected' : ''}>삼녀</option>
+              <option value="사녀" ${state.brideRelation === '사녀' ? 'selected' : ''}>사녀</option>
               <option value="막내" ${state.brideRelation === '막내' ? 'selected' : ''}>막내</option>
+              <option value="외동딸" ${state.brideRelation === '외동딸' ? 'selected' : ''}>외동딸</option>
               <option value="딸" ${state.brideRelation === '딸' ? 'selected' : ''}>딸</option>
+              <option value="조카" ${state.brideRelation === '조카' ? 'selected' : ''}>조카</option>
+              <option value="동생" ${state.brideRelation === '동생' ? 'selected' : ''}>동생</option>
+              <option value="자매" ${state.brideRelation === '자매' ? 'selected' : ''}>자매</option>
+              <option value="custom" ${state.brideRelation === 'custom' ? 'selected' : ''}>기타 (직접 입력)</option>
             </select>
+            <input type="text" id="mBrideRelationCustom" value="${state.brideRelationCustom || ''}" placeholder="직접 입력 (예: 손녀, 조카 등)" style="${state.brideRelation === 'custom' ? 'display:block;' : 'display:none;'}margin-top:6px;" />
           </div>
           <div class="form-group">
             <label>아버님 연락처(선택)</label>
@@ -1166,8 +1198,10 @@ function openBottomSheet(tabType) {
       <!-- 3. Accounts -->
       <div class="form-group" style="margin-top:12px;"><label>신랑 본인 계좌</label><input type="text" id="mGroomAcc" value="${state.groomAccount}" placeholder="은행 계좌번호 (예금주: 신랑이름)" /></div>
       <div class="form-group"><label>신랑 혼주(부) 계좌</label><input type="text" id="mGroomFatherAcc" value="${state.groomFatherAccount}" placeholder="은행 계좌번호 (예금주: 아버님)" /></div>
+      <div class="form-group"><label>신랑 혼주(모) 계좌</label><input type="text" id="mGroomMotherAcc" value="${state.groomMotherAccount}" placeholder="은행 계좌번호 (예금주: 어머님)" /></div>
       <div class="form-group"><label>신부 본인 계좌</label><input type="text" id="mBrideAcc" value="${state.brideAccount}" placeholder="은행 계좌번호 (예금주: 신부이름)" /></div>
       <div class="form-group"><label>신부 혼주(부) 계좌</label><input type="text" id="mBrideFatherAcc" value="${state.brideFatherAccount}" placeholder="은행 계좌번호 (예금주: 아버님)" /></div>
+      <div class="form-group"><label>신부 혼주(모) 계좌</label><input type="text" id="mBrideMotherAcc" value="${state.brideMotherAccount}" placeholder="은행 계좌번호 (예금주: 어머님)" /></div>
 
       <!-- 4. Greeting -->
       <div class="form-group" style="margin-top:12px;">
@@ -1182,6 +1216,19 @@ function openBottomSheet(tabType) {
 
       <button type="button" class="btn-primary" id="btnSaveMobileInfo" style="margin-top:8px;">수정사항 저장하기</button>
     `;
+
+    // Dynamic relation custom input toggle
+    const mGroomRel = document.getElementById("mGroomRelation");
+    const mGroomCustom = document.getElementById("mGroomRelationCustom");
+    mGroomRel?.addEventListener("change", (e) => {
+      if (mGroomCustom) mGroomCustom.style.display = (e.target.value === "custom") ? "block" : "none";
+    });
+
+    const mBrideRel = document.getElementById("mBrideRelation");
+    const mBrideCustom = document.getElementById("mBrideRelationCustom");
+    mBrideRel?.addEventListener("change", (e) => {
+      if (mBrideCustom) mBrideCustom.style.display = (e.target.value === "custom") ? "block" : "none";
+    });
 
     document.getElementById("mBtnPure")?.addEventListener("click", () => {
       applyPureState();
@@ -1210,6 +1257,7 @@ function openBottomSheet(tabType) {
       state.groomMother = document.getElementById("mGroomMother").value;
       state.groomMotherDeceased = document.getElementById("mChkGMD").checked;
       state.groomRelation = document.getElementById("mGroomRelation").value;
+      state.groomRelationCustom = document.getElementById("mGroomRelationCustom")?.value || "";
       state.groomFatherPhone = document.getElementById("mGroomFatherPhone").value;
 
       state.brideName = document.getElementById("mBride").value;
@@ -1219,6 +1267,7 @@ function openBottomSheet(tabType) {
       state.brideMother = document.getElementById("mBrideMother").value;
       state.brideMotherDeceased = document.getElementById("mChkBMD").checked;
       state.brideRelation = document.getElementById("mBrideRelation").value;
+      state.brideRelationCustom = document.getElementById("mBrideRelationCustom")?.value || "";
       state.brideFatherPhone = document.getElementById("mBrideFatherPhone").value;
 
       state.weddingDate = document.getElementById("mDate").value;
@@ -1232,8 +1281,10 @@ function openBottomSheet(tabType) {
 
       state.groomAccount = document.getElementById("mGroomAcc").value;
       state.groomFatherAccount = document.getElementById("mGroomFatherAcc").value;
+      state.groomMotherAccount = document.getElementById("mGroomMotherAcc")?.value || "";
       state.brideAccount = document.getElementById("mBrideAcc").value;
       state.brideFatherAccount = document.getElementById("mBrideFatherAcc").value;
+      state.brideMotherAccount = document.getElementById("mBrideMotherAcc")?.value || "";
 
       state.greeting = document.getElementById("mGreeting").value;
 
@@ -1830,6 +1881,9 @@ function syncFormInputsFromState() {
   setVal("inpGroomMother", state.groomMother);
   setChk("chkGroomMotherDeceased", state.groomMotherDeceased);
   setVal("inpGroomRelation", state.groomRelation);
+  setVal("inpGroomRelationCustom", state.groomRelationCustom || "");
+  const groomCustomEl = document.getElementById("inpGroomRelationCustom");
+  if (groomCustomEl) groomCustomEl.style.display = (state.groomRelation === "custom") ? "block" : "none";
   setVal("inpGroomFatherPhone", state.groomFatherPhone);
 
   setVal("inpBrideName", state.brideName);
@@ -1839,6 +1893,9 @@ function syncFormInputsFromState() {
   setVal("inpBrideMother", state.brideMother);
   setChk("chkBrideMotherDeceased", state.brideMotherDeceased);
   setVal("inpBrideRelation", state.brideRelation);
+  setVal("inpBrideRelationCustom", state.brideRelationCustom || "");
+  const brideCustomEl = document.getElementById("inpBrideRelationCustom");
+  if (brideCustomEl) brideCustomEl.style.display = (state.brideRelation === "custom") ? "block" : "none";
   setVal("inpBrideFatherPhone", state.brideFatherPhone);
 
   setVal("inpWeddingDate", state.weddingDate);
@@ -1862,10 +1919,14 @@ function syncFormInputsFromState() {
 
 function bindDesktopFormEvents() {
   const bind = (id, prop) => {
-    document.getElementById(id)?.addEventListener("input", (e) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const handler = (e) => {
       state[prop] = e.target.value;
       renderAll();
-    });
+    };
+    el.addEventListener("input", handler);
+    el.addEventListener("change", handler);
   };
 
   bind("inpGroomName", "groomName");
@@ -1873,6 +1934,11 @@ function bindDesktopFormEvents() {
   bind("inpGroomFather", "groomFather");
   bind("inpGroomMother", "groomMother");
   bind("inpGroomRelation", "groomRelation");
+  bind("inpGroomRelationCustom", "groomRelationCustom");
+  document.getElementById("inpGroomRelation")?.addEventListener("change", (e) => {
+    const customInp = document.getElementById("inpGroomRelationCustom");
+    if (customInp) customInp.style.display = (e.target.value === "custom") ? "block" : "none";
+  });
   bind("inpGroomFatherPhone", "groomFatherPhone");
 
   bind("inpBrideName", "brideName");
@@ -1880,6 +1946,11 @@ function bindDesktopFormEvents() {
   bind("inpBrideFather", "brideFather");
   bind("inpBrideMother", "brideMother");
   bind("inpBrideRelation", "brideRelation");
+  bind("inpBrideRelationCustom", "brideRelationCustom");
+  document.getElementById("inpBrideRelation")?.addEventListener("change", (e) => {
+    const customInp = document.getElementById("inpBrideRelationCustom");
+    if (customInp) customInp.style.display = (e.target.value === "custom") ? "block" : "none";
+  });
   bind("inpBrideFatherPhone", "brideFatherPhone");
 
   bind("inpWeddingDate", "weddingDate");

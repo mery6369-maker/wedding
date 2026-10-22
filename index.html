@@ -29,9 +29,17 @@
         <button type="button" class="btn-sample-fill" id="btnDeskSample">📋 예시 샘플 채우기</button>
       </div>
 
-      <!-- 1. Cover Style Selector (with Visual Thumbnails) -->
+      <!-- 1. Section ON/OFF Toggles (Moved to Top) -->
       <section class="editor-section">
-        <div class="editor-section-title">1. 시그니처 커버 디자인 선택</div>
+        <div class="editor-section-title">1. 청첩장 표시 항목 ON / OFF (기능 설정)</div>
+        <div class="toggle-list" id="deskToggleList">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- 2. Cover Style Selector (with Visual Thumbnails) -->
+      <section class="editor-section">
+        <div class="editor-section-title">2. 시그니처 커버 디자인 선택</div>
         <div class="cover-cards-stack">
           <div class="cover-card active" data-cover-style="duo">
             <div class="cover-mini-thumb">
@@ -79,9 +87,9 @@
         </div>
       </section>
 
-      <!-- 2. Couple & Parents Info -->
+      <!-- 3. Couple & Parents Info -->
       <section class="editor-section">
-        <div class="editor-section-title">2. 신랑 · 신부 및 양가 혼주 정보</div>
+        <div class="editor-section-title">3. 신랑 · 신부 및 양가 혼주 정보</div>
         
         <!-- Groom Box -->
         <div class="person-box-group">
@@ -123,9 +131,16 @@
                 <option value="장남">장남</option>
                 <option value="차남">차남</option>
                 <option value="삼남">삼남</option>
+                <option value="사남">사남</option>
                 <option value="막내">막내</option>
+                <option value="외아들">외아들</option>
                 <option value="아들">아들</option>
+                <option value="조카">조카</option>
+                <option value="동생">동생</option>
+                <option value="형제">형제</option>
+                <option value="custom">기타 (직접 입력)</option>
               </select>
+              <input type="text" id="inpGroomRelationCustom" placeholder="직접 입력 (예: 손자, 조카 등)" style="display:none;margin-top:6px;" />
             </div>
             <div class="form-group">
               <label for="inpGroomFatherPhone">아버님 연락처 (선택)</label>
@@ -174,9 +189,16 @@
                 <option value="장녀">장녀</option>
                 <option value="차녀">차녀</option>
                 <option value="삼녀">삼녀</option>
+                <option value="사녀">사녀</option>
                 <option value="막내">막내</option>
+                <option value="외동딸">외동딸</option>
                 <option value="딸">딸</option>
+                <option value="조카">조카</option>
+                <option value="동생">동생</option>
+                <option value="자매">자매</option>
+                <option value="custom">기타 (직접 입력)</option>
               </select>
+              <input type="text" id="inpBrideRelationCustom" placeholder="직접 입력 (예: 손녀, 조카 등)" style="display:none;margin-top:6px;" />
             </div>
             <div class="form-group">
               <label for="inpBrideFatherPhone">아버님 연락처 (선택)</label>
@@ -186,9 +208,9 @@
         </div>
       </section>
 
-      <!-- 3. Wedding Date & Venue Info -->
+      <!-- 4. Wedding Date & Venue Info -->
       <section class="editor-section">
-        <div class="editor-section-title">3. 예식 일시 및 웨딩홀 안내</div>
+        <div class="editor-section-title">4. 예식 일시 및 웨딩홀 안내</div>
         <div class="form-row">
           <div class="form-group">
             <label for="inpWeddingDate">예식 날짜 (달력/D-Day 연동)</label>
@@ -353,15 +375,7 @@
         </div>
       </section>
 
-      <!-- 8. Section ON/OFF Toggles -->
-      <section class="editor-section">
-        <div class="editor-section-title">8. 청첩장 표시 항목 ON / OFF</div>
-        <div class="toggle-list" id="deskToggleList">
-          <!-- Rendered via JS -->
-        </div>
-      </section>
-
-      <!-- 9. Standalone Export & Sharing -->
+      <!-- 8. Standalone Export & Sharing -->
       <div class="action-bar">
         <button type="button" class="btn-primary" id="btnOpenShareModal">
           🚀 내 모바일 청첩장 웹 링크 생성 &amp; 카톡 공유
@@ -655,21 +669,21 @@
       <span class="dock-icon">🎨</span>
       <span class="dock-label">커버선택</span>
     </button>
+    <button type="button" class="dock-btn" data-tab="sections" id="dockBtnSections">
+      <span class="dock-icon">⚙️</span>
+      <span class="dock-label">기능설정</span>
+    </button>
     <button type="button" class="dock-btn" data-tab="info" id="dockBtnInfo">
       <span class="dock-icon">✍️</span>
       <span class="dock-label">내용편집</span>
     </button>
     <button type="button" class="dock-btn" data-tab="photo" id="dockBtnPhoto">
       <span class="dock-icon">📷</span>
-      <span class="dock-label">사진(20장)</span>
+      <span class="dock-label">사진</span>
     </button>
     <button type="button" class="dock-btn" data-tab="music" id="dockBtnMusic">
       <span class="dock-icon">🎵</span>
       <span class="dock-label">음악</span>
-    </button>
-    <button type="button" class="dock-btn" data-tab="sections" id="dockBtnSections">
-      <span class="dock-icon">⚙️</span>
-      <span class="dock-label">기능설정</span>
     </button>
     <button type="button" class="dock-btn highlight" data-tab="share" id="dockBtnShare">
       <span class="dock-icon">🚀</span>

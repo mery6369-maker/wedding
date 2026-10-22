@@ -943,23 +943,40 @@ body.viewer-only .phone-mockup {
   font-weight: 600;
 }
 
+.cal-header-row,
+.cal-grid-head {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-size: 11.5px;
+  color: #8c857b;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0eae0;
+  margin-bottom: 10px;
+}
+
+.cal-header-row span:first-child,
+.cal-day-head.sun {
+  color: #c26155; /* Sunday */
+}
+
+.cal-days-grid,
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   row-gap: 8px;
-  font-size: 12.5px;
   text-align: center;
+  font-size: 13px;
 }
 
-.cal-day-head {
-  font-size: 11px;
-  color: var(--card-text-muted);
-  font-weight: 500;
-  padding-bottom: 6px;
+.cal-empty {
+  height: 32px;
 }
 
+.cal-day,
 .cal-cell {
-  height: 30px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -967,14 +984,17 @@ body.viewer-only .phone-mockup {
   color: #4b453e;
 }
 
+.cal-day:nth-child(7n+1),
 .cal-cell.sun {
   color: #c26155;
 }
 
+.cal-day.wedding-day,
 .cal-cell.wedding-day {
-  background: var(--card-text-primary);
-  color: #ffffff;
+  background: #2b2724 !important;
+  color: #ffffff !important;
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(43, 39, 36, 0.28);
 }
 
 .dday-banner {
