@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Moiitee Style Studio — 감성 모바일 청첩장 셀프 제작 시스템</title>
+  <title>감성 프리미엄 모바일 청첩장 스튜디오</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -17,10 +17,16 @@
     <aside class="editor-sidebar" id="editorSidebar">
       <div class="studio-brand">
         <div>
-          <h1>Moiitee Studio</h1>
-          <p style="font-size:12px;color:#787168;margin-top:2px;">모이티 감성 모바일 청첩장 웹 스튜디오</p>
+          <h1>Wedding Studio</h1>
+          <p style="font-size:12px;color:#787168;margin-top:2px;">감성 프리미엄 모바일 청첩장 셀프 스튜디오</p>
         </div>
-        <span class="studio-badge">BRIGHT v2.2</span>
+        <span class="studio-badge">BRIGHT v2.5</span>
+      </div>
+
+      <!-- Pure State & Sample Toggle Bar -->
+      <div class="pure-sample-bar">
+        <button type="button" class="btn-pure-reset" id="btnDeskPure">✨ 내용 비우기 (Pure 상태 시작)</button>
+        <button type="button" class="btn-sample-fill" id="btnDeskSample">📋 예시 샘플 채우기</button>
       </div>
 
       <!-- 1. Cover Style Selector (with Visual Thumbnails) -->
@@ -38,9 +44,9 @@
               </div>
             </div>
             <div class="cover-card-info">
-              <span class="cover-card-title">01. 듀오 프레임</span>
-              <span class="cover-card-desc">전신 컷 + 디테일 컷 2장과 날짜 블록</span>
-              <span class="cover-card-badge">모이티 대표 스타일</span>
+              <span class="cover-card-title">01. 듀오 프레임 (추천)</span>
+              <span class="cover-card-desc">전신 메인 컷 + 디테일 컷 2장과 감각적 날짜 블록</span>
+              <span class="cover-card-badge">시그니처 듀오</span>
             </div>
           </div>
 
@@ -75,45 +81,107 @@
 
       <!-- 2. Couple & Parents Info -->
       <section class="editor-section">
-        <div class="editor-section-title">2. 신랑 · 신부 및 혼주 정보</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="inpGroomName">신랑 이름</label>
-            <input type="text" id="inpGroomName" value="김도윤" />
+        <div class="editor-section-title">2. 신랑 · 신부 및 양가 혼주 정보</div>
+        
+        <!-- Groom Box -->
+        <div class="person-box-group">
+          <span class="person-box-badge">신랑측 정보</span>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inpGroomName">신랑 이름</label>
+              <input type="text" id="inpGroomName" placeholder="예: 김도윤" />
+            </div>
+            <div class="form-group">
+              <label for="inpGroomPhone">신랑 연락처</label>
+              <input type="text" id="inpGroomPhone" placeholder="예: 010-1234-5678" />
+            </div>
           </div>
-          <div class="form-group">
-            <label for="inpGroomPhone">신랑 연락처</label>
-            <input type="text" id="inpGroomPhone" value="010-1234-5678" />
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inpGroomFather">신랑 아버님 성함</label>
+              <div class="input-with-deceased">
+                <input type="text" id="inpGroomFather" placeholder="예: 김건우" />
+                <label class="chk-deceased-label">
+                  <input type="checkbox" id="chkGroomFatherDeceased" /> 故
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inpGroomMother">신랑 어머님 성함</label>
+              <div class="input-with-deceased">
+                <input type="text" id="inpGroomMother" placeholder="예: 박정숙" />
+                <label class="chk-deceased-label">
+                  <input type="checkbox" id="chkGroomMotherDeceased" /> 故
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inpGroomRelation">신랑 서열(관계)</label>
+              <select id="inpGroomRelation">
+                <option value="장남">장남</option>
+                <option value="차남">차남</option>
+                <option value="삼남">삼남</option>
+                <option value="막내">막내</option>
+                <option value="아들">아들</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inpGroomFatherPhone">아버님 연락처 (선택)</label>
+              <input type="text" id="inpGroomFatherPhone" placeholder="전화/문자 연동용" />
+            </div>
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="inpBrideName">신부 이름</label>
-            <input type="text" id="inpBrideName" value="이서연" />
+
+        <!-- Bride Box -->
+        <div class="person-box-group" style="margin-top:14px;">
+          <span class="person-box-badge">신부측 정보</span>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inpBrideName">신부 이름</label>
+              <input type="text" id="inpBrideName" placeholder="예: 이서연" />
+            </div>
+            <div class="form-group">
+              <label for="inpBridePhone">신부 연락처</label>
+              <input type="text" id="inpBridePhone" placeholder="예: 010-9876-5432" />
+            </div>
           </div>
-          <div class="form-group">
-            <label for="inpBridePhone">신부 연락처</label>
-            <input type="text" id="inpBridePhone" value="010-9876-5432" />
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inpBrideFather">신부 아버님 성함</label>
+              <div class="input-with-deceased">
+                <input type="text" id="inpBrideFather" placeholder="예: 이재민" />
+                <label class="chk-deceased-label">
+                  <input type="checkbox" id="chkBrideFatherDeceased" /> 故
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inpBrideMother">신부 어머님 성함</label>
+              <div class="input-with-deceased">
+                <input type="text" id="inpBrideMother" placeholder="예: 최은영" />
+                <label class="chk-deceased-label">
+                  <input type="checkbox" id="chkBrideMotherDeceased" /> 故
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="inpGroomFather">신랑 아버님</label>
-            <input type="text" id="inpGroomFather" value="김건우" />
-          </div>
-          <div class="form-group">
-            <label for="inpGroomMother">신랑 어머님</label>
-            <input type="text" id="inpGroomMother" value="박정숙" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="inpBrideFather">신부 아버님</label>
-            <input type="text" id="inpBrideFather" value="이재민" />
-          </div>
-          <div class="form-group">
-            <label for="inpBrideMother">신부 어머님</label>
-            <input type="text" id="inpBrideMother" value="최은영" />
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inpBrideRelation">신부 서열(관계)</label>
+              <select id="inpBrideRelation">
+                <option value="장녀">장녀</option>
+                <option value="차녀">차녀</option>
+                <option value="삼녀">삼녀</option>
+                <option value="막내">막내</option>
+                <option value="딸">딸</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inpBrideFatherPhone">아버님 연락처 (선택)</label>
+              <input type="text" id="inpBrideFatherPhone" placeholder="전화/문자 연동용" />
+            </div>
           </div>
         </div>
       </section>
@@ -123,32 +191,44 @@
         <div class="editor-section-title">3. 예식 일시 및 웨딩홀 안내</div>
         <div class="form-row">
           <div class="form-group">
-            <label for="inpWeddingDate">예식 날짜 (달력/D-Day 자동 연동)</label>
+            <label for="inpWeddingDate">예식 날짜 (달력/D-Day 연동)</label>
             <input type="date" id="inpWeddingDate" value="2026-11-28" />
           </div>
           <div class="form-group">
             <label for="inpWeddingTime">시간 표기</label>
-            <input type="text" id="inpWeddingTime" value="토요일 오후 1시 30분" />
+            <input type="text" id="inpWeddingTime" placeholder="예: 토요일 오후 1시 30분" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label for="inpVenueName">예식장 이름</label>
-            <input type="text" id="inpVenueName" value="더채플 앳 청담" />
+            <input type="text" id="inpVenueName" placeholder="예: 더채플 앳 청담" />
           </div>
           <div class="form-group">
             <label for="inpVenueHall">층수 / 홀</label>
-            <input type="text" id="inpVenueHall" value="6층 커티지홀" />
+            <input type="text" id="inpVenueHall" placeholder="예: 6층 커티지홀" />
           </div>
         </div>
         <div class="form-group">
-          <label for="inpVenueAddr">도로명 주소</label>
-          <input type="text" id="inpVenueAddr" value="서울특별시 강남구 선릉로 757" />
+          <label for="inpVenueAddr">도로명 주소 (네비게이션 연동)</label>
+          <input type="text" id="inpVenueAddr" placeholder="예: 서울특별시 강남구 선릉로 757" />
+        </div>
+        
+        <!-- Transportation Guidance Breakdown -->
+        <div class="form-group">
+          <label for="inpTransportParking">🅿️ 주차 안내</label>
+          <input type="text" id="inpTransportParking" placeholder="예: 건물 내 지하 주차장 2시간 무료 지원" />
         </div>
         <div class="form-group">
-          <label for="inpTransport">교통편 및 주차 안내</label>
-          <textarea id="inpTransport" rows="3">지하철: 7호선·수인분당선 강남구청역 4번 출구 (도보 7분 / 셔틀 수시 운행)
-자가용: 건물 지하 주차장 및 전용 주차타워 2시간 무료 지원</textarea>
+          <label for="inpTransportSubway">🚇 지하철 안내</label>
+          <input type="text" id="inpTransportSubway" placeholder="예: 7호선·수인분당선 강남구청역 4번 출구 도보 7분" />
+        </div>
+        <div class="form-group">
+          <label for="inpTransportBus">🚌 버스 안내</label>
+          <input type="text" id="inpTransportBus" placeholder="예: 간선 141, 145 / 지선 2014 정류장 하차" />
+        </div>
+        <div class="help-text">
+          💡 <strong>지도 연동 알고리즘</strong>: 예식장명과 주소를 입력하면 네이버지도, 카카오맵, 티맵 길안내 URL과 주소 복사 기능이 자동으로 계산되어 연결됩니다.
         </div>
       </section>
 
@@ -161,7 +241,7 @@
           <button type="button" class="chip-btn" data-greeting-preset="modern">담백·트렌디형</button>
         </div>
         <div class="form-group" style="margin-top:6px;">
-          <textarea id="inpGreeting" rows="6"></textarea>
+          <textarea id="inpGreeting" rows="6" placeholder="소중한 분들을 모시는 따뜻한 초대글을 입력해 주세요."></textarea>
         </div>
       </section>
 
@@ -206,7 +286,7 @@
         <div style="margin-top:14px;border-top:1px dashed #e8e3d8;padding-top:12px;">
           <div class="gallery-manage-header">
             <strong>포토 갤러리 사진 관리</strong>
-            <span class="gallery-count-badge" id="deskGalleryCountBadge">현재 4 / 20장</span>
+            <span class="gallery-count-badge" id="deskGalleryCountBadge">현재 0 / 20장</span>
           </div>
           <p style="font-size:11.5px;color:#8c857b;margin-top:3px;margin-bottom:8px;">
             스마트폰 고화질 사진을 올려도 자동 압축되어 빠르게 로딩됩니다 (최대 20장).
@@ -245,18 +325,43 @@
 
       <!-- 7. Bank Accounts -->
       <section class="editor-section">
-        <div class="editor-section-title">7. 축의금 계좌번호</div>
+        <div class="editor-section-title">7. 축의금 계좌번호 (마음 전하실 곳)</div>
         <div class="form-group">
-          <label for="inpGroomAcc">신랑측 계좌</label>
-          <input type="text" id="inpGroomAcc" value="카카오뱅크 3333-01-2345678 (예금주: 김도윤)" />
+          <label for="inpGroomAcc">신랑 본인 계좌</label>
+          <input type="text" id="inpGroomAcc" placeholder="예: 카카오뱅크 3333-01-2345678 (예금주: 김도윤)" />
         </div>
         <div class="form-group">
-          <label for="inpBrideAcc">신부측 계좌</label>
-          <input type="text" id="inpBrideAcc" value="토스뱅크 1000-1234-5678 (예금주: 이서연)" />
+          <label for="inpGroomFatherAcc">신랑 혼주(부) 계좌</label>
+          <input type="text" id="inpGroomFatherAcc" placeholder="예: 국민은행 123-456-7890 (예금주: 김건우)" />
+        </div>
+        <div class="form-group">
+          <label for="inpGroomMotherAcc">신랑 혼주(모) 계좌</label>
+          <input type="text" id="inpGroomMotherAcc" placeholder="예: 신한은행 987-654-3210 (예금주: 박정숙)" />
+        </div>
+        <hr style="border:none;border-top:1px dashed #ded8cd;margin:12px 0;" />
+        <div class="form-group">
+          <label for="inpBrideAcc">신부 본인 계좌</label>
+          <input type="text" id="inpBrideAcc" placeholder="예: 토스뱅크 1000-1234-5678 (예금주: 이서연)" />
+        </div>
+        <div class="form-group">
+          <label for="inpBrideFatherAcc">신부 혼주(부) 계좌</label>
+          <input type="text" id="inpBrideFatherAcc" placeholder="예: 하나은행 111-222-3333 (예금주: 이재민)" />
+        </div>
+        <div class="form-group">
+          <label for="inpBrideMotherAcc">신부 혼주(모) 계좌</label>
+          <input type="text" id="inpBrideMotherAcc" placeholder="예: 우리은행 444-555-6666 (예금주: 최은영)" />
         </div>
       </section>
 
-      <!-- 8. Standalone Export & Sharing -->
+      <!-- 8. Section ON/OFF Toggles -->
+      <section class="editor-section">
+        <div class="editor-section-title">8. 청첩장 표시 항목 ON / OFF</div>
+        <div class="toggle-list" id="deskToggleList">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- 9. Standalone Export & Sharing -->
       <div class="action-bar">
         <button type="button" class="btn-primary" id="btnOpenShareModal">
           🚀 내 모바일 청첩장 웹 링크 생성 &amp; 카톡 공유
@@ -282,13 +387,13 @@
             </button>
           </div>
 
-          <!-- COVER 1: DUO FRAME (MOIITEE SIGNATURE) -->
+          <!-- COVER 1: DUO FRAME -->
           <header class="cover-duo">
             <div class="cover-duo-heading">WEDDING INVITATION</div>
             <h2 class="cover-duo-names">
-              <span id="duoGroomName">김도윤</span>
+              <span id="duoGroomName">신랑</span>
               <span class="dot">·</span>
-              <span id="duoBrideName">이서연</span>
+              <span id="duoBrideName">신부</span>
             </h2>
             <div class="cover-duo-grid">
               <div class="duo-left-col">
@@ -303,7 +408,7 @@
                 </div>
               </div>
             </div>
-            <div class="duo-bottom-venue" id="duoVenueSummary">더채플 앳 청담 6층 커티지홀</div>
+            <div class="duo-bottom-venue" id="duoVenueSummary">웨딩홀 안내</div>
           </header>
 
           <!-- COVER 2: MAGAZINE FULL-BLEED -->
@@ -316,12 +421,12 @@
               </div>
               <div class="cover-magazine-bottom">
                 <div class="cover-magazine-names">
-                  <span id="magGroomName">김도윤</span>
+                  <span id="magGroomName">신랑</span>
                   <span class="amp">&amp;</span>
-                  <span id="magBrideName">이서연</span>
+                  <span id="magBrideName">신부</span>
                 </div>
                 <div class="cover-magazine-date" id="magDateSummary">2026. 11. 28 SAT PM 1:30</div>
-                <div class="cover-magazine-venue" id="magVenueSummary">더채플 앳 청담 6층 커티지홀</div>
+                <div class="cover-magazine-venue" id="magVenueSummary">웨딩홀 안내</div>
               </div>
             </div>
           </header>
@@ -335,17 +440,17 @@
             <div class="cover-arch-caption">
               <div class="script-cursive">Two lives, one heart</div>
               <h2 class="arch-names">
-                <span id="archGroomName">김도윤</span>
+                <span id="archGroomName">신랑</span>
                 <span class="dot">·</span>
-                <span id="archBrideName">이서연</span>
+                <span id="archBrideName">신부</span>
               </h2>
               <div class="arch-date" id="archDateSummary">2026년 11월 28일 토요일 오후 1시 30분</div>
-              <div class="arch-venue" id="archVenueSummary">더채플 앳 청담 6층 커티지홀</div>
+              <div class="arch-venue" id="archVenueSummary">웨딩홀 안내</div>
             </div>
           </header>
 
           <!-- INVITATION GREETING & PARENTS -->
-          <section class="inv-section">
+          <section class="inv-section" id="secGreeting">
             <span class="script-accent-title">Invitation</span>
             <div class="inv-sec-sub">초대합니다</div>
             <h3 class="inv-sec-title">소중한 분들을 초대합니다</h3>
@@ -355,13 +460,13 @@
 
             <div class="contact-btn-row">
               <button type="button" class="btn-contact-pill" id="btnOpenContactModal">
-                📞 신랑 · 신부에게 축하 연락하기
+                📞 축하 연락하기
               </button>
             </div>
           </section>
 
           <!-- CALENDAR & D-DAY -->
-          <section class="inv-section divider">
+          <section class="inv-section divider" id="secCalendar">
             <span class="script-accent-title">Calendar</span>
             <div class="inv-sec-sub">예식 일정</div>
             <h3 class="inv-sec-title" id="viewCalDateHeading">2026. 11. 28 토요일</h3>
@@ -370,7 +475,7 @@
           </section>
 
           <!-- PHOTO GALLERY (UP TO 20 PHOTOS WITH LIGHTBOX) -->
-          <section class="inv-section divider">
+          <section class="inv-section divider" id="secGallery">
             <span class="script-accent-title">Gallery</span>
             <div class="inv-sec-sub">우리의 순간</div>
             <h3 class="inv-sec-title">사랑이 머무는 곳</h3>
@@ -383,14 +488,14 @@
           </section>
 
           <!-- LOCATION & NAVIGATION -->
-          <section class="inv-section divider">
+          <section class="inv-section divider" id="secLocation">
             <span class="script-accent-title">Location</span>
             <div class="inv-sec-sub">오시는 길</div>
             <h3 class="inv-sec-title">웨딩홀 안내</h3>
             <div class="location-box">
-              <div class="loc-name" id="viewLocName">더채플 앳 청담 6층 커티지홀</div>
+              <div class="loc-name" id="viewLocName">식장 위치를 입력해 주세요</div>
               <div class="loc-addr-row">
-                <span class="loc-addr" id="viewLocAddr">서울특별시 강남구 선릉로 757</span>
+                <span class="loc-addr" id="viewLocAddr">도로명 주소를 입력해 주세요</span>
                 <button type="button" class="btn-copy-addr" id="btnCopyAddr">주소복사</button>
               </div>
               <div class="map-pills">
@@ -398,12 +503,15 @@
                 <a class="map-pill-btn" id="linkKakaoMap" target="_blank" rel="noopener">카카오맵</a>
                 <a class="map-pill-btn" id="linkTmap" target="_blank" rel="noopener">티맵 길안내</a>
               </div>
-              <div class="transport-details" id="viewTransportDetails"></div>
+              <!-- Structured Transport Cards -->
+              <div class="transport-grid" id="viewTransportGrid">
+                <!-- Dynamic transport cards -->
+              </div>
             </div>
           </section>
 
           <!-- BANK ACCOUNTS ACCORDION -->
-          <section class="inv-section divider">
+          <section class="inv-section divider" id="secAccount">
             <span class="script-accent-title">Gift for Couple</span>
             <div class="inv-sec-sub">마음 전하실 곳</div>
             <h3 class="inv-sec-title">축복의 마음을 전하세요</h3>
@@ -412,42 +520,32 @@
               따뜻한 축하의 마음에 깊이 감사드립니다.
             </p>
             <div class="account-accordion-group">
+              <!-- Groom Accordion -->
               <div class="acc-accordion">
                 <button type="button" class="acc-accordion-header" id="btnAccGroomHeader">
                   <span>신랑측 계좌번호 보기</span>
                   <span class="arrow">▾</span>
                 </button>
                 <div class="acc-accordion-body" id="bodyAccGroom">
-                  <div class="acc-item">
-                    <div class="acc-info">
-                      <span class="acc-owner">신랑 김도윤</span>
-                      <span class="acc-num" id="viewGroomAccNum">카카오뱅크 3333-01-2345678</span>
-                    </div>
-                    <button type="button" class="btn-copy-acc" id="btnCopyGroomAcc">복사</button>
-                  </div>
+                  <!-- Dynamic items rendered via JS -->
                 </div>
               </div>
 
+              <!-- Bride Accordion -->
               <div class="acc-accordion">
                 <button type="button" class="acc-accordion-header" id="btnAccBrideHeader">
                   <span>신부측 계좌번호 보기</span>
                   <span class="arrow">▾</span>
                 </button>
                 <div class="acc-accordion-body" id="bodyAccBride">
-                  <div class="acc-item">
-                    <div class="acc-info">
-                      <span class="acc-owner">신부 이서연</span>
-                      <span class="acc-num" id="viewBrideAccNum">토스뱅크 1000-1234-5678</span>
-                    </div>
-                    <button type="button" class="btn-copy-acc" id="btnCopyBrideAcc">복사</button>
-                  </div>
+                  <!-- Dynamic items rendered via JS -->
                 </div>
               </div>
             </div>
           </section>
 
           <!-- RSVP ATTENDANCE CARD -->
-          <section class="inv-section divider">
+          <section class="inv-section divider" id="secRsvp">
             <span class="script-accent-title">R.S.V.P</span>
             <div class="inv-sec-sub">참석 의사 전달</div>
             <h3 class="inv-sec-title">참석 여부 전달하기</h3>
@@ -503,9 +601,40 @@
             </div>
           </section>
 
+          <!-- GUESTBOOK (방명록) SECTION -->
+          <section class="inv-section divider" id="secGuestbook">
+            <span class="script-accent-title">Guestbook</span>
+            <div class="inv-sec-sub">방명록</div>
+            <h3 class="inv-sec-title">축하 메시지를 남겨주세요</h3>
+            <p style="font-size:13px;color:#888176;margin-bottom:16px;line-height:1.6;">
+              축하해주시는 모든 분들께 진심으로 감사드립니다.
+            </p>
+            <div class="guestbook-list" id="viewGuestbookList">
+              <!-- Dynamic comments rendered via JS -->
+            </div>
+            <button type="button" class="btn-open-guestbook-form" id="btnOpenGuestbookModal">
+              💌 축하 메시지 작성하기
+            </button>
+          </section>
+
+          <!-- BOTTOM SHARING BUTTONS -->
+          <section class="inv-section divider" id="secShare">
+            <div class="bottom-share-box">
+              <p style="font-size:13px;color:#888176;margin-bottom:14px;line-height:1.5;">
+                소중한 분들에게 모바일 청첩장을 전해주세요.
+              </p>
+              <button type="button" class="btn-bottom-kakao" id="btnBottomKakao">
+                💬 카카오톡으로 공유하기
+              </button>
+              <button type="button" class="btn-bottom-copy" id="btnBottomCopy">
+                🔗 청첩장 주소 복사하기
+              </button>
+            </div>
+          </section>
+
           <!-- FOOTER -->
           <footer class="inv-footer">
-            <div class="script-cursive" style="font-size:26px;color:#8c857b;">Doyun &amp; Seoyeon</div>
+            <div class="script-cursive" id="footerCoupleNames" style="font-size:26px;color:#8c857b;">Groom &amp; Bride</div>
             <div style="font-size:11.5px;letter-spacing:0.2em;color:#aba59b;margin-top:4px;">THANK YOU</div>
           </footer>
 
@@ -537,6 +666,10 @@
     <button type="button" class="dock-btn" data-tab="music" id="dockBtnMusic">
       <span class="dock-icon">🎵</span>
       <span class="dock-label">음악</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="sections" id="dockBtnSections">
+      <span class="dock-icon">⚙️</span>
+      <span class="dock-label">기능설정</span>
     </button>
     <button type="button" class="dock-btn highlight" data-tab="share" id="dockBtnShare">
       <span class="dock-icon">🚀</span>
@@ -590,40 +723,48 @@
     </div>
   </div>
 
+  <!-- GUESTBOOK WRITE MODAL -->
+  <div class="modal-backdrop" id="guestbookModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>💌 축하 메시지 남기기</h4>
+        <button type="button" class="modal-close" id="btnCloseGuestbookModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="formGuestbookWrite" onsubmit="event.preventDefault(); submitGuestbookEntry();">
+          <div class="form-group">
+            <label for="gbAuthor">작성자 성함 *</label>
+            <input type="text" id="gbAuthor" placeholder="성함을 입력해 주세요" required />
+          </div>
+          <div class="form-group">
+            <label for="gbPassword">삭제용 비밀번호 (4자리) *</label>
+            <input type="password" id="gbPassword" maxlength="8" placeholder="나중에 글을 지울 때 필요해요" required />
+          </div>
+          <div class="form-group">
+            <label for="gbMessage">축하 메시지 *</label>
+            <textarea id="gbMessage" rows="4" placeholder="따뜻한 축하의 한마디를 남겨주세요." required></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;margin-top:6px;">축하글 등록하기</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- LIGHTBOX MODAL FOR FULLSCREEN GALLERY ZOOM -->
   <div class="lightbox-modal" id="lightboxModal">
     <button type="button" class="lightbox-close" id="btnLightboxClose">✕</button>
     <img class="lightbox-img" id="lightboxImg" src="" alt="확대 사진" />
   </div>
 
-  <!-- CONTACT MODAL -->
+  <!-- CONTACT MODAL (GROOM, BRIDE & PARENTS) -->
   <div class="modal-backdrop" id="contactModal">
-    <div class="modal-content">
+    <div class="modal-content modal-contact">
       <div class="modal-header">
         <h4>축하 연락하기</h4>
         <button type="button" class="modal-close" id="btnCloseContactModal">✕</button>
       </div>
-      <div class="modal-body">
-        <div class="contact-item">
-          <div>
-            <span class="role-badge">신랑</span>
-            <span class="person-name" id="modalGroomName">김도윤</span>
-          </div>
-          <div class="contact-actions">
-            <a href="tel:010-1234-5678" id="linkCallGroom" class="btn-action-icon" title="전화걸기">📞 통화</a>
-            <a href="sms:010-1234-5678" id="linkSmsGroom" class="btn-action-icon" title="문자보내기">💬 문자</a>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div>
-            <span class="role-badge">신부</span>
-            <span class="person-name" id="modalBrideName">이서연</span>
-          </div>
-          <div class="contact-actions">
-            <a href="tel:010-9876-5432" id="linkCallBride" class="btn-action-icon" title="전화걸기">📞 통화</a>
-            <a href="sms:010-9876-5432" id="linkSmsBride" class="btn-action-icon" title="문자보내기">💬 문자</a>
-          </div>
-        </div>
+      <div class="modal-body" id="contactModalBody">
+        <!-- Rendered dynamically via JS -->
       </div>
     </div>
   </div>

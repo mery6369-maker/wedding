@@ -1595,8 +1595,8 @@ body.guest-preview .mobile-dock {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
-  z-index: 1000;
-  padding: 6px 8px;
+  z-index: 2500;
+  padding: 6px 4px;
   justify-content: space-around;
   align-items: center;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
@@ -1654,6 +1654,7 @@ body.guest-preview .mobile-dock {
   z-index: 2000;
   display: none;
   align-items: flex-end;
+  padding-bottom: 64px;
 }
 
 .bottom-sheet-backdrop.show {
@@ -1816,6 +1817,554 @@ body.guest-preview .mobile-dock {
   background: #faf8f5;
   border-radius: 6px;
   padding: 10px 12px;
+}
+
+/* ===================================================
+   PURE / SAMPLE TOGGLE BAR
+   =================================================== */
+.pure-sample-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.btn-pure-reset, .btn-sample-fill {
+  flex: 1;
+  padding: 9px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  text-align: center;
+}
+
+.btn-pure-reset {
+  background: #ffffff;
+  border: 1px solid #dcd4c7;
+  color: #4a453e;
+}
+
+.btn-pure-reset:hover {
+  background: #f5f0e6;
+  border-color: #2b2724;
+}
+
+.btn-sample-fill {
+  background: #f0eae0;
+  border: 1px solid #dcd4c7;
+  color: #2b2724;
+}
+
+.btn-sample-fill:hover {
+  background: #e5ded2;
+}
+
+/* ===================================================
+   PERSON & PARENTS FORM GROUP
+   =================================================== */
+.person-box-group {
+  background: #faf8f4;
+  border: 1px solid #eee8dc;
+  border-radius: 12px;
+  padding: 14px 12px;
+  position: relative;
+}
+
+.person-box-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #787168;
+  background: #ffffff;
+  border: 1px solid #ded8cd;
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-bottom: 10px;
+}
+
+.input-with-deceased {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.input-with-deceased input {
+  flex: 1;
+}
+
+.chk-deceased-label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: #787168;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ===================================================
+   INVITATION PARENTS & RELATIONS DISPLAY
+   =================================================== */
+.inv-parents-box {
+  margin: 26px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+
+.parent-line {
+  font-size: 14px;
+  color: #55504a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  letter-spacing: -0.01em;
+}
+
+.parent-names {
+  font-weight: 500;
+  color: #2b2724;
+}
+
+.parent-rel {
+  font-size: 13px;
+  color: #8c857b;
+}
+
+.child-name {
+  font-weight: 600;
+  color: #2b2724;
+  font-size: 14.5px;
+}
+
+.deceased-badge {
+  font-size: 11px;
+  color: #8c857b;
+  font-weight: normal;
+  margin-right: 2px;
+}
+
+/* ===================================================
+   STRUCTURED TRANSPORTATION (PARKING / SUBWAY / BUS)
+   =================================================== */
+.transport-grid {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transport-card {
+  background: #ffffff;
+  border: 1px solid #eee8dc;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+}
+
+.transport-icon {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.transport-body {
+  flex: 1;
+}
+
+.transport-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2b2724;
+  margin-bottom: 2px;
+}
+
+.transport-desc {
+  font-size: 12.5px;
+  color: #55504a;
+  line-height: 1.5;
+}
+
+.help-text {
+  font-size: 11.5px;
+  color: #8c857b;
+  line-height: 1.5;
+  background: #faf8f4;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 8px;
+}
+
+/* ===================================================
+   IOS STYLE SWITCH UI & SECTION TOGGLES
+   =================================================== */
+.switch-ui {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.switch-ui input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider-round {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #dcd6cb;
+  transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 24px;
+}
+
+.slider-round:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.switch-ui input:checked + .slider-round {
+  background-color: #2b2724;
+}
+
+.switch-ui input:checked + .slider-round:before {
+  transform: translateX(20px);
+}
+
+.toggle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 13px;
+  background: #faf8f5;
+  border: 1px solid #eee8dc;
+  border-radius: 10px;
+}
+
+.toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toggle-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2b2724;
+}
+
+.toggle-sub {
+  font-size: 11px;
+  color: #8c857b;
+}
+
+/* ===================================================
+   REDESIGNED MOBILE MUSIC BGM PICKER
+   =================================================== */
+.music-sheet-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.music-master-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #faf8f5;
+  border: 1px solid #ded8cd;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.music-toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.music-toggle-text strong {
+  font-size: 13.5px;
+  color: #2b2724;
+}
+
+.music-toggle-text span {
+  font-size: 11.5px;
+  color: #8c857b;
+}
+
+.music-tracks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.music-track-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1.5px solid #ded8cd;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.music-track-card.selected {
+  border-color: #2b2724;
+  background: #fbf9f6;
+  box-shadow: 0 2px 8px rgba(43, 39, 36, 0.08);
+}
+
+.btn-track-play {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #ded8cd;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  flex-shrink: 0;
+  color: #2b2724;
+  transition: all 0.15s ease;
+}
+
+.btn-track-play:hover {
+  background: #2b2724;
+  color: #ffffff;
+}
+
+.btn-track-play.playing {
+  background: #2b2724;
+  color: #ffffff;
+}
+
+.track-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.track-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2b2724;
+}
+
+.track-meta {
+  font-size: 11.5px;
+  color: #8c857b;
+}
+
+.track-select-indicator {
+  font-size: 14px;
+  font-weight: bold;
+  color: transparent;
+}
+
+.music-track-card.selected .track-select-indicator {
+  color: #2b2724;
+}
+
+.btn-upload-mp3 {
+  font-size: 11.5px;
+  padding: 6px 10px;
+  background: #2b2724;
+  color: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.music-volume-box {
+  background: #faf8f5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.volume-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2b2724;
+}
+
+.volume-range-input {
+  width: 100%;
+  accent-color: #2b2724;
+  cursor: pointer;
+}
+
+.music-guide-box {
+  background: #faf8f5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 11.5px;
+  color: #787168;
+  line-height: 1.5;
+}
+
+/* ===================================================
+   GUESTBOOK (방명록) STYLES
+   =================================================== */
+.guestbook-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.guestbook-card {
+  background: #ffffff;
+  border: 1px solid #eee8dc;
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  position: relative;
+}
+
+.guestbook-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.guestbook-author {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2b2724;
+}
+
+.guestbook-date {
+  font-size: 11px;
+  color: #aba59b;
+}
+
+.guestbook-text {
+  font-size: 13px;
+  color: #4a453e;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.btn-del-gb {
+  background: none;
+  border: none;
+  color: #aba59b;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.btn-del-gb:hover {
+  color: #c53030;
+}
+
+.btn-open-guestbook-form {
+  width: 100%;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #ded8cd;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2b2724;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-open-guestbook-form:hover {
+  background: #f7f3eb;
+}
+
+/* ===================================================
+   BOTTOM SHARING BOX
+   =================================================== */
+.bottom-share-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 0 16px;
+}
+
+.btn-bottom-kakao {
+  background: #fee500;
+  color: #191919;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.btn-bottom-copy {
+  background: #ffffff;
+  border: 1px solid #ded8cd;
+  color: #2b2724;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn-bottom-copy:hover {
+  background: #f9f7f4;
+}
+
+/* Contact Modal Layout */
+.modal-contact {
+  max-width: 420px;
+}
+
+.contact-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #787168;
+  margin: 12px 0 8px;
+  border-bottom: 1px dashed #ded8cd;
+  padding-bottom: 4px;
 }
 
 /* Responsive Overrides */

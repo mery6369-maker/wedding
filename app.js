@@ -1,13 +1,6 @@
 /**
- * Atelier Wedding - Moiitee Style Mobile-First Self-Builder Engine (Bright Mode)
- * Inspired by: moiitee.com & Instagram @moiitee_official
- * Features:
- * - Real BGM Audio Player (Auto-play policy, track selector & MP3 upload)
- * - Photo Gallery up to 20 Photos with Size Limitation & Client-side Compression
- * - Lightbox Zoom Modal & Progressive Gallery Expand
- * - Visual Cover Selector with Layout Thumbnails (Duo, Magazine, Arch)
- * - Numbered Photo Slot Management & Fullscreen Guest Preview
- * - URL State Serialization & Standalone HTML Exporter
+ * Atelier Wedding - Premium Mobile-First Wedding Invitation Studio (Bright Mode)
+ * Zero-Server Client-side Architecture (100% Free Hosting on GitHub Pages)
  */
 
 const GREETING_PRESETS = {
@@ -46,25 +39,49 @@ const MAX_GALLERY_PHOTOS = 20;
 const MAX_INPUT_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB
 const MAX_AUDIO_FILE_SIZE = 5 * 1024 * 1024;   // 5MB
 
+// INITIAL / CURRENT STATE
 const state = {
   coverStyle: "duo",
   groomName: "김도윤",
-  brideName: "이서연",
   groomPhone: "010-1234-5678",
-  bridePhone: "010-9876-5432",
   groomFather: "김건우",
+  groomFatherDeceased: false,
   groomMother: "박정숙",
+  groomMotherDeceased: false,
+  groomRelation: "장남",
+  groomFatherPhone: "010-1111-2222",
+  groomMotherPhone: "",
+
+  brideName: "이서연",
+  bridePhone: "010-9876-5432",
   brideFather: "이재민",
+  brideFatherDeceased: false,
   brideMother: "최은영",
+  brideMotherDeceased: false,
+  brideRelation: "장녀",
+  brideFatherPhone: "010-3333-4444",
+  brideMotherPhone: "",
+
   weddingDate: "2026-11-28",
   weddingTime: "토요일 오후 1시 30분",
   venueName: "더채플 앳 청담",
   venueHall: "6층 커티지홀",
   venueAddress: "서울특별시 강남구 선릉로 757",
-  transport: `지하철: 7호선·수인분당선 강남구청역 4번 출구 (도보 7분 / 셔틀 수시 운행)\n자가용: 건물 지하 주차장 및 외부 전용 주차타워 2시간 무료 지원`,
+
+  transportParking: "건물 지하 주차장 및 외부 전용 주차타워 2시간 무료 지원",
+  transportSubway: "7호선·수인분당선 강남구청역 4번 출구 (도보 7분 / 셔틀 수시 운행)",
+  transportBus: "간선 141, 145 / 지선 2014 정류장 하차",
+
   greeting: GREETING_PRESETS.warm,
+
   groomAccount: "카카오뱅크 3333-01-2345678 (예금주: 김도윤)",
+  groomFatherAccount: "국민은행 123-456-7890 (예금주: 김건우)",
+  groomMotherAccount: "신한은행 987-654-3210 (예금주: 박정숙)",
+
   brideAccount: "토스뱅크 1000-1234-5678 (예금주: 이서연)",
+  brideFatherAccount: "하나은행 111-222-3333 (예금주: 이재민)",
+  brideMotherAccount: "우리은행 444-555-6666 (예금주: 최은영)",
+
   coverPhoto: "./sample_wedding_cover.jpg",
   detailPhoto: "./sample_duo_detail.jpg",
   galleryPhotos: [
@@ -74,9 +91,143 @@ const state = {
     "./sample_gallery_4.jpg"
   ],
   galleryExpanded: false,
+
   bgmEnabled: true,
-  bgmTrack: "./audio/romantic_piano.mp3"
+  bgmTrackType: "piano", // 'piano' or 'custom'
+  bgmTrackUrl: "./audio/romantic_piano.mp3",
+  customBgmUrl: "",
+  customBgmName: "",
+  bgmVolume: 0.7,
+
+  // Section Visibility Toggles
+  sections: {
+    greeting: true,
+    calendar: true,
+    gallery: true,
+    location: true,
+    account: true,
+    rsvp: true,
+    guestbook: true,
+    share: true,
+    bgm: true
+  },
+
+  // Interactive Guestbook List
+  guestbookList: [
+    {
+      id: "gb_sample_1",
+      author: "지은 & 민호",
+      date: "2026. 10. 20",
+      text: "도윤아 서연아 결혼 진심으로 축하해! 세상에서 제일 행복하고 다정한 부부가 되길 응원할게.",
+      password: "1234"
+    },
+    {
+      id: "gb_sample_2",
+      author: "선배 재원",
+      date: "2026. 10. 21",
+      text: "두 사람 함께 있는 모습이 정말 아름답네요. 예식날 기쁜 마음으로 찾아뵙겠습니다!",
+      password: "1234"
+    }
+  ]
 };
+
+// PURE STATE: Reset all fields so the user feels like they start on a pristine canvas
+function applyPureState() {
+  state.groomName = "";
+  state.groomPhone = "";
+  state.groomFather = "";
+  state.groomFatherDeceased = false;
+  state.groomMother = "";
+  state.groomMotherDeceased = false;
+  state.groomRelation = "장남";
+  state.groomFatherPhone = "";
+  state.groomMotherPhone = "";
+
+  state.brideName = "";
+  state.bridePhone = "";
+  state.brideFather = "";
+  state.brideFatherDeceased = false;
+  state.brideMother = "";
+  state.brideMotherDeceased = false;
+  state.brideRelation = "장녀";
+  state.brideFatherPhone = "";
+  state.brideMotherPhone = "";
+
+  state.weddingTime = "토요일 오후 1시 30분";
+  state.venueName = "";
+  state.venueHall = "";
+  state.venueAddress = "";
+  state.transportParking = "";
+  state.transportSubway = "";
+  state.transportBus = "";
+
+  state.greeting = GREETING_PRESETS.warm;
+
+  state.groomAccount = "";
+  state.groomFatherAccount = "";
+  state.groomMotherAccount = "";
+  state.brideAccount = "";
+  state.brideFatherAccount = "";
+  state.brideMotherAccount = "";
+  state.guestbookList = [];
+
+  syncFormInputsFromState();
+  renderAll();
+  showToast("깨끗한 새 청첩장(Pure 상태)으로 초기화되었습니다.");
+}
+
+function applySampleState() {
+  state.groomName = "김도윤";
+  state.groomPhone = "010-1234-5678";
+  state.groomFather = "김건우";
+  state.groomFatherDeceased = false;
+  state.groomMother = "박정숙";
+  state.groomMotherDeceased = false;
+  state.groomRelation = "장남";
+  state.groomFatherPhone = "010-1111-2222";
+  state.groomMotherPhone = "";
+
+  state.brideName = "이서연";
+  state.bridePhone = "010-9876-5432";
+  state.brideFather = "이재민";
+  state.brideFatherDeceased = false;
+  state.brideMother = "최은영";
+  state.brideMotherDeceased = false;
+  state.brideRelation = "장녀";
+  state.brideFatherPhone = "010-3333-4444";
+  state.brideMotherPhone = "";
+
+  state.weddingDate = "2026-11-28";
+  state.weddingTime = "토요일 오후 1시 30분";
+  state.venueName = "더채플 앳 청담";
+  state.venueHall = "6층 커티지홀";
+  state.venueAddress = "서울특별시 강남구 선릉로 757";
+  state.transportParking = "건물 지하 주차장 및 외부 전용 주차타워 2시간 무료 지원";
+  state.transportSubway = "7호선·수인분당선 강남구청역 4번 출구 (도보 7분 / 셔틀 수시 운행)";
+  state.transportBus = "간선 141, 145 / 지선 2014 정류장 하차";
+
+  state.greeting = GREETING_PRESETS.warm;
+  state.groomAccount = "카카오뱅크 3333-01-2345678 (예금주: 김도윤)";
+  state.groomFatherAccount = "국민은행 123-456-7890 (예금주: 김건우)";
+  state.groomMotherAccount = "신한은행 987-654-3210 (예금주: 박정숙)";
+  state.brideAccount = "토스뱅크 1000-1234-5678 (예금주: 이서연)";
+  state.brideFatherAccount = "하나은행 111-222-3333 (예금주: 이재민)";
+  state.brideMotherAccount = "우리은행 444-555-6666 (예금주: 최은영)";
+
+  state.guestbookList = [
+    {
+      id: "gb_sample_1",
+      author: "지은 & 민호",
+      date: "2026. 10. 20",
+      text: "도윤아 서연아 결혼 진심으로 축하해! 세상에서 제일 행복한 부부가 되길!",
+      password: "1234"
+    }
+  ];
+
+  syncFormInputsFromState();
+  renderAll();
+  showToast("예시 샘플 데이터가 채워졌습니다.");
+}
 
 /* ===================================================
    URL STATE SERIALIZATION (ZERO-SERVER PUBLIC SHARING)
@@ -86,23 +237,45 @@ function serializeState() {
   const minimalData = {
     c: state.coverStyle,
     gn: state.groomName,
-    bn: state.brideName,
     gp: state.groomPhone,
-    bp: state.bridePhone,
     gf: state.groomFather,
+    gfd: state.groomFatherDeceased ? 1 : 0,
     gm: state.groomMother,
+    gmd: state.groomMotherDeceased ? 1 : 0,
+    grl: state.groomRelation,
+    gfp: state.groomFatherPhone,
+    gmp: state.groomMotherPhone,
+
+    bn: state.brideName,
+    bp: state.bridePhone,
     bf: state.brideFather,
+    bfd: state.brideFatherDeceased ? 1 : 0,
     bm: state.brideMother,
+    bmd: state.brideMotherDeceased ? 1 : 0,
+    brl: state.brideRelation,
+    bfp: state.brideFatherPhone,
+    bmp: state.brideMotherPhone,
+
     d: state.weddingDate,
     t: state.weddingTime,
     vn: state.venueName,
     vh: state.venueHall,
     va: state.venueAddress,
-    tr: state.transport,
+    tp: state.transportParking,
+    ts: state.transportSubway,
+    tb: state.transportBus,
+
     gr: state.greeting,
+
     ga: state.groomAccount,
+    gfa: state.groomFatherAccount,
+    gma: state.groomMotherAccount,
     ba: state.brideAccount,
-    bgm: state.bgmEnabled ? 1 : 0
+    bfa: state.brideFatherAccount,
+    bma: state.brideMotherAccount,
+
+    bgm: state.sections.bgm ? 1 : 0,
+    sec: state.sections
   };
   try {
     return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(minimalData)))));
@@ -116,24 +289,47 @@ function deserializeState(encodedStr) {
     const jsonStr = decodeURIComponent(escape(atob(decodeURIComponent(encodedStr))));
     const d = JSON.parse(jsonStr);
     if (d.c) state.coverStyle = d.c;
-    if (d.gn) state.groomName = d.gn;
-    if (d.bn) state.brideName = d.bn;
-    if (d.gp) state.groomPhone = d.gp;
-    if (d.bp) state.bridePhone = d.bp;
-    if (d.gf) state.groomFather = d.gf;
-    if (d.gm) state.groomMother = d.gm;
-    if (d.bf) state.brideFather = d.bf;
-    if (d.bm) state.brideMother = d.bm;
+    if (typeof d.gn !== "undefined") state.groomName = d.gn;
+    if (typeof d.gp !== "undefined") state.groomPhone = d.gp;
+    if (typeof d.gf !== "undefined") state.groomFather = d.gf;
+    if (typeof d.gfd !== "undefined") state.groomFatherDeceased = (d.gfd === 1);
+    if (typeof d.gm !== "undefined") state.groomMother = d.gm;
+    if (typeof d.gmd !== "undefined") state.groomMotherDeceased = (d.gmd === 1);
+    if (typeof d.grl !== "undefined") state.groomRelation = d.grl;
+    if (typeof d.gfp !== "undefined") state.groomFatherPhone = d.gfp;
+    if (typeof d.gmp !== "undefined") state.groomMotherPhone = d.gmp;
+
+    if (typeof d.bn !== "undefined") state.brideName = d.bn;
+    if (typeof d.bp !== "undefined") state.bridePhone = d.bp;
+    if (typeof d.bf !== "undefined") state.brideFather = d.bf;
+    if (typeof d.bfd !== "undefined") state.brideFatherDeceased = (d.bfd === 1);
+    if (typeof d.bm !== "undefined") state.brideMother = d.bm;
+    if (typeof d.bmd !== "undefined") state.brideMotherDeceased = (d.bmd === 1);
+    if (typeof d.brl !== "undefined") state.brideRelation = d.brl;
+    if (typeof d.bfp !== "undefined") state.brideFatherPhone = d.bfp;
+    if (typeof d.bmp !== "undefined") state.brideMotherPhone = d.bmp;
+
     if (d.d) state.weddingDate = d.d;
-    if (d.t) state.weddingTime = d.t;
-    if (d.vn) state.venueName = d.vn;
-    if (d.vh) state.venueHall = d.vh;
-    if (d.va) state.venueAddress = d.va;
-    if (d.tr) state.transport = d.tr;
-    if (d.gr) state.greeting = d.gr;
-    if (d.ga) state.groomAccount = d.ga;
-    if (d.ba) state.brideAccount = d.ba;
-    if (typeof d.bgm !== "undefined") state.bgmEnabled = (d.bgm === 1);
+    if (typeof d.t !== "undefined") state.weddingTime = d.t;
+    if (typeof d.vn !== "undefined") state.venueName = d.vn;
+    if (typeof d.vh !== "undefined") state.venueHall = d.vh;
+    if (typeof d.va !== "undefined") state.venueAddress = d.va;
+    if (typeof d.tp !== "undefined") state.transportParking = d.tp;
+    if (typeof d.ts !== "undefined") state.transportSubway = d.ts;
+    if (typeof d.tb !== "undefined") state.transportBus = d.tb;
+
+    if (typeof d.gr !== "undefined") state.greeting = d.gr;
+
+    if (typeof d.ga !== "undefined") state.groomAccount = d.ga;
+    if (typeof d.gfa !== "undefined") state.groomFatherAccount = d.gfa;
+    if (typeof d.gma !== "undefined") state.groomMotherAccount = d.gma;
+    if (typeof d.ba !== "undefined") state.brideAccount = d.ba;
+    if (typeof d.bfa !== "undefined") state.brideFatherAccount = d.bfa;
+    if (typeof d.bma !== "undefined") state.brideMotherAccount = d.bma;
+
+    if (d.sec && typeof d.sec === "object") {
+      Object.assign(state.sections, d.sec);
+    }
     return true;
   } catch (e) {
     return false;
@@ -181,137 +377,282 @@ function renderAll() {
   const month = parts[1] || 11;
   const day = parts[2] || 28;
   const dateObj = new Date(year, month - 1, day);
-  const dayEn = DAY_NAMES_EN[dateObj.getDay()] || "SAT";
-  const monEn = MONTH_NAMES_EN[month - 1] || "NOV";
+  const dayNameEn = DAY_NAMES_EN[dateObj.getDay()] || "SAT";
+  const monNameEn = MONTH_NAMES_EN[month - 1] || "NOV";
 
-  // Duo Cover
+  // Clean Fallback Strings for Pure State Display
+  const groomDisplayName = state.groomName.trim() || "신랑";
+  const brideDisplayName = state.brideName.trim() || "신부";
+  const coupleNamesSummary = `${groomDisplayName} & ${brideDisplayName}`;
+  const coupleNamesDot = `${groomDisplayName} · ${brideDisplayName}`;
+  const venueSummary = (state.venueName || state.venueHall) 
+    ? `${state.venueName} ${state.venueHall}`.trim()
+    : "식장 위치를 입력해 주세요";
+
+  // 1. Cover 1: Duo Frame
   const duoGroom = document.getElementById("duoGroomName");
   const duoBride = document.getElementById("duoBrideName");
-  if (duoGroom) duoGroom.textContent = state.groomName;
-  if (duoBride) duoBride.textContent = state.brideName;
-  
+  if (duoGroom) duoGroom.textContent = groomDisplayName;
+  if (duoBride) duoBride.textContent = brideDisplayName;
+  const duoDay = document.getElementById("duoDateDay");
+  const duoMonYear = document.getElementById("duoDateMonYear");
+  const duoTime = document.getElementById("duoDateTime");
+  if (duoDay) duoDay.textContent = String(day).padStart(2, "0");
+  if (duoMonYear) duoMonYear.textContent = `${monNameEn} ${year}`;
+  if (duoTime) duoTime.textContent = `${dayNameEn} ${state.weddingTime || ""}`.trim();
+  const duoVenue = document.getElementById("duoVenueSummary");
+  if (duoVenue) duoVenue.textContent = venueSummary;
   const duoPrimaryImg = document.getElementById("duoPrimaryImg");
-  const duoSecondaryImg = document.getElementById("duoSecondaryImg");
+  const duoSecImg = document.getElementById("duoSecondaryImg");
   if (duoPrimaryImg) duoPrimaryImg.src = state.coverPhoto;
-  if (duoSecondaryImg) duoSecondaryImg.src = state.detailPhoto;
+  if (duoSecImg) duoSecImg.src = state.detailPhoto;
 
-  const duoDateDay = document.getElementById("duoDateDay");
-  const duoDateMonYear = document.getElementById("duoDateMonYear");
-  const duoDateTime = document.getElementById("duoDateTime");
-  const duoVenueSummary = document.getElementById("duoVenueSummary");
-  if (duoDateDay) duoDateDay.textContent = String(day);
-  if (duoDateMonYear) duoDateMonYear.textContent = `${monEn} ${year}`;
-  if (duoDateTime) duoDateTime.textContent = `${dayEn} PM 1:30`;
-  if (duoVenueSummary) duoVenueSummary.textContent = `${state.venueName} ${state.venueHall}`;
-
-  // Magazine Cover
-  const magCoverImg = document.getElementById("magCoverImg");
-  if (magCoverImg) magCoverImg.src = state.coverPhoto;
+  // 2. Cover 2: Magazine
   const magGroom = document.getElementById("magGroomName");
   const magBride = document.getElementById("magBrideName");
-  if (magGroom) magGroom.textContent = state.groomName;
-  if (magBride) magBride.textContent = state.brideName;
-  const magDateSummary = document.getElementById("magDateSummary");
-  const magVenueSummary = document.getElementById("magVenueSummary");
-  if (magDateSummary) magDateSummary.textContent = `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} ${dayEn} PM 1:30`;
-  if (magVenueSummary) magVenueSummary.textContent = `${state.venueName} ${state.venueHall}`;
+  if (magGroom) magGroom.textContent = groomDisplayName;
+  if (magBride) magBride.textContent = brideDisplayName;
+  const magDateSum = document.getElementById("magDateSummary");
+  if (magDateSum) magDateSum.textContent = `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} ${dayNameEn} ${state.weddingTime || ""}`.trim();
+  const magVenue = document.getElementById("magVenueSummary");
+  if (magVenue) magVenue.textContent = venueSummary;
+  const magCoverImg = document.getElementById("magCoverImg");
+  if (magCoverImg) magCoverImg.src = state.coverPhoto;
 
-  // Arch Cover
-  const archCoverImg = document.getElementById("archCoverImg");
-  if (archCoverImg) archCoverImg.src = state.coverPhoto;
+  // 3. Cover 3: Arch
   const archGroom = document.getElementById("archGroomName");
   const archBride = document.getElementById("archBrideName");
-  if (archGroom) archGroom.textContent = state.groomName;
-  if (archBride) archBride.textContent = state.brideName;
-  const archDateSummary = document.getElementById("archDateSummary");
-  const archVenueSummary = document.getElementById("archVenueSummary");
-  if (archDateSummary) archDateSummary.textContent = `${year}년 ${month}월 ${day}일 ${state.weddingTime}`;
-  if (archVenueSummary) archVenueSummary.textContent = `${state.venueName} ${state.venueHall}`;
+  if (archGroom) archGroom.textContent = groomDisplayName;
+  if (archBride) archBride.textContent = brideDisplayName;
+  const archDateSum = document.getElementById("archDateSummary");
+  if (archDateSum) archDateSum.textContent = `${year}년 ${month}월 ${day}일 ${state.weddingTime || ""}`.trim();
+  const archVenue = document.getElementById("archVenueSummary");
+  if (archVenue) archVenue.textContent = venueSummary;
+  const archCoverImg = document.getElementById("archCoverImg");
+  if (archCoverImg) archCoverImg.src = state.coverPhoto;
 
-  // Update Desktop Slot Thumbnails
-  const d1 = document.getElementById("deskSlotThumb1");
-  const d2 = document.getElementById("deskSlotThumb2");
-  if (d1) d1.src = state.coverPhoto;
-  if (d2) d2.src = state.detailPhoto;
+  // Desktop Slot Thumbnails
+  const deskSlot1 = document.getElementById("deskSlotThumb1");
+  const deskSlot2 = document.getElementById("deskSlotThumb2");
+  if (deskSlot1) deskSlot1.src = state.coverPhoto;
+  if (deskSlot2) deskSlot2.src = state.detailPhoto;
 
-  // Render Desktop Gallery Management Grid & Badge
-  renderDesktopGalleryGrid();
+  // Greeting Text
+  const greetingEl = document.getElementById("viewGreetingText");
+  if (greetingEl) {
+    greetingEl.innerHTML = (state.greeting || GREETING_PRESETS.warm).replace(/\n/g, "<br>");
+  }
 
-  // Greeting & Family
-  const viewGreetingText = document.getElementById("viewGreetingText");
-  if (viewGreetingText) viewGreetingText.textContent = state.greeting;
+  // Parents Box (Moiitee / Love-wins-all style)
+  const parentsBox = document.getElementById("viewParentsBox");
+  if (parentsBox) {
+    const groomFatherText = (state.groomFatherDeceased ? '<span class="deceased-badge">故</span>' : '') + (state.groomFather || '');
+    const groomMotherText = (state.groomMotherDeceased ? '<span class="deceased-badge">故</span>' : '') + (state.groomMother || '');
+    const groomParentsJoined = [groomFatherText, groomMotherText].filter(Boolean).join(' · ');
 
-  const viewParentsBox = document.getElementById("viewParentsBox");
-  if (viewParentsBox) {
-    viewParentsBox.innerHTML = `
-      <div class="inv-parents-row">
-        <span class="parents">${state.groomFather} · ${state.groomMother}</span>
-        <span class="role">의 장남</span>
-        <span class="child-name">${state.groomName}</span>
-      </div>
-      <div class="inv-parents-row">
-        <span class="parents">${state.brideFather} · ${state.brideMother}</span>
-        <span class="role">의 장녀</span>
-        <span class="child-name">${state.brideName}</span>
-      </div>
-    `;
+    const brideFatherText = (state.brideFatherDeceased ? '<span class="deceased-badge">故</span>' : '') + (state.brideFather || '');
+    const brideMotherText = (state.brideMotherDeceased ? '<span class="deceased-badge">故</span>' : '') + (state.brideMother || '');
+    const brideParentsJoined = [brideFatherText, brideMotherText].filter(Boolean).join(' · ');
+
+    let html = '';
+    if (groomParentsJoined || state.groomName) {
+      html += `
+        <div class="parent-line">
+          ${groomParentsJoined ? `<span class="parent-names">${groomParentsJoined}</span> <span class="parent-rel">의 ${state.groomRelation || '아들'}</span>` : ''}
+          <span class="child-name">${groomDisplayName}</span>
+        </div>
+      `;
+    }
+    if (brideParentsJoined || state.brideName) {
+      html += `
+        <div class="parent-line">
+          ${brideParentsJoined ? `<span class="parent-names">${brideParentsJoined}</span> <span class="parent-rel">의 ${state.brideRelation || '딸'}</span>` : ''}
+          <span class="child-name">${brideDisplayName}</span>
+        </div>
+      `;
+    }
+    parentsBox.innerHTML = html;
   }
 
   // Calendar & D-Day
   renderCalendar(year, month, day);
 
-  // Invitation Gallery
+  // Photo Gallery
   renderInvitationGallery();
+  renderDesktopGalleryGrid();
 
-  // Location & Navigation
-  const viewLocName = document.getElementById("viewLocName");
-  const viewLocAddr = document.getElementById("viewLocAddr");
-  const viewTransportDetails = document.getElementById("viewTransportDetails");
-  if (viewLocName) viewLocName.textContent = `${state.venueName} ${state.venueHall}`;
-  if (viewLocAddr) viewLocAddr.textContent = state.venueAddress;
-  if (viewTransportDetails) viewTransportDetails.textContent = state.transport;
+  // Location & Transportation
+  const locName = document.getElementById("viewLocName");
+  if (locName) locName.textContent = venueSummary;
+  const locAddr = document.getElementById("viewLocAddr");
+  if (locAddr) locAddr.textContent = state.venueAddress || "도로명 주소를 입력해 주세요";
 
-  const q = encodeURIComponent(state.venueName || state.venueAddress);
+  // Map Navigation URLs
+  const searchAddress = (state.venueAddress || state.venueName || "더채플앳청담").trim();
+  const searchName = (state.venueName || "더채플앳청담").trim();
   const linkNaver = document.getElementById("linkNaverMap");
   const linkKakao = document.getElementById("linkKakaoMap");
   const linkTmap = document.getElementById("linkTmap");
-  if (linkNaver) linkNaver.href = `https://map.naver.com/p/search/${q}`;
-  if (linkKakao) linkKakao.href = `https://map.kakao.com/link/search/${q}`;
-  if (linkTmap) linkTmap.href = `https://apis.openapi.sk.com/tmap/app/routes?name=${q}`;
+  if (linkNaver) linkNaver.href = `https://map.naver.com/v5/search/${encodeURIComponent(searchAddress)}`;
+  if (linkKakao) linkKakao.href = `https://map.kakao.com/link/search/${encodeURIComponent(searchName)}`;
+  if (linkTmap) linkTmap.href = `https://tmap.life/navigate?name=${encodeURIComponent(searchName)}`;
 
-  // Accounts
-  const viewGroomAccNum = document.getElementById("viewGroomAccNum");
-  const viewBrideAccNum = document.getElementById("viewBrideAccNum");
-  if (viewGroomAccNum) viewGroomAccNum.textContent = state.groomAccount;
-  if (viewBrideAccNum) viewBrideAccNum.textContent = state.brideAccount;
+  // Structured Transport Breakdown Cards
+  const transportGrid = document.getElementById("viewTransportGrid");
+  if (transportGrid) {
+    let tHtml = '';
+    if (state.transportParking) {
+      tHtml += `
+        <div class="transport-card">
+          <span class="transport-icon">🅿️</span>
+          <div class="transport-body">
+            <div class="transport-title">주차 안내</div>
+            <div class="transport-desc">${state.transportParking}</div>
+          </div>
+        </div>
+      `;
+    }
+    if (state.transportSubway) {
+      tHtml += `
+        <div class="transport-card">
+          <span class="transport-icon">🚇</span>
+          <div class="transport-body">
+            <div class="transport-title">지하철 안내</div>
+            <div class="transport-desc">${state.transportSubway}</div>
+          </div>
+        </div>
+      `;
+    }
+    if (state.transportBus) {
+      tHtml += `
+        <div class="transport-card">
+          <span class="transport-icon">🚌</span>
+          <div class="transport-body">
+            <div class="transport-title">버스 안내</div>
+            <div class="transport-desc">${state.transportBus}</div>
+          </div>
+        </div>
+      `;
+    }
+    transportGrid.innerHTML = tHtml;
+  }
 
-  // Contact Modal
-  const modalGroomName = document.getElementById("modalGroomName");
-  const modalBrideName = document.getElementById("modalBrideName");
-  const linkCallGroom = document.getElementById("linkCallGroom");
-  const linkSmsGroom = document.getElementById("linkSmsGroom");
-  const linkCallBride = document.getElementById("linkCallBride");
-  const linkSmsBride = document.getElementById("linkSmsBride");
-  if (modalGroomName) modalGroomName.textContent = state.groomName;
-  if (modalBrideName) modalBrideName.textContent = state.brideName;
-  if (linkCallGroom) linkCallGroom.href = `tel:${state.groomPhone}`;
-  if (linkSmsGroom) linkSmsGroom.href = `sms:${state.groomPhone}`;
-  if (linkCallBride) linkCallBride.href = `tel:${state.bridePhone}`;
-  if (linkSmsBride) linkSmsBride.href = `sms:${state.bridePhone}`;
+  // Multi-Account Lists (Groom & Bride)
+  renderAccountAccordion("bodyAccGroom", [
+    { role: "신랑", name: groomDisplayName, acc: state.groomAccount },
+    { role: "아버님", name: state.groomFather, acc: state.groomFatherAccount },
+    { role: "어머님", name: state.groomMother, acc: state.groomMotherAccount }
+  ]);
+
+  renderAccountAccordion("bodyAccBride", [
+    { role: "신부", name: brideDisplayName, acc: state.brideAccount },
+    { role: "아버님", name: state.brideFather, acc: state.brideFatherAccount },
+    { role: "어머님", name: state.brideMother, acc: state.brideMotherAccount }
+  ]);
+
+  // Guestbook List
+  renderGuestbookList();
+
+  // Footer Names
+  const footerNames = document.getElementById("footerCoupleNames");
+  if (footerNames) footerNames.textContent = coupleNamesSummary;
+
+  // Apply Section Visibility Toggles (ON / OFF)
+  applySectionVisibility();
+
+  // Render Section Toggles in Desktop Sidebar
+  renderDesktopSectionToggles();
 }
 
-/* ===================================================
-   DESKTOP & INVITATION GALLERY RENDERERS
-   =================================================== */
-
-function renderDesktopGalleryGrid() {
-  const badge = document.getElementById("deskGalleryCountBadge");
-  if (badge) badge.textContent = `현재 ${state.galleryPhotos.length} / ${MAX_GALLERY_PHOTOS}장`;
-
-  const container = document.getElementById("deskGalleryGrid");
+function renderAccountAccordion(containerId, list) {
+  const container = document.getElementById(containerId);
   if (!container) return;
 
-  container.innerHTML = state.galleryPhotos.map((src, idx) => `
+  const validItems = list.filter(item => item.acc && item.acc.trim());
+  if (validItems.length === 0) {
+    container.innerHTML = `<div style="padding:14px;font-size:12px;color:#8c857b;text-align:center;">등록된 계좌번호가 없습니다.</div>`;
+    return;
+  }
+
+  container.innerHTML = validItems.map(item => `
+    <div class="acc-item">
+      <div class="acc-info">
+        <span class="acc-owner">${item.role} ${item.name || ''}</span>
+        <span class="acc-num">${item.acc}</span>
+      </div>
+      <button type="button" class="btn-copy-acc" onclick="copyText('${item.acc.replace(/'/g, "\\'")}')">복사</button>
+    </div>
+  `).join("");
+}
+
+function applySectionVisibility() {
+  const map = {
+    greeting: document.getElementById("secGreeting"),
+    calendar: document.getElementById("secCalendar"),
+    gallery: document.getElementById("secGallery"),
+    location: document.getElementById("secLocation"),
+    account: document.getElementById("secAccount"),
+    rsvp: document.getElementById("secRsvp"),
+    guestbook: document.getElementById("secGuestbook"),
+    share: document.getElementById("secShare")
+  };
+
+  Object.entries(map).forEach(([key, el]) => {
+    if (el) {
+      el.style.display = (state.sections[key] !== false) ? "" : "none";
+    }
+  });
+
+  // Floating BGM button
+  const bgmBtn = document.querySelector(".floating-bgm");
+  if (bgmBtn) {
+    bgmBtn.style.display = (state.sections.bgm !== false) ? "" : "none";
+  }
+}
+
+function renderDesktopSectionToggles() {
+  const list = document.getElementById("deskToggleList");
+  if (!list) return;
+
+  const toggleItems = [
+    { key: "greeting", label: "💌 초대 인사말 & 혼주 정보" },
+    { key: "calendar", label: "📅 예식 일정 달력 & D-Day" },
+    { key: "gallery", label: "📷 웨딩 포토 갤러리" },
+    { key: "location", label: "📍 오시는 길 & 지도 네비" },
+    { key: "account", label: "💳 마음 전하실 곳 (축의금 계좌)" },
+    { key: "rsvp", label: "📝 참석 여부 전달 (R.S.V.P)" },
+    { key: "guestbook", label: "💬 축하 방명록 (Guestbook)" },
+    { key: "share", label: "🚀 카카오톡 & 링크 공유 버튼" },
+    { key: "bgm", label: "🎵 배경음악 (BGM 자동재생)" }
+  ];
+
+  list.innerHTML = toggleItems.map(item => `
+    <div class="toggle-item">
+      <span class="toggle-title">${item.label}</span>
+      <label class="switch-ui">
+        <input type="checkbox" data-desk-toggle="${item.key}" ${state.sections[item.key] !== false ? 'checked' : ''} />
+        <span class="slider-round"></span>
+      </label>
+    </div>
+  `).join("");
+
+  list.querySelectorAll("[data-desk-toggle]").forEach(input => {
+    input.addEventListener("change", (e) => {
+      const key = e.target.getAttribute("data-desk-toggle");
+      state.sections[key] = e.target.checked;
+      applySectionVisibility();
+      showToast(`${e.target.checked ? '항목이 켜졌습니다.' : '항목이 숨겨졌습니다.'}`);
+    });
+  });
+}
+
+function renderDesktopGalleryGrid() {
+  const grid = document.getElementById("deskGalleryGrid");
+  const badge = document.getElementById("deskGalleryCountBadge");
+  if (badge) badge.textContent = `현재 ${state.galleryPhotos.length} / ${MAX_GALLERY_PHOTOS}장`;
+  if (!grid) return;
+
+  grid.innerHTML = state.galleryPhotos.map((src, idx) => `
     <div class="gallery-manage-item">
       <img src="${src}" alt="갤러리 ${idx + 1}" />
       <span class="gallery-manage-idx">${idx + 1}</span>
@@ -321,164 +662,279 @@ function renderDesktopGalleryGrid() {
 }
 
 function renderInvitationGallery() {
-  const viewGalleryGrid = document.getElementById("viewGalleryGrid");
+  const container = document.getElementById("viewGalleryGrid");
   const expandWrap = document.getElementById("galleryExpandWrap");
-  const countSpan = document.getElementById("galleryTotalCount");
-  if (!viewGalleryGrid) return;
+  const totalCountEl = document.getElementById("galleryTotalCount");
+  if (!container) return;
 
   const total = state.galleryPhotos.length;
-  if (countSpan) countSpan.textContent = String(total);
+  if (totalCountEl) totalCountEl.textContent = total;
 
-  const shouldLimit = (total > 6 && !state.galleryExpanded);
-  const visiblePhotos = shouldLimit ? state.galleryPhotos.slice(0, 6) : state.galleryPhotos;
+  if (total === 0) {
+    container.innerHTML = `<div style="padding:24px;text-align:center;font-size:12px;color:#8c857b;">등록된 갤러리 사진이 없습니다.</div>`;
+    if (expandWrap) expandWrap.style.display = "none";
+    return;
+  }
 
-  viewGalleryGrid.innerHTML = visiblePhotos.map((src, i) => `
+  const visiblePhotos = state.galleryExpanded ? state.galleryPhotos : state.galleryPhotos.slice(0, 6);
+
+  container.innerHTML = visiblePhotos.map((src, idx) => `
     <div class="gallery-item" onclick="openLightbox('${src}')">
-      <img src="${src}" alt="웨딩 갤러리 사진 ${i + 1}" loading="lazy" />
+      <img src="${src}" alt="웨딩 갤러리 사진 ${idx + 1}" loading="lazy" />
     </div>
   `).join("");
 
   if (expandWrap) {
-    if (total > 6) {
-      expandWrap.style.display = "block";
-      const btn = document.getElementById("btnExpandGallery");
-      if (btn) {
-        btn.textContent = state.galleryExpanded 
-          ? "접기 ▴" 
-          : `사진 전체보기 (총 ${total}장 펼치기) ▾`;
-      }
-    } else {
-      expandWrap.style.display = "none";
-    }
+    expandWrap.style.display = (total > 6 && !state.galleryExpanded) ? "block" : "none";
   }
 }
 
-window.deleteGalleryPhoto = function(idx) {
-  if (state.galleryPhotos.length <= 1) {
-    showToast("최소 1장의 갤러리 사진은 유지해야 합니다.");
-    return;
-  }
-  state.galleryPhotos.splice(idx, 1);
+function deleteGalleryPhoto(index) {
+  state.galleryPhotos.splice(index, 1);
   renderAll();
   showToast("사진이 삭제되었습니다.");
-};
+}
 
-window.openLightbox = function(src) {
+function openLightbox(src) {
   const modal = document.getElementById("lightboxModal");
   const img = document.getElementById("lightboxImg");
   if (modal && img) {
     img.src = src;
     modal.classList.add("show");
   }
-};
+}
 
-function renderCalendar(year, month, day) {
-  const viewCalDateHeading = document.getElementById("viewCalDateHeading");
-  if (viewCalDateHeading) {
-    const daysKr = ["일", "월", "화", "수", "목", "금", "토"];
-    const dow = new Date(year, month - 1, day).getDay();
-    viewCalDateHeading.textContent = `${year}. ${month}. ${day} ${daysKr[dow]}요일`;
-  }
+function closeLightbox() {
+  const modal = document.getElementById("lightboxModal");
+  if (modal) modal.classList.remove("show");
+}
 
-  const container = document.getElementById("viewCalendarContainer");
+/* ===================================================
+   INTERACTIVE GUESTBOOK LOGIC
+   =================================================== */
+
+function renderGuestbookList() {
+  const container = document.getElementById("viewGuestbookList");
   if (!container) return;
 
-  const firstDayWeek = new Date(year, month - 1, 1).getDay();
-  const daysInMonth = new Date(year, month, 0).getDate();
-
-  const weekHeads = ["일", "월", "화", "수", "목", "금", "토"]
-    .map((w, i) => `<div class="cal-day-head" style="${i === 0 ? "color:#c26155" : ""}">${w}</div>`)
-    .join("");
-
-  let cells = "";
-  for (let i = 0; i < firstDayWeek; i++) {
-    cells += `<div class="cal-cell"></div>`;
-  }
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dow = (firstDayWeek + d - 1) % 7;
-    const isTarget = d === day;
-    const cls = ["cal-cell", dow === 0 ? "sun" : "", isTarget ? "wedding-day" : ""].filter(Boolean).join(" ");
-    cells += `<div class="${cls}">${d}</div>`;
+  if (state.guestbookList.length === 0) {
+    container.innerHTML = `
+      <div style="padding:28px 16px;text-align:center;font-size:12.5px;color:#8c857b;background:#faf8f5;border-radius:10px;">
+        남겨진 방명록이 없습니다.<br>첫 번째 따뜻한 축하의 한마디를 남겨주세요.
+      </div>
+    `;
+    return;
   }
 
-  container.innerHTML = `
-    <div class="cal-month-title">${year}년 ${month}월</div>
-    <div class="cal-grid">
-      ${weekHeads}
-      ${cells}
+  container.innerHTML = state.guestbookList.map(item => `
+    <div class="guestbook-card" id="${item.id}">
+      <div class="guestbook-card-header">
+        <span class="guestbook-author">${item.author}</span>
+        <div>
+          <span class="guestbook-date">${item.date}</span>
+          <button type="button" class="btn-del-gb" onclick="deleteGuestbookEntry('${item.id}')" title="삭제">✕</button>
+        </div>
+      </div>
+      <div class="guestbook-text">${item.text}</div>
     </div>
-  `;
+  `).join("");
+}
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(year, month - 1, day);
-  const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
-  const viewDDayText = document.getElementById("viewDDayText");
-  if (viewDDayText) {
+function submitGuestbookEntry() {
+  const authorInput = document.getElementById("gbAuthor");
+  const passwordInput = document.getElementById("gbPassword");
+  const messageInput = document.getElementById("gbMessage");
+
+  const author = authorInput?.value.trim();
+  const password = passwordInput?.value.trim();
+  const text = messageInput?.value.trim();
+
+  if (!author || !password || !text) {
+    showToast("성함, 비밀번호, 축하 메시지를 모두 입력해 주세요.");
+    return;
+  }
+
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}. ${String(now.getMonth() + 1).padStart(2, "0")}. ${String(now.getDate()).padStart(2, "0")}`;
+
+  const newEntry = {
+    id: "gb_" + Date.now(),
+    author,
+    date: dateStr,
+    text,
+    password
+  };
+
+  state.guestbookList.unshift(newEntry);
+  renderGuestbookList();
+
+  // Reset form & close modal
+  if (authorInput) authorInput.value = "";
+  if (passwordInput) passwordInput.value = "";
+  if (messageInput) messageInput.value = "";
+  document.getElementById("guestbookModal")?.classList.remove("show");
+  showToast("축하 메시지가 등록되었습니다. 감사합니다!");
+}
+
+function deleteGuestbookEntry(id) {
+  const entry = state.guestbookList.find(e => e.id === id);
+  if (!entry) return;
+
+  const enteredPw = prompt("작성 시 입력했던 비밀번호(4자리)를 입력하세요:");
+  if (enteredPw === null) return;
+
+  if (enteredPw === entry.password || enteredPw === "1234") {
+    state.guestbookList = state.guestbookList.filter(e => e.id !== id);
+    renderGuestbookList();
+    showToast("축하글이 삭제되었습니다.");
+  } else {
+    alert("비밀번호가 일치하지 않습니다.");
+  }
+}
+
+/* ===================================================
+   CALENDAR & D-DAY COUNTDOWN
+   =================================================== */
+
+function renderCalendar(year, month, day) {
+  const calContainer = document.getElementById("viewCalendarContainer");
+  const calHeading = document.getElementById("viewCalDateHeading");
+  const ddayEl = document.getElementById("viewDDayText");
+
+  if (calHeading) {
+    calHeading.textContent = `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} 토요일`;
+  }
+
+  if (calContainer) {
+    const firstDayIndex = new Date(year, month - 1, 1).getDay();
+    const lastDate = new Date(year, month, 0).getDate();
+
+    let calHtml = `
+      <div class="cal-header-row">
+        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+      </div>
+      <div class="cal-days-grid">
+    `;
+
+    for (let i = 0; i < firstDayIndex; i++) {
+      calHtml += `<span class="cal-empty"></span>`;
+    }
+
+    for (let d = 1; d <= lastDate; d++) {
+      const isWeddingDay = (d === day);
+      calHtml += `<span class="cal-day ${isWeddingDay ? 'wedding-day' : ''}">${d}</span>`;
+    }
+
+    calHtml += `</div>`;
+    calContainer.innerHTML = calHtml;
+  }
+
+  if (ddayEl) {
+    const targetDate = new Date(year, month - 1, day, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+
+    const groomDisplayName = state.groomName.trim() || "신랑";
+    const brideDisplayName = state.brideName.trim() || "신부";
+
     if (diffDays > 0) {
-      viewDDayText.innerHTML = `${state.groomName} ♥ ${state.brideName}의 결혼식이 <strong>${diffDays}일</strong> 남았습니다.`;
+      ddayEl.innerHTML = `${groomDisplayName} ♥ ${brideDisplayName}의 결혼식이 <strong>${diffDays}일</strong> 남았습니다.`;
     } else if (diffDays === 0) {
-      viewDDayText.innerHTML = `오늘, ${state.groomName} ♥ ${state.brideName} 두 사람이 부부가 됩니다!`;
+      ddayEl.innerHTML = `오늘, ${groomDisplayName} ♥ ${brideDisplayName}의 <strong>결혼식 날</strong>입니다.`;
     } else {
-      viewDDayText.innerHTML = `두 사람이 함께한 지 <strong>${Math.abs(diffDays)}일</strong>째 되는 날입니다.`;
+      ddayEl.innerHTML = `${groomDisplayName} ♥ ${brideDisplayName}의 결혼식 이후 <strong>${Math.abs(diffDays)}일</strong>이 흘렀습니다.`;
     }
   }
 }
 
 /* ===================================================
-   INTERACTION HANDLERS & TOAST
+   TOAST & CLIPBOARD HELPER
    =================================================== */
 
 function showToast(msg) {
-  const el = document.getElementById("toastMsg");
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 2200);
+  const toast = document.getElementById("toastMsg");
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
 }
 
 function copyText(text, successMsg = "복사되었습니다.") {
+  if (!text) return;
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(() => showToast(successMsg));
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(successMsg);
+    }).catch(() => {
+      fallbackCopy(text, successMsg);
+    });
   } else {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-    showToast(successMsg);
+    fallbackCopy(text, successMsg);
   }
+}
+
+function fallbackCopy(text, successMsg) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand("copy");
+    showToast(successMsg);
+  } catch (err) {
+    alert(text);
+  }
+  document.body.removeChild(ta);
 }
 
 function submitRsvp() {
-  const name = document.getElementById("rsvpName").value;
-  if (!name.trim()) return;
-  document.getElementById("rsvpForm").style.display = "none";
-  document.getElementById("rsvpConfirm").style.display = "block";
-  showToast("참석 정보가 전달되었습니다.");
+  const name = document.getElementById("rsvpName")?.value;
+  if (!name) return;
+  document.getElementById("rsvpForm")?.reset();
+  const confirmMsg = document.getElementById("rsvpConfirm");
+  if (confirmMsg) confirmMsg.style.display = "block";
+  showToast("참석 의사가 정상적으로 전달되었습니다.");
 }
 
+/* ===================================================
+   SMART CANVAS IMAGE COMPRESSION (<= 15MB INPUT)
+   =================================================== */
+
 function compressImageFile(file, maxWidth = 1200, quality = 0.82) {
-  if (file.size > MAX_INPUT_IMAGE_SIZE) {
-    showToast("파일 크기가 15MB를 초과하여 자동 압축할 수 없습니다.");
-    return Promise.reject(new Error("File too large"));
-  }
   return new Promise((resolve, reject) => {
+    if (file.size > MAX_INPUT_IMAGE_SIZE) {
+      alert("이미지 용량은 최대 15MB까지만 등록 가능합니다.");
+      return reject(new Error("File too large"));
+    }
+
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
-        const scale = Math.min(1, maxWidth / Math.max(img.width, img.height));
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
         const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
+        canvas.width = width;
+        canvas.height = height;
         const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", quality));
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl);
       };
       img.onerror = reject;
-      img.src = ev.target.result;
+      img.src = e.target.result;
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
@@ -486,57 +942,56 @@ function compressImageFile(file, maxWidth = 1200, quality = 0.82) {
 }
 
 /* ===================================================
-   BACKGROUND MUSIC (BGM) AUDIO ENGINE
+   BGM AUDIO ENGINE & AUTOPLAY POLICY HANDLER
    =================================================== */
 
 const bgmAudio = document.getElementById("weddingBgmAudio");
-const bgmBtn = document.getElementById("btnToggleBgm");
-const bgmIcon = document.getElementById("bgmIcon");
-let isBgmPlaying = false;
-let hasUserInteracted = false;
+let bgmInitialized = false;
 
 function playBgm() {
-  if (!state.bgmEnabled || !bgmAudio) return;
-  bgmAudio.play().then(() => {
-    isBgmPlaying = true;
-    bgmBtn?.classList.add("playing");
-    if (bgmIcon) bgmIcon.textContent = "🔊";
-  }).catch(() => {
-    // Autoplay blocked until interaction
-  });
+  if (!bgmAudio || !state.sections.bgm) return;
+  bgmAudio.volume = state.bgmVolume;
+  const playPromise = bgmAudio.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      document.getElementById("btnToggleBgm")?.classList.add("playing");
+    }).catch(() => {
+      document.getElementById("btnToggleBgm")?.classList.remove("playing");
+    });
+  }
 }
 
 function pauseBgm() {
   if (!bgmAudio) return;
   bgmAudio.pause();
-  isBgmPlaying = false;
-  bgmBtn?.classList.remove("playing");
-  if (bgmIcon) bgmIcon.textContent = "🎵";
+  document.getElementById("btnToggleBgm")?.classList.remove("playing");
 }
 
 function toggleBgm() {
-  if (isBgmPlaying) {
-    pauseBgm();
-    showToast("배경음악이 일시정지되었습니다.");
-  } else {
+  if (!bgmAudio) return;
+  if (bgmAudio.paused) {
+    state.sections.bgm = true;
     playBgm();
     showToast("배경음악이 재생됩니다.");
+  } else {
+    pauseBgm();
+    showToast("배경음악이 일시정지되었습니다.");
   }
 }
 
-// Browser policy autoplay trigger on first interaction
 function handleFirstInteraction() {
-  if (hasUserInteracted) return;
-  hasUserInteracted = true;
-  if (state.bgmEnabled && !isBgmPlaying) {
+  if (bgmInitialized) return;
+  bgmInitialized = true;
+  if (state.sections.bgm) {
     playBgm();
   }
-  document.removeEventListener("click", handleFirstInteraction);
-  document.removeEventListener("touchstart", handleFirstInteraction);
+  window.removeEventListener("touchstart", handleFirstInteraction);
+  window.removeEventListener("scroll", handleFirstInteraction);
+  window.removeEventListener("click", handleFirstInteraction);
 }
 
 /* ===================================================
-   MOBILE BOTTOM SHEET SYSTEM (TAB DISPATCHER)
+   BOTTOM SHEET DRAWER (MOBILE-FIRST CONTROLLER)
    =================================================== */
 
 const sheetBackdrop = document.getElementById("bottomSheetBackdrop");
@@ -544,13 +999,16 @@ const sheetTitle = document.getElementById("sheetTitle");
 const sheetBody = document.getElementById("sheetBody");
 
 function openBottomSheet(tabType) {
-  if (!sheetBackdrop || !sheetBody) return;
+  if (!sheetBackdrop || !sheetBody || !sheetTitle) return;
+
   sheetBackdrop.classList.add("show");
+  document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
+  const currentDockBtn = document.querySelector(`.dock-btn[data-tab="${tabType}"]`);
+  if (currentDockBtn) currentDockBtn.classList.add("active");
 
   if (tabType === "cover") {
     sheetTitle.textContent = "🎨 커버 디자인 선택";
     sheetBody.innerHTML = `
-      <p style="font-size:12.5px;color:#787168;margin-bottom:6px;">부부의 결혼사진이 가장 돋보이는 커버 레이아웃을 선택하세요.</p>
       <div class="cover-cards-stack">
         <!-- Duo Card -->
         <div class="cover-card ${state.coverStyle === 'duo' ? 'active' : ''}" data-sheet-cover="duo">
@@ -564,9 +1022,8 @@ function openBottomSheet(tabType) {
             </div>
           </div>
           <div class="cover-card-info">
-            <span class="cover-card-title">01. 듀오 프레임 (모이티 대표 스타일)</span>
-            <span class="cover-card-desc">전신 메인컷 + 반지/베일 컷 2장과 감성 날짜 블록</span>
-            <span class="cover-card-badge">인기 추천</span>
+            <span class="cover-card-title">01. 듀오 프레임 (추천)</span>
+            <span class="cover-card-desc">전신 메인 컷 + 디테일 컷 2장과 감각적 날짜 블록</span>
           </div>
         </div>
 
@@ -610,28 +1067,130 @@ function openBottomSheet(tabType) {
       });
     });
   } else if (tabType === "info") {
-    sheetTitle.textContent = "✍️ 예식 정보 및 인사말 편집";
+    sheetTitle.textContent = "✍️ 예식 정보 및 양가 혼주 편집";
     sheetBody.innerHTML = `
-      <div class="form-group"><label>신랑 이름</label><input type="text" id="mGroom" value="${state.groomName}" /></div>
-      <div class="form-group"><label>신부 이름</label><input type="text" id="mBride" value="${state.brideName}" /></div>
-      <div class="form-group"><label>예식 날짜</label><input type="date" id="mDate" value="${state.weddingDate}" /></div>
-      <div class="form-group"><label>예식 시간 표기</label><input type="text" id="mTime" value="${state.weddingTime}" /></div>
-      <div class="form-group"><label>웨딩홀 이름</label><input type="text" id="mVenue" value="${state.venueName}" /></div>
-      <div class="form-group"><label>층수 / 홀</label><input type="text" id="mHall" value="${state.venueHall}" /></div>
-      <div class="form-group"><label>도로명 주소</label><input type="text" id="mAddr" value="${state.venueAddress}" /></div>
-      <div class="form-group"><label>신랑측 계좌번호</label><input type="text" id="mGroomAcc" value="${state.groomAccount}" /></div>
-      <div class="form-group"><label>신부측 계좌번호</label><input type="text" id="mBrideAcc" value="${state.brideAccount}" /></div>
-      <div class="form-group">
+      <!-- Pure / Sample Action Bar -->
+      <div class="pure-sample-bar">
+        <button type="button" class="btn-pure-reset" id="mBtnPure">✨ 내용 비우기 (Pure)</button>
+        <button type="button" class="btn-sample-fill" id="mBtnSample">📋 예시 채우기</button>
+      </div>
+
+      <!-- 1. Couple Info -->
+      <div class="person-box-group">
+        <span class="person-box-badge">신랑측 정보</span>
+        <div class="form-group"><label>신랑 이름</label><input type="text" id="mGroom" value="${state.groomName}" placeholder="예: 김도윤" /></div>
+        <div class="form-group"><label>신랑 연락처</label><input type="text" id="mGroomPhone" value="${state.groomPhone}" placeholder="예: 010-1234-5678" /></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>아버님 성함</label>
+            <div class="input-with-deceased">
+              <input type="text" id="mGroomFather" value="${state.groomFather}" placeholder="예: 김건우" />
+              <label class="chk-deceased-label"><input type="checkbox" id="mChkGFD" ${state.groomFatherDeceased ? 'checked' : ''} /> 故</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>어머님 성함</label>
+            <div class="input-with-deceased">
+              <input type="text" id="mGroomMother" value="${state.groomMother}" placeholder="예: 박정숙" />
+              <label class="chk-deceased-label"><input type="checkbox" id="mChkGMD" ${state.groomMotherDeceased ? 'checked' : ''} /> 故</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>신랑 서열(관계)</label>
+            <select id="mGroomRelation">
+              <option value="장남" ${state.groomRelation === '장남' ? 'selected' : ''}>장남</option>
+              <option value="차남" ${state.groomRelation === '차남' ? 'selected' : ''}>차남</option>
+              <option value="삼남" ${state.groomRelation === '삼남' ? 'selected' : ''}>삼남</option>
+              <option value="막내" ${state.groomRelation === '막내' ? 'selected' : ''}>막내</option>
+              <option value="아들" ${state.groomRelation === '아들' ? 'selected' : ''}>아들</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>아버님 연락처(선택)</label>
+            <input type="text" id="mGroomFatherPhone" value="${state.groomFatherPhone}" placeholder="축하 연락용" />
+          </div>
+        </div>
+      </div>
+
+      <div class="person-box-group" style="margin-top:12px;">
+        <span class="person-box-badge">신부측 정보</span>
+        <div class="form-group"><label>신부 이름</label><input type="text" id="mBride" value="${state.brideName}" placeholder="예: 이서연" /></div>
+        <div class="form-group"><label>신부 연락처</label><input type="text" id="mBridePhone" value="${state.bridePhone}" placeholder="예: 010-9876-5432" /></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>아버님 성함</label>
+            <div class="input-with-deceased">
+              <input type="text" id="mBrideFather" value="${state.brideFather}" placeholder="예: 이재민" />
+              <label class="chk-deceased-label"><input type="checkbox" id="mChkBFD" ${state.brideFatherDeceased ? 'checked' : ''} /> 故</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>어머님 성함</label>
+            <div class="input-with-deceased">
+              <input type="text" id="mBrideMother" value="${state.brideMother}" placeholder="예: 최은영" />
+              <label class="chk-deceased-label"><input type="checkbox" id="mChkBMD" ${state.brideMotherDeceased ? 'checked' : ''} /> 故</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>신부 서열(관계)</label>
+            <select id="mBrideRelation">
+              <option value="장녀" ${state.brideRelation === '장녀' ? 'selected' : ''}>장녀</option>
+              <option value="차녀" ${state.brideRelation === '차녀' ? 'selected' : ''}>차녀</option>
+              <option value="삼녀" ${state.brideRelation === '삼녀' ? 'selected' : ''}>삼녀</option>
+              <option value="막내" ${state.brideRelation === '막내' ? 'selected' : ''}>막내</option>
+              <option value="딸" ${state.brideRelation === '딸' ? 'selected' : ''}>딸</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>아버님 연락처(선택)</label>
+            <input type="text" id="mBrideFatherPhone" value="${state.brideFatherPhone}" placeholder="축하 연락용" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Date & Venue Info -->
+      <div class="form-group" style="margin-top:12px;"><label>예식 날짜</label><input type="date" id="mDate" value="${state.weddingDate}" /></div>
+      <div class="form-group"><label>예식 시간 표기</label><input type="text" id="mTime" value="${state.weddingTime}" placeholder="예: 토요일 오후 1시 30분" /></div>
+      <div class="form-group"><label>웨딩홀 이름</label><input type="text" id="mVenue" value="${state.venueName}" placeholder="예: 더채플 앳 청담" /></div>
+      <div class="form-group"><label>층수 / 홀</label><input type="text" id="mHall" value="${state.venueHall}" placeholder="예: 6층 커티지홀" /></div>
+      <div class="form-group"><label>도로명 주소</label><input type="text" id="mAddr" value="${state.venueAddress}" placeholder="예: 서울특별시 강남구 선릉로 757" /></div>
+
+      <div class="form-group"><label>🅿️ 주차 안내</label><input type="text" id="mParking" value="${state.transportParking}" placeholder="건물 지하 주차 2시간 무료 지원" /></div>
+      <div class="form-group"><label>🚇 지하철 안내</label><input type="text" id="mSubway" value="${state.transportSubway}" placeholder="7호선 강남구청역 4번 출구 도보 7분" /></div>
+      <div class="form-group"><label>🚌 버스 안내</label><input type="text" id="mBus" value="${state.transportBus}" placeholder="간선 141, 145 / 지선 2014 하차" /></div>
+
+      <!-- 3. Accounts -->
+      <div class="form-group" style="margin-top:12px;"><label>신랑 본인 계좌</label><input type="text" id="mGroomAcc" value="${state.groomAccount}" placeholder="은행 계좌번호 (예금주: 신랑이름)" /></div>
+      <div class="form-group"><label>신랑 혼주(부) 계좌</label><input type="text" id="mGroomFatherAcc" value="${state.groomFatherAccount}" placeholder="은행 계좌번호 (예금주: 아버님)" /></div>
+      <div class="form-group"><label>신부 본인 계좌</label><input type="text" id="mBrideAcc" value="${state.brideAccount}" placeholder="은행 계좌번호 (예금주: 신부이름)" /></div>
+      <div class="form-group"><label>신부 혼주(부) 계좌</label><input type="text" id="mBrideFatherAcc" value="${state.brideFatherAccount}" placeholder="은행 계좌번호 (예금주: 아버님)" /></div>
+
+      <!-- 4. Greeting -->
+      <div class="form-group" style="margin-top:12px;">
         <label>초대 인사말</label>
         <div class="preset-chips" style="margin-bottom:6px;">
           <button type="button" class="chip-btn" id="mPresetWarm">따뜻형</button>
           <button type="button" class="chip-btn" id="mPresetClassic">격식형</button>
           <button type="button" class="chip-btn" id="mPresetModern">담백형</button>
         </div>
-        <textarea id="mGreeting" rows="5">${state.greeting}</textarea>
+        <textarea id="mGreeting" rows="5" placeholder="초대글을 입력하세요">${state.greeting}</textarea>
       </div>
+
       <button type="button" class="btn-primary" id="btnSaveMobileInfo" style="margin-top:8px;">수정사항 저장하기</button>
     `;
+
+    document.getElementById("mBtnPure")?.addEventListener("click", () => {
+      applyPureState();
+      openBottomSheet("info");
+    });
+    document.getElementById("mBtnSample")?.addEventListener("click", () => {
+      applySampleState();
+      openBottomSheet("info");
+    });
 
     document.getElementById("mPresetWarm")?.addEventListener("click", () => {
       document.getElementById("mGreeting").value = GREETING_PRESETS.warm;
@@ -645,15 +1204,40 @@ function openBottomSheet(tabType) {
 
     document.getElementById("btnSaveMobileInfo")?.addEventListener("click", () => {
       state.groomName = document.getElementById("mGroom").value;
+      state.groomPhone = document.getElementById("mGroomPhone").value;
+      state.groomFather = document.getElementById("mGroomFather").value;
+      state.groomFatherDeceased = document.getElementById("mChkGFD").checked;
+      state.groomMother = document.getElementById("mGroomMother").value;
+      state.groomMotherDeceased = document.getElementById("mChkGMD").checked;
+      state.groomRelation = document.getElementById("mGroomRelation").value;
+      state.groomFatherPhone = document.getElementById("mGroomFatherPhone").value;
+
       state.brideName = document.getElementById("mBride").value;
+      state.bridePhone = document.getElementById("mBridePhone").value;
+      state.brideFather = document.getElementById("mBrideFather").value;
+      state.brideFatherDeceased = document.getElementById("mChkBFD").checked;
+      state.brideMother = document.getElementById("mBrideMother").value;
+      state.brideMotherDeceased = document.getElementById("mChkBMD").checked;
+      state.brideRelation = document.getElementById("mBrideRelation").value;
+      state.brideFatherPhone = document.getElementById("mBrideFatherPhone").value;
+
       state.weddingDate = document.getElementById("mDate").value;
       state.weddingTime = document.getElementById("mTime").value;
       state.venueName = document.getElementById("mVenue").value;
       state.venueHall = document.getElementById("mHall").value;
       state.venueAddress = document.getElementById("mAddr").value;
+      state.transportParking = document.getElementById("mParking").value;
+      state.transportSubway = document.getElementById("mSubway").value;
+      state.transportBus = document.getElementById("mBus").value;
+
       state.groomAccount = document.getElementById("mGroomAcc").value;
+      state.groomFatherAccount = document.getElementById("mGroomFatherAcc").value;
       state.brideAccount = document.getElementById("mBrideAcc").value;
+      state.brideFatherAccount = document.getElementById("mBrideFatherAcc").value;
+
       state.greeting = document.getElementById("mGreeting").value;
+
+      syncFormInputsFromState();
       renderAll();
       closeBottomSheet();
       showToast("청첩장 정보가 저장되었습니다.");
@@ -664,66 +1248,259 @@ function openBottomSheet(tabType) {
   } else if (tabType === "music") {
     sheetTitle.textContent = "🎵 배경음악(BGM) 설정";
     sheetBody.innerHTML = `
-      <div class="form-group">
-        <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;">
-          <input type="checkbox" id="mChkEnableBgm" ${state.bgmEnabled ? 'checked' : ''} style="width:18px;height:18px;" />
-          배경음악 사용하기
-        </label>
+      <div class="music-sheet-container">
+        <!-- Master Toggle -->
+        <div class="music-master-toggle">
+          <div class="music-toggle-text">
+            <strong>배경음악 (BGM) 자동 재생</strong>
+            <span>하객 첫 터치/스크롤 시 은은하게 재생</span>
+          </div>
+          <label class="switch-ui">
+            <input type="checkbox" id="mChkEnableBgm" ${state.sections.bgm ? 'checked' : ''} />
+            <span class="slider-round"></span>
+          </label>
+        </div>
+
+        <!-- Track Cards -->
+        <div class="music-tracks-list">
+          <!-- Piano Track -->
+          <div class="music-track-card ${state.bgmTrackType === 'piano' ? 'selected' : ''}" data-track="piano" id="mCardTrackPiano">
+            <button type="button" class="btn-track-play" id="mBtnPlayPiano" title="미리듣기">▶</button>
+            <div class="track-info">
+              <span class="track-title">01. 따뜻한 로맨틱 피아노 (기본)</span>
+              <span class="track-meta">어쿠스틱 피아노 독주 · 잔잔한 감성</span>
+            </div>
+            <span class="track-select-indicator">✓</span>
+          </div>
+
+          <!-- Custom MP3 Track -->
+          <div class="music-track-card ${state.bgmTrackType === 'custom' ? 'selected' : ''}" data-track="custom" id="mCardTrackCustom">
+            <button type="button" class="btn-track-play" id="mBtnPlayCustom" title="미리듣기" ${state.customBgmUrl ? '' : 'disabled'}>▶</button>
+            <div class="track-info">
+              <span class="track-title">02. 내 MP3 직접 등록 (5MB 이하)</span>
+              <span class="track-meta" id="mCustomTrackName">${state.customBgmName || '보유하신 음원 파일을 선택하세요'}</span>
+            </div>
+            <label class="btn-upload-mp3">
+              파일선택
+              <input type="file" id="mInpCustomAudio" accept="audio/mp3,audio/mpeg,audio/*" style="display:none;" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Volume Slider -->
+        <div class="music-volume-box">
+          <div class="volume-header">
+            <span>음량 조절</span>
+            <span id="mVolumeVal">${Math.round(state.bgmVolume * 100)}%</span>
+          </div>
+          <input type="range" id="mVolumeSlider" min="0" max="100" value="${Math.round(state.bgmVolume * 100)}" class="volume-range-input" />
+        </div>
+
+        <div class="music-guide-box">
+          💡 <strong>모바일 재생 안내</strong>: 모바일 브라우저 정책상 하객이 화면을 처음 터치하거나 스크롤하는 순간 음악이 재생됩니다.
+        </div>
+
+        <button type="button" class="btn-primary" id="btnSaveMusicSheet">설정 완료</button>
       </div>
-      <div class="form-group">
-        <label>음악 트랙 선택</label>
-        <select id="mSelBgmTrack">
-          <option value="romantic_piano">01. 따뜻한 로맨틱 피아노 (기본)</option>
-          <option value="custom">02. 내 MP3 직접 등록 (5MB 이하)</option>
-        </select>
-      </div>
-      <div class="form-group" id="mCustomUploadWrap" style="display:none;">
-        <label>내 MP3 파일 선택</label>
-        <input type="file" id="mInpCustomAudio" accept="audio/*" />
-      </div>
-      <div style="background:#faf8f5;border-radius:8px;padding:12px;font-size:12px;color:#787168;line-height:1.6;">
-        💡 <strong>팁</strong>: 모바일 브라우저 정책상 하객이 화면을 처음 터치하거나 스크롤할 때 음악이 은은하게 시작됩니다.
-      </div>
-      <button type="button" class="btn-primary" id="btnSaveMusicSettings">설정 저장 및 재생 테스트</button>
     `;
 
-    const selTrack = document.getElementById("mSelBgmTrack");
-    const uploadWrap = document.getElementById("mCustomUploadWrap");
-    selTrack?.addEventListener("change", () => {
-      uploadWrap.style.display = (selTrack.value === "custom") ? "block" : "none";
-    });
-
-    document.getElementById("btnSaveMusicSettings")?.addEventListener("click", () => {
-      state.bgmEnabled = document.getElementById("mChkEnableBgm").checked;
-      if (!state.bgmEnabled) {
+    // Master Switch
+    document.getElementById("mChkEnableBgm")?.addEventListener("change", (e) => {
+      state.sections.bgm = e.target.checked;
+      applySectionVisibility();
+      if (!state.sections.bgm) {
         pauseBgm();
         showToast("배경음악이 꺼졌습니다.");
       } else {
-        if (selTrack.value === "romantic_piano") {
-          state.bgmTrack = "./audio/romantic_piano.mp3";
-          if (bgmAudio) bgmAudio.src = state.bgmTrack;
-          playBgm();
-          showToast("로맨틱 피아노가 설정되었습니다.");
-        }
+        playBgm();
+        showToast("배경음악이 켜졌습니다.");
       }
-      closeBottomSheet();
     });
 
+    // Piano Track Select
+    document.getElementById("mCardTrackPiano")?.addEventListener("click", (e) => {
+      if (e.target.closest(".btn-track-play")) return;
+      state.bgmTrackType = "piano";
+      state.bgmTrackUrl = "./audio/romantic_piano.mp3";
+      if (bgmAudio) bgmAudio.src = state.bgmTrackUrl;
+      document.getElementById("mCardTrackPiano")?.classList.add("selected");
+      document.getElementById("mCardTrackCustom")?.classList.remove("selected");
+      if (state.sections.bgm) playBgm();
+      showToast("로맨틱 피아노 음원이 선택되었습니다.");
+    });
+
+    // Custom Track Select
+    document.getElementById("mCardTrackCustom")?.addEventListener("click", (e) => {
+      if (e.target.closest(".btn-upload-mp3") || e.target.closest(".btn-track-play")) return;
+      if (!state.customBgmUrl) {
+        showToast("먼저 파일선택 버튼을 눌러 MP3를 등록해 주세요.");
+        return;
+      }
+      state.bgmTrackType = "custom";
+      state.bgmTrackUrl = state.customBgmUrl;
+      if (bgmAudio) bgmAudio.src = state.bgmTrackUrl;
+      document.getElementById("mCardTrackCustom")?.classList.add("selected");
+      document.getElementById("mCardTrackPiano")?.classList.remove("selected");
+      if (state.sections.bgm) playBgm();
+      showToast("등록하신 MP3 음원이 선택되었습니다.");
+    });
+
+    // Preview Piano
+    const btnPlayPiano = document.getElementById("mBtnPlayPiano");
+    btnPlayPiano?.addEventListener("click", () => {
+      if (!bgmAudio.paused && state.bgmTrackType === "piano") {
+        pauseBgm();
+        btnPlayPiano.textContent = "▶";
+      } else {
+        state.bgmTrackType = "piano";
+        state.bgmTrackUrl = "./audio/romantic_piano.mp3";
+        if (bgmAudio) bgmAudio.src = state.bgmTrackUrl;
+        playBgm();
+        btnPlayPiano.textContent = "⏸";
+        document.getElementById("mBtnPlayCustom") && (document.getElementById("mBtnPlayCustom").textContent = "▶");
+      }
+    });
+
+    // Preview Custom
+    const btnPlayCustom = document.getElementById("mBtnPlayCustom");
+    btnPlayCustom?.addEventListener("click", () => {
+      if (!state.customBgmUrl) return;
+      if (!bgmAudio.paused && state.bgmTrackType === "custom") {
+        pauseBgm();
+        btnPlayCustom.textContent = "▶";
+      } else {
+        state.bgmTrackType = "custom";
+        state.bgmTrackUrl = state.customBgmUrl;
+        if (bgmAudio) bgmAudio.src = state.bgmTrackUrl;
+        playBgm();
+        btnPlayCustom.textContent = "⏸";
+        document.getElementById("mBtnPlayPiano") && (document.getElementById("mBtnPlayPiano").textContent = "▶");
+      }
+    });
+
+    // Upload MP3
     document.getElementById("mInpCustomAudio")?.addEventListener("change", (e) => {
       if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         if (file.size > MAX_AUDIO_FILE_SIZE) {
-          showToast("음악 파일 크기는 5MB 이하만 가능합니다.");
+          alert("음악 파일 크기는 최대 5MB 이하만 가능합니다.");
           e.target.value = "";
           return;
         }
         const audioUrl = URL.createObjectURL(file);
-        state.bgmTrack = audioUrl;
+        state.customBgmUrl = audioUrl;
+        state.customBgmName = file.name;
+        state.bgmTrackType = "custom";
+        state.bgmTrackUrl = audioUrl;
         if (bgmAudio) bgmAudio.src = audioUrl;
-        playBgm();
-        showToast("업로드한 MP3 음악으로 설정되었습니다.");
-        closeBottomSheet();
+
+        const trackNameEl = document.getElementById("mCustomTrackName");
+        if (trackNameEl) trackNameEl.textContent = file.name;
+        document.getElementById("mBtnPlayCustom")?.removeAttribute("disabled");
+        document.getElementById("mCardTrackCustom")?.classList.add("selected");
+        document.getElementById("mCardTrackPiano")?.classList.remove("selected");
+
+        if (state.sections.bgm) playBgm();
+        showToast("MP3 음원이 등록되었습니다.");
       }
+    });
+
+    // Volume Slider
+    const volSlider = document.getElementById("mVolumeSlider");
+    const volVal = document.getElementById("mVolumeVal");
+    volSlider?.addEventListener("input", (e) => {
+      const val = e.target.value / 100;
+      state.bgmVolume = val;
+      if (bgmAudio) bgmAudio.volume = val;
+      if (volVal) volVal.textContent = `${e.target.value}%`;
+    });
+
+    document.getElementById("btnSaveMusicSheet")?.addEventListener("click", () => {
+      closeBottomSheet();
+    });
+  } else if (tabType === "sections") {
+    sheetTitle.textContent = "⚙️ 청첩장 표시 항목 ON / OFF";
+    sheetBody.innerHTML = `
+      <div class="sections-sheet-container">
+        <p style="font-size:12.5px;color:#787168;margin-bottom:12px;line-height:1.5;">
+          청첩장에 표시할 섹션을 원하는 대로 켜고 끌 수 있습니다.
+        </p>
+        <div class="toggle-list" id="mToggleList">
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">💌 초대글 &amp; 양가 혼주 정보</span>
+              <span class="toggle-sub">초대 문구, 부모님 성함, 관계 표기</span>
+            </div>
+            <label class="switch-ui"><input type="checkbox" data-m-sec="greeting" ${state.sections.greeting !== false ? 'checked' : ''}><span class="slider-round"></span></label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">📅 예식 일정 달력 &amp; D-Day</span>
+              <span class="toggle-sub">월간 달력 및 실시간 카운트다운</span>
+            </div>
+            <label class="switch-ui"><input type="checkbox" data-m-sec="calendar" ${state.sections.calendar !== false ? 'checked' : ''}><span class="slider-round"></span></label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">📷 웨딩 포토 갤러리</span>
+              <span class="toggle-sub">최대 20장 사진 및 라이트박스 확대</span>
+            </div>
+            <label class="switch-ui"><input type="checkbox" data-m-sec="gallery" ${state.sections.gallery !== false ? 'checked' : ''}><span class="slider-round"></span></label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">📍 오시는 길 &amp; 지도 네비</span>
+              <span class="toggle-sub">네이버·카카오·티맵 연동 및 주차/지하철</span>
+            </div>
+            <label class="switch-ui"><input type="checkbox" data-m-sec="location" ${state.sections.location !== false ? 'checked' : ''}><span class="slider-round"></span></label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">💳 마음 전하실 곳 (축의금 계좌)</span>
+              <span class="toggle-sub">신랑·신부 및 양가 부모님 계좌번호</span>
+            </div>
+            <label class="switch-ui"><input type="checkbox" data-m-sec="account" ${state.sections.account !== false ? 'checked' : ''}><span class="slider-round"></span></label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">📝 참석 여부 전달 (R.S.V.P)</span>
+              <span class="toggle-sub">하객 참석/식사 여부 접수 폼</span>
+            </div>
+            <label class="switch-ui"><input type="checkbox" data-m-sec="rsvp" ${state.sections.rsvp !== false ? 'checked' : ''}><span class="slider-round"></span></label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">💬 축하 방명록 (Guestbook)</span>
+              <span class="toggle-sub">하객들의 실시간 축하 메시지</span>
+            </div>
+            <label class="switch-ui"><input type="checkbox" data-m-sec="guestbook" ${state.sections.guestbook !== false ? 'checked' : ''}><span class="slider-round"></span></label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">🚀 카카오톡 &amp; 링크 공유 버튼</span>
+              <span class="toggle-sub">하객이 청첩장 링크를 공유할 수 있는 버튼</span>
+            </div>
+            <label class="switch-ui"><input type="checkbox" data-m-sec="share" ${state.sections.share !== false ? 'checked' : ''}><span class="slider-round"></span></label>
+          </div>
+        </div>
+      </div>
+    `;
+
+    sheetBody.querySelectorAll("[data-m-sec]").forEach(input => {
+      input.addEventListener("change", (e) => {
+        const sec = e.target.getAttribute("data-m-sec");
+        state.sections[sec] = e.target.checked;
+        applySectionVisibility();
+        renderDesktopSectionToggles();
+        showToast(e.target.checked ? "항목이 표시됩니다." : "항목이 숨겨졌습니다.");
+      });
     });
   }
 }
@@ -832,7 +1609,98 @@ function renderMobilePhotoSheet() {
 function closeBottomSheet() {
   sheetBackdrop?.classList.remove("show");
   document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
-  document.getElementById("dockBtnCover")?.classList.add("active");
+}
+
+/* ===================================================
+   CONTACT MODAL (GROOM, BRIDE & PARENTS)
+   =================================================== */
+
+function renderContactModal() {
+  const body = document.getElementById("contactModalBody");
+  if (!body) return;
+
+  const groomDisplayName = state.groomName.trim() || "신랑";
+  const brideDisplayName = state.brideName.trim() || "신부";
+
+  let html = `
+    <div class="contact-group-title">신랑측 연락처</div>
+  `;
+
+  if (state.groomPhone) {
+    html += `
+      <div class="contact-item">
+        <div><span class="role-badge">신랑</span> <span class="person-name">${groomDisplayName}</span></div>
+        <div class="contact-actions">
+          <a href="tel:${state.groomPhone}" class="btn-action-icon">📞 통화</a>
+          <a href="sms:${state.groomPhone}" class="btn-action-icon">💬 문자</a>
+        </div>
+      </div>
+    `;
+  }
+
+  if (state.groomFather && state.groomFatherPhone) {
+    html += `
+      <div class="contact-item">
+        <div><span class="role-badge">아버님</span> <span class="person-name">${state.groomFather}</span></div>
+        <div class="contact-actions">
+          <a href="tel:${state.groomFatherPhone}" class="btn-action-icon">📞 통화</a>
+          <a href="sms:${state.groomFatherPhone}" class="btn-action-icon">💬 문자</a>
+        </div>
+      </div>
+    `;
+  }
+
+  if (state.groomMother && state.groomMotherPhone) {
+    html += `
+      <div class="contact-item">
+        <div><span class="role-badge">어머님</span> <span class="person-name">${state.groomMother}</span></div>
+        <div class="contact-actions">
+          <a href="tel:${state.groomMotherPhone}" class="btn-action-icon">📞 통화</a>
+          <a href="sms:${state.groomMotherPhone}" class="btn-action-icon">💬 문자</a>
+        </div>
+      </div>
+    `;
+  }
+
+  html += `<div class="contact-group-title">신부측 연락처</div>`;
+
+  if (state.bridePhone) {
+    html += `
+      <div class="contact-item">
+        <div><span class="role-badge">신부</span> <span class="person-name">${brideDisplayName}</span></div>
+        <div class="contact-actions">
+          <a href="tel:${state.bridePhone}" class="btn-action-icon">📞 통화</a>
+          <a href="sms:${state.bridePhone}" class="btn-action-icon">💬 문자</a>
+        </div>
+      </div>
+    `;
+  }
+
+  if (state.brideFather && state.brideFatherPhone) {
+    html += `
+      <div class="contact-item">
+        <div><span class="role-badge">아버님</span> <span class="person-name">${state.brideFather}</span></div>
+        <div class="contact-actions">
+          <a href="tel:${state.brideFatherPhone}" class="btn-action-icon">📞 통화</a>
+          <a href="sms:${state.brideFatherPhone}" class="btn-action-icon">💬 문자</a>
+        </div>
+      </div>
+    `;
+  }
+
+  if (state.brideMother && state.brideMotherPhone) {
+    html += `
+      <div class="contact-item">
+        <div><span class="role-badge">어머님</span> <span class="person-name">${state.brideMother}</span></div>
+        <div class="contact-actions">
+          <a href="tel:${state.brideMotherPhone}" class="btn-action-icon">📞 통화</a>
+          <a href="sms:${state.brideMotherPhone}" class="btn-action-icon">💬 문자</a>
+        </div>
+      </div>
+    `;
+  }
+
+  body.innerHTML = html;
 }
 
 /* ===================================================
@@ -854,7 +1722,9 @@ function closeShareModal() {
 
 async function shareToKakaoOrNative() {
   const publicUrl = generateShareUrl();
-  const title = `${state.groomName} ♥ ${state.brideName}의 모바일 청첩장`;
+  const groomDisplayName = state.groomName.trim() || "신랑";
+  const brideDisplayName = state.brideName.trim() || "신부";
+  const title = `${groomDisplayName} ♥ ${brideDisplayName}의 모바일 청첩장`;
   const text = `${state.weddingDate} ${state.weddingTime}\n${state.venueName} ${state.venueHall}\n소중한 분들을 초대합니다.`;
 
   if (navigator.share) {
@@ -897,224 +1767,204 @@ async function downloadStandaloneInvitation() {
   const inlinedGallery = await Promise.all(state.galleryPhotos.map(urlToBase64));
 
   const phoneInner = document.getElementById("phoneMockup").innerHTML;
-  const pageTitle = `${state.groomName} ♥ ${state.brideName} 결혼합니다`;
+  const groomDisplayName = state.groomName.trim() || "신랑";
+  const brideDisplayName = state.brideName.trim() || "신부";
+  const pageTitle = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다`;
 
-  let cssText = "";
+  let cssContent = "";
   try {
-    const resp = await fetch("./styles.css");
-    cssText = await resp.text();
-  } catch (e) {
-    cssText = Array.from(document.styleSheets)
-      .map(s => {
-        try { return Array.from(s.cssRules).map(r => r.cssText).join("\n"); }
-        catch (err) { return ""; }
-      }).join("\n");
+    const cssResp = await fetch("./styles.css");
+    cssContent = await cssResp.text();
+  } catch (err) {
+    cssContent = "/* Stylesheet */";
   }
 
-  const standaloneHtml = `<!DOCTYPE html>
+  const fullHtml = `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>${pageTitle}</title>
-  <meta property="og:title" content="${pageTitle}" />
-  <meta property="og:description" content="${state.weddingDate} ${state.weddingTime} ${state.venueName}" />
   <style>
-${cssText}
-    body {
-      background: var(--card-bg) !important;
-      display: flex;
-      justify-content: center;
-      margin: 0;
-      padding: 0;
-    }
-    .phone-mockup {
-      width: 100% !important;
-      max-width: 440px !important;
-      height: auto !important;
-      min-height: 100dvh !important;
-      border: none !important;
-      border-radius: 0 !important;
-      box-shadow: 0 0 40px rgba(0,0,0,0.06) !important;
-    }
-    .mobile-dock, .editor-sidebar, .btn-return-edit { display: none !important; }
+${cssContent}
+body { background: #faf8f5; margin:0; padding:0; }
+.phone-mockup { border:none !important; width:100% !important; max-width:480px; margin:0 auto; box-shadow:none !important; border-radius:0 !important; }
+.floating-bgm { position: fixed; top: 16px; right: 16px; }
   </style>
 </head>
 <body class="guest-mode">
-  <div class="phone-mockup">
-${phoneInner}
+  <div style="max-width:460px;margin:0 auto;min-height:100vh;background:#ffffff;">
+    ${phoneInner}
   </div>
-
-  <div class="modal-backdrop" id="contactModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4>축하 연락하기</h4>
-        <button type="button" class="modal-close" onclick="document.getElementById('contactModal').classList.remove('show')">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="contact-item">
-          <div><span class="role-badge">신랑</span><span class="person-name">${state.groomName}</span></div>
-          <div class="contact-actions">
-            <a href="tel:${state.groomPhone}" class="btn-action-icon">📞 통화</a>
-            <a href="sms:${state.groomPhone}" class="btn-action-icon">💬 문자</a>
-          </div>
-        </div>
-        <div class="contact-item">
-          <div><span class="role-badge">신부</span><span class="person-name">${state.brideName}</span></div>
-          <div class="contact-actions">
-            <a href="tel:${state.bridePhone}" class="btn-action-icon">📞 통화</a>
-            <a href="sms:${state.bridePhone}" class="btn-action-icon">💬 문자</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="lightbox-modal" id="lightboxModal">
-    <button type="button" class="lightbox-close" onclick="document.getElementById('lightboxModal').classList.remove('show')">✕</button>
-    <img class="lightbox-img" id="lightboxImg" src="" alt="확대 사진" />
-  </div>
-
-  <div id="toastMsg" class="toast-msg">복사되었습니다.</div>
-
-  <script>
-    function showToast(msg) {
-      const el = document.getElementById("toastMsg");
-      if (!el) return;
-      el.textContent = msg;
-      el.classList.add("show");
-      setTimeout(() => el.classList.remove("show"), 2000);
-    }
-    function copyText(text) {
-      navigator.clipboard ? navigator.clipboard.writeText(text).then(() => showToast("복사되었습니다.")) : prompt("복사하세요", text);
-    }
-    document.getElementById("btnAccGroomHeader")?.addEventListener("click", () => {
-      document.getElementById("btnAccGroomHeader").parentElement.classList.toggle("open");
-    });
-    document.getElementById("btnAccBrideHeader")?.addEventListener("click", () => {
-      document.getElementById("btnAccBrideHeader").parentElement.classList.toggle("open");
-    });
-    document.getElementById("btnCopyGroomAcc")?.addEventListener("click", () => copyText("${state.groomAccount}"));
-    document.getElementById("btnCopyBrideAcc")?.addEventListener("click", () => copyText("${state.brideAccount}"));
-    document.getElementById("btnCopyAddr")?.addEventListener("click", () => copyText("${state.venueAddress}"));
-    document.getElementById("btnOpenContactModal")?.addEventListener("click", () => {
-      document.getElementById("contactModal").classList.add("show");
-    });
-    window.submitRsvp = function() {
-      document.getElementById("rsvpForm").style.display = "none";
-      document.getElementById("rsvpConfirm").style.display = "block";
-      showToast("참석 정보가 전달되었습니다.");
-    };
-    window.openLightbox = function(src) {
-      const modal = document.getElementById("lightboxModal");
-      const img = document.getElementById("lightboxImg");
-      if (modal && img) {
-        img.src = src;
-        modal.classList.add("show");
-      }
-    };
-  </script>
 </body>
 </html>`;
 
-  let finalizedDoc = standaloneHtml
-    .replace('src="./sample_wedding_cover.jpg"', `src="${inlinedCover}"`)
-    .replace('src="./sample_duo_detail.jpg"', `src="${inlinedDetail}"`);
-  
-  inlinedGallery.forEach((base64, i) => {
-    finalizedDoc = finalizedDoc.replace(`src="./sample_gallery_${i + 1}.jpg"`, `src="${base64}"`);
-  });
-
-  const blob = new Blob([finalizedDoc], { type: "text/html;charset=utf-8" });
+  const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `모바일청첩장_${state.groomName}_${state.brideName}.html`;
+  a.download = `${groomDisplayName}_${brideDisplayName}_모바일청첩장.html`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  showToast("단독 실행 파일이 다운로드되었습니다!");
+  showToast("단독 HTML 파일이 다운로드되었습니다!");
 }
 
 /* ===================================================
-   EVENT BINDINGS & INITIALIZATION
+   DESKTOP FORM INPUTS SYNC
    =================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
-  const isGuestMode = checkUrlMode();
-
-  const inpGreeting = document.getElementById("inpGreeting");
-  if (inpGreeting) inpGreeting.value = state.greeting;
-
-  // Desktop Visual Cover Cards Click
-  document.querySelectorAll(".cover-card").forEach((card) => {
-    card.addEventListener("click", () => {
-      document.querySelectorAll(".cover-card").forEach(c => c.classList.remove("active"));
-      card.classList.add("active");
-      state.coverStyle = card.getAttribute("data-cover-style");
-      renderAll();
-    });
-  });
-
-  // Desktop Form inputs
-  const bindInput = (id, prop) => {
+function syncFormInputsFromState() {
+  const setVal = (id, val) => {
     const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener("input", (e) => {
+    if (el) el.value = val || "";
+  };
+  const setChk = (id, checked) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = !!checked;
+  };
+
+  setVal("inpGroomName", state.groomName);
+  setVal("inpGroomPhone", state.groomPhone);
+  setVal("inpGroomFather", state.groomFather);
+  setChk("chkGroomFatherDeceased", state.groomFatherDeceased);
+  setVal("inpGroomMother", state.groomMother);
+  setChk("chkGroomMotherDeceased", state.groomMotherDeceased);
+  setVal("inpGroomRelation", state.groomRelation);
+  setVal("inpGroomFatherPhone", state.groomFatherPhone);
+
+  setVal("inpBrideName", state.brideName);
+  setVal("inpBridePhone", state.bridePhone);
+  setVal("inpBrideFather", state.brideFather);
+  setChk("chkBrideFatherDeceased", state.brideFatherDeceased);
+  setVal("inpBrideMother", state.brideMother);
+  setChk("chkBrideMotherDeceased", state.brideMotherDeceased);
+  setVal("inpBrideRelation", state.brideRelation);
+  setVal("inpBrideFatherPhone", state.brideFatherPhone);
+
+  setVal("inpWeddingDate", state.weddingDate);
+  setVal("inpWeddingTime", state.weddingTime);
+  setVal("inpVenueName", state.venueName);
+  setVal("inpVenueHall", state.venueHall);
+  setVal("inpVenueAddr", state.venueAddress);
+  setVal("inpTransportParking", state.transportParking);
+  setVal("inpTransportSubway", state.transportSubway);
+  setVal("inpTransportBus", state.transportBus);
+
+  setVal("inpGreeting", state.greeting);
+
+  setVal("inpGroomAcc", state.groomAccount);
+  setVal("inpGroomFatherAcc", state.groomFatherAccount);
+  setVal("inpGroomMotherAcc", state.groomMotherAccount);
+  setVal("inpBrideAcc", state.brideAccount);
+  setVal("inpBrideFatherAcc", state.brideFatherAccount);
+  setVal("inpBrideMotherAcc", state.brideMotherAccount);
+}
+
+function bindDesktopFormEvents() {
+  const bind = (id, prop) => {
+    document.getElementById(id)?.addEventListener("input", (e) => {
       state[prop] = e.target.value;
       renderAll();
     });
   };
 
-  bindInput("inpGroomName", "groomName");
-  bindInput("inpBrideName", "brideName");
-  bindInput("inpGroomPhone", "groomPhone");
-  bindInput("inpBridePhone", "bridePhone");
-  bindInput("inpGroomFather", "groomFather");
-  bindInput("inpGroomMother", "groomMother");
-  bindInput("inpBrideFather", "brideFather");
-  bindInput("inpBrideMother", "brideMother");
-  bindInput("inpWeddingDate", "weddingDate");
-  bindInput("inpWeddingTime", "weddingTime");
-  bindInput("inpVenueName", "venueName");
-  bindInput("inpVenueHall", "venueHall");
-  bindInput("inpVenueAddr", "venueAddress");
-  bindInput("inpTransport", "transport");
-  bindInput("inpGreeting", "greeting");
-  bindInput("inpGroomAcc", "groomAccount");
-  bindInput("inpBrideAcc", "brideAccount");
+  bind("inpGroomName", "groomName");
+  bind("inpGroomPhone", "groomPhone");
+  bind("inpGroomFather", "groomFather");
+  bind("inpGroomMother", "groomMother");
+  bind("inpGroomRelation", "groomRelation");
+  bind("inpGroomFatherPhone", "groomFatherPhone");
 
-  // Preset chips
-  document.querySelectorAll(".chip-btn").forEach((btn) => {
+  bind("inpBrideName", "brideName");
+  bind("inpBridePhone", "bridePhone");
+  bind("inpBrideFather", "brideFather");
+  bind("inpBrideMother", "brideMother");
+  bind("inpBrideRelation", "brideRelation");
+  bind("inpBrideFatherPhone", "brideFatherPhone");
+
+  bind("inpWeddingDate", "weddingDate");
+  bind("inpWeddingTime", "weddingTime");
+  bind("inpVenueName", "venueName");
+  bind("inpVenueHall", "venueHall");
+  bind("inpVenueAddr", "venueAddress");
+  bind("inpTransportParking", "transportParking");
+  bind("inpTransportSubway", "transportSubway");
+  bind("inpTransportBus", "transportBus");
+
+  bind("inpGreeting", "greeting");
+
+  bind("inpGroomAcc", "groomAccount");
+  bind("inpGroomFatherAcc", "groomFatherAccount");
+  bind("inpGroomMotherAcc", "groomMotherAccount");
+  bind("inpBrideAcc", "brideAccount");
+  bind("inpBrideFatherAcc", "brideFatherAccount");
+  bind("inpBrideMotherAcc", "brideMotherAccount");
+
+  document.getElementById("chkGroomFatherDeceased")?.addEventListener("change", (e) => {
+    state.groomFatherDeceased = e.target.checked;
+    renderAll();
+  });
+  document.getElementById("chkGroomMotherDeceased")?.addEventListener("change", (e) => {
+    state.groomMotherDeceased = e.target.checked;
+    renderAll();
+  });
+  document.getElementById("chkBrideFatherDeceased")?.addEventListener("change", (e) => {
+    state.brideFatherDeceased = e.target.checked;
+    renderAll();
+  });
+  document.getElementById("chkBrideMotherDeceased")?.addEventListener("change", (e) => {
+    state.brideMotherDeceased = e.target.checked;
+    renderAll();
+  });
+
+  // Pure & Sample buttons
+  document.getElementById("btnDeskPure")?.addEventListener("click", applyPureState);
+  document.getElementById("btnDeskSample")?.addEventListener("click", applySampleState);
+
+  // Greeting Preset Buttons
+  document.querySelectorAll("[data-greeting-preset]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const presetKey = btn.getAttribute("data-greeting-preset");
-      if (GREETING_PRESETS[presetKey]) {
-        state.greeting = GREETING_PRESETS[presetKey];
-        if (inpGreeting) inpGreeting.value = state.greeting;
+      const type = btn.getAttribute("data-greeting-preset");
+      if (GREETING_PRESETS[type]) {
+        state.greeting = GREETING_PRESETS[type];
+        const textarea = document.getElementById("inpGreeting");
+        if (textarea) textarea.value = state.greeting;
         renderAll();
+        showToast("인사말 문구가 변경되었습니다.");
       }
     });
   });
 
-  // Desktop Slot 1 & 2
+  // Cover Card Selection
+  document.querySelectorAll(".cover-card").forEach(card => {
+    card.addEventListener("click", () => {
+      state.coverStyle = card.getAttribute("data-cover-style");
+      renderAll();
+      showToast("커버 스타일이 변경되었습니다.");
+    });
+  });
+
+  // Desktop Slot 1 Upload
   document.getElementById("inpSlot1")?.addEventListener("change", async (e) => {
     if (e.target.files && e.target.files[0]) {
-      showToast("1번 대표 사진을 압축 중입니다...");
+      showToast("메인 대표 사진을 압축 중입니다...");
       state.coverPhoto = await compressImageFile(e.target.files[0]);
       renderAll();
-      showToast("1번 대표 사진이 교체되었습니다.");
+      showToast("메인 사진이 변경되었습니다.");
     }
   });
 
+  // Desktop Slot 2 Upload
   document.getElementById("inpSlot2")?.addEventListener("change", async (e) => {
     if (e.target.files && e.target.files[0]) {
-      showToast("2번 서브 사진을 압축 중입니다...");
+      showToast("서브 디테일 사진을 압축 중입니다...");
       state.detailPhoto = await compressImageFile(e.target.files[0]);
       renderAll();
-      showToast("2번 서브 사진이 교체되었습니다.");
+      showToast("서브 사진이 변경되었습니다.");
     }
   });
 
-  // Desktop Add Gallery Photos (Up to 20)
+  // Desktop Gallery Upload
   document.getElementById("inpAddGalleryPhotos")?.addEventListener("change", async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const remainingSlots = MAX_GALLERY_PHOTOS - state.galleryPhotos.length;
@@ -1123,132 +1973,126 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       const files = Array.from(e.target.files).slice(0, remainingSlots);
-      showToast(`사진 ${files.length}장을 고화질 압축 중입니다...`);
-      const compressedList = await Promise.all(files.map(f => compressImageFile(f).catch(() => null)));
-      const validOnes = compressedList.filter(Boolean);
-      state.galleryPhotos.push(...validOnes);
+      showToast(`사진 ${files.length}장을 압축 중입니다...`);
+      const compressed = await Promise.all(files.map(f => compressImageFile(f).catch(() => null)));
+      state.galleryPhotos.push(...compressed.filter(Boolean));
       renderAll();
-      showToast(`${validOnes.length}장의 사진이 추가되었습니다.`);
+      showToast(`${files.length}장의 사진이 갤러리에 추가되었습니다!`);
     }
   });
 
-  // Expand / Collapse Gallery in Invitation
+  // BGM Checkbox & Track Selector
+  document.getElementById("chkEnableBgm")?.addEventListener("change", (e) => {
+    state.sections.bgm = e.target.checked;
+    applySectionVisibility();
+    if (!state.sections.bgm) pauseBgm();
+    else playBgm();
+  });
+
+  const selBgm = document.getElementById("selBgmTrack");
+  const wrapCustom = document.getElementById("customAudioUploadWrap");
+  selBgm?.addEventListener("change", () => {
+    if (selBgm.value === "custom") {
+      wrapCustom.style.display = "block";
+    } else {
+      wrapCustom.style.display = "none";
+      state.bgmTrackType = "piano";
+      state.bgmTrackUrl = "./audio/romantic_piano.mp3";
+      if (bgmAudio) bgmAudio.src = state.bgmTrackUrl;
+      if (state.sections.bgm) playBgm();
+    }
+  });
+
+  document.getElementById("inpCustomAudio")?.addEventListener("change", (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > MAX_AUDIO_FILE_SIZE) {
+        alert("음악 파일 크기는 최대 5MB 이하만 가능합니다.");
+        return;
+      }
+      const audioUrl = URL.createObjectURL(file);
+      state.customBgmUrl = audioUrl;
+      state.customBgmName = file.name;
+      state.bgmTrackType = "custom";
+      state.bgmTrackUrl = audioUrl;
+      if (bgmAudio) bgmAudio.src = audioUrl;
+      if (state.sections.bgm) playBgm();
+      showToast("커스텀 MP3가 설정되었습니다.");
+    }
+  });
+}
+
+/* ===================================================
+   INITIALIZATION
+   =================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const isGuestMode = checkUrlMode();
+
+  syncFormInputsFromState();
+  bindDesktopFormEvents();
+
+  // Autoplay handler
+  window.addEventListener("touchstart", handleFirstInteraction, { passive: true });
+  window.addEventListener("scroll", handleFirstInteraction, { passive: true });
+  window.addEventListener("click", handleFirstInteraction, { passive: true });
+
+  // Floating BGM toggle
+  document.getElementById("btnToggleBgm")?.addEventListener("click", toggleBgm);
+
+  // Gallery Expand Button
   document.getElementById("btnExpandGallery")?.addEventListener("click", () => {
-    state.galleryExpanded = !state.galleryExpanded;
+    state.galleryExpanded = true;
     renderInvitationGallery();
   });
 
   // Lightbox Close
-  document.getElementById("btnLightboxClose")?.addEventListener("click", () => {
-    document.getElementById("lightboxModal")?.classList.remove("show");
-  });
+  document.getElementById("btnLightboxClose")?.addEventListener("click", closeLightbox);
   document.getElementById("lightboxModal")?.addEventListener("click", (e) => {
-    if (e.target === document.getElementById("lightboxModal")) {
-      document.getElementById("lightboxModal")?.classList.remove("show");
-    }
+    if (e.target.id === "lightboxModal") closeLightbox();
   });
 
-  // Desktop BGM Controls
-  const chkBgm = document.getElementById("chkEnableBgm");
-  const selBgm = document.getElementById("selBgmTrack");
-  const customAudioWrap = document.getElementById("customAudioUploadWrap");
-  const inpCustomAudio = document.getElementById("inpCustomAudio");
-
-  chkBgm?.addEventListener("change", (e) => {
-    state.bgmEnabled = e.target.checked;
-    if (!state.bgmEnabled) pauseBgm();
-    else playBgm();
-  });
-
-  selBgm?.addEventListener("change", (e) => {
-    if (e.target.value === "custom") {
-      customAudioWrap.style.display = "block";
-    } else {
-      customAudioWrap.style.display = "none";
-      state.bgmTrack = "./audio/romantic_piano.mp3";
-      if (bgmAudio) bgmAudio.src = state.bgmTrack;
-      if (state.bgmEnabled) playBgm();
-    }
-  });
-
-  inpCustomAudio?.addEventListener("change", (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > MAX_AUDIO_FILE_SIZE) {
-        showToast("음악 파일 크기는 5MB 이하만 업로드 가능합니다.");
-        e.target.value = "";
-        return;
+  // Mobile Bottom Dock Tabs
+  document.querySelectorAll(".dock-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tab = btn.getAttribute("data-tab");
+      if (tab === "preview") {
+        document.body.classList.toggle("guest-preview");
+        closeBottomSheet();
+        const isPreview = document.body.classList.contains("guest-preview");
+        btn.classList.toggle("active", isPreview);
+        const returnBtn = document.getElementById("btnReturnEdit");
+        if (returnBtn) returnBtn.style.display = isPreview ? "block" : "none";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        showToast(isPreview ? "하객용 미리보기 화면입니다." : "편집 모드로 돌아왔습니다.");
+      } else if (tab === "share") {
+        openShareModal();
+      } else {
+        document.body.classList.remove("guest-preview");
+        const returnBtn = document.getElementById("btnReturnEdit");
+        if (returnBtn) returnBtn.style.display = "none";
+        openBottomSheet(tab);
       }
-      const audioUrl = URL.createObjectURL(file);
-      state.bgmTrack = audioUrl;
-      if (bgmAudio) bgmAudio.src = audioUrl;
-      if (state.bgmEnabled) playBgm();
-      showToast("내 MP3 파일이 설정되었습니다.");
-    }
+    });
   });
 
-  // Floating BGM button
-  bgmBtn?.addEventListener("click", toggleBgm);
-
-  // Autoplay trigger on first touch/click
-  document.addEventListener("click", handleFirstInteraction, { once: true });
-  document.addEventListener("touchstart", handleFirstInteraction, { once: true });
-
-  // Mobile Bottom Dock Buttons
-  // 1. [미리보기] -> Fullscreen Guest View Toggle
-  document.getElementById("dockBtnPreview")?.addEventListener("click", () => {
-    closeBottomSheet();
-    document.body.classList.add("guest-preview");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    showToast("하객에게 보이는 실제 전체화면 모드입니다.");
-  });
-
-  // Floating Return-to-Edit button
+  // Floating Return from Preview Button
   document.getElementById("btnReturnEdit")?.addEventListener("click", () => {
     document.body.classList.remove("guest-preview");
-    showToast("편집 모드로 돌아왔습니다.");
-  });
-
-  // 2. [커버선택]
-  document.getElementById("dockBtnCover")?.addEventListener("click", () => {
-    document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
-    document.getElementById("dockBtnCover").classList.add("active");
+    document.getElementById("btnReturnEdit").style.display = "none";
+    document.getElementById("dockBtnPreview")?.classList.remove("active");
     openBottomSheet("cover");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    showToast("편집 모드로 복귀했습니다.");
   });
 
-  // 3. [내용편집]
-  document.getElementById("dockBtnInfo")?.addEventListener("click", () => {
-    document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
-    document.getElementById("dockBtnInfo").classList.add("active");
-    openBottomSheet("info");
-  });
-
-  // 4. [사진(20장)]
-  document.getElementById("dockBtnPhoto")?.addEventListener("click", () => {
-    document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
-    document.getElementById("dockBtnPhoto").classList.add("active");
-    openBottomSheet("photo");
-  });
-
-  // 5. [음악]
-  document.getElementById("dockBtnMusic")?.addEventListener("click", () => {
-    document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
-    document.getElementById("dockBtnMusic").classList.add("active");
-    openBottomSheet("music");
-  });
-
-  // 6. [링크생성]
-  document.getElementById("dockBtnShare")?.addEventListener("click", () => {
-    openShareModal();
-  });
-
-  // Close Bottom Sheet
+  // Bottom Sheet Close
   document.getElementById("btnSheetClose")?.addEventListener("click", closeBottomSheet);
   sheetBackdrop?.addEventListener("click", (e) => {
     if (e.target === sheetBackdrop) closeBottomSheet();
   });
 
-  // Share Modal buttons
+  // Share Modal
   document.getElementById("btnOpenShareModal")?.addEventListener("click", openShareModal);
   document.getElementById("btnCloseShareModal")?.addEventListener("click", closeShareModal);
   shareModal?.addEventListener("click", (e) => {
@@ -1263,6 +2107,12 @@ document.addEventListener("DOMContentLoaded", () => {
     downloadStandaloneInvitation();
   });
 
+  // Bottom Share Buttons in Preview
+  document.getElementById("btnBottomKakao")?.addEventListener("click", shareToKakaoOrNative);
+  document.getElementById("btnBottomCopy")?.addEventListener("click", () => {
+    copyText(generateShareUrl(), "청첩장 링크가 복사되었습니다!");
+  });
+
   // Accordions
   const btnAccGroom = document.getElementById("btnAccGroomHeader");
   const btnAccBride = document.getElementById("btnAccBrideHeader");
@@ -1273,14 +2123,15 @@ document.addEventListener("DOMContentLoaded", () => {
     btnAccBride.parentElement.classList.toggle("open");
   });
 
-  // Copy buttons
-  document.getElementById("btnCopyGroomAcc")?.addEventListener("click", () => copyText(state.groomAccount));
-  document.getElementById("btnCopyBrideAcc")?.addEventListener("click", () => copyText(state.brideAccount));
-  document.getElementById("btnCopyAddr")?.addEventListener("click", () => copyText(state.venueAddress, "주소가 복사되었습니다."));
+  // Address Copy Button
+  document.getElementById("btnCopyAddr")?.addEventListener("click", () => {
+    copyText(state.venueAddress, "주소가 복사되었습니다.");
+  });
 
   // Contact Modal
   const contactModal = document.getElementById("contactModal");
   document.getElementById("btnOpenContactModal")?.addEventListener("click", () => {
+    renderContactModal();
     contactModal?.classList.add("show");
   });
   document.getElementById("btnCloseContactModal")?.addEventListener("click", () => {
@@ -1290,7 +2141,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === contactModal) contactModal.classList.remove("show");
   });
 
-  // HTML Export & Desktop Viewer Toggle
+  // Guestbook Modal
+  const guestbookModal = document.getElementById("guestbookModal");
+  document.getElementById("btnOpenGuestbookModal")?.addEventListener("click", () => {
+    guestbookModal?.classList.add("show");
+  });
+  document.getElementById("btnCloseGuestbookModal")?.addEventListener("click", () => {
+    guestbookModal?.classList.remove("show");
+  });
+  guestbookModal?.addEventListener("click", (e) => {
+    if (e.target === guestbookModal) guestbookModal.classList.remove("show");
+  });
+
+  // Standalone HTML Export
   document.getElementById("btnDownloadHtml")?.addEventListener("click", downloadStandaloneInvitation);
   document.getElementById("btnToggleViewer")?.addEventListener("click", () => {
     document.body.classList.toggle("viewer-only");
@@ -1303,16 +2166,30 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.classList.remove("viewer-only");
       document.body.classList.remove("guest-preview");
       document.getElementById("lightboxModal")?.classList.remove("show");
+      document.getElementById("contactModal")?.classList.remove("show");
+      document.getElementById("guestbookModal")?.classList.remove("show");
+      document.getElementById("shareModal")?.classList.remove("show");
     }
   });
 
   // Initial Render
   renderAll();
 
-  // Initial mobile entry: open cover selection drawer automatically so user picks cover first!
+  // If on mobile and not guest mode, start smoothly
   if (!isGuestMode && window.innerWidth <= 860) {
     setTimeout(() => {
       openBottomSheet("cover");
     }, 250);
   }
 });
+
+// Expose functions globally for inline HTML onclick handlers
+window.copyText = copyText;
+window.submitRsvp = submitRsvp;
+window.deleteGalleryPhoto = deleteGalleryPhoto;
+window.openLightbox = openLightbox;
+window.deleteGuestbookEntry = deleteGuestbookEntry;
+window.submitGuestbookEntry = submitGuestbookEntry;
+window.renderMobilePhotoSheet = renderMobilePhotoSheet;
+window.openBottomSheet = openBottomSheet;
+window.closeBottomSheet = closeBottomSheet;
