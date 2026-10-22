@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Moiitee Style Studio — 감성 모바일 청첩장 셀프 제작 시스템</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="studio-layout">
+    <!-- LEFT SIDEBAR: DESKTOP BUILDER CONTROLS -->
+    <aside class="editor-sidebar" id="editorSidebar">
+      <div class="studio-brand">
+        <div>
+          <h1>Moiitee Studio</h1>
+          <p style="font-size:12px;color:#94a3b8;margin-top:2px;">모이티 감성 모바일 청첩장 웹 스튜디오</p>
+        </div>
+        <span class="studio-badge">MOBILE-FIRST v2.0</span>
+      </div>
+
+      <!-- 1. Cover Style Selector -->
+      <section class="editor-section">
+        <div class="editor-section-title">1. 시그니처 커버 디자인 선택</div>
+        <div class="style-grid">
+          <button type="button" class="style-btn active" data-cover-style="duo">
+            01. 듀오 프레임
+            <span style="display:block;font-size:10px;opacity:0.75;margin-top:2px;">모이티 대표 2분할 컷</span>
+          </button>
+          <button type="button" class="style-btn" data-cover-style="magazine">
+            02. 매거진 풀화면
+            <span style="display:block;font-size:10px;opacity:0.75;margin-top:2px;">시네마틱 화보형</span>
+          </button>
+          <button type="button" class="style-btn" data-cover-style="arch">
+            03. 아치 & 액자
+            <span style="display:block;font-size:10px;opacity:0.75;margin-top:2px;">미니멀 갤러리 매트</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. Couple & Parents Info -->
+      <section class="editor-section">
+        <div class="editor-section-title">2. 신랑 · 신부 및 혼주 정보</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inpGroomName">신랑 이름</label>
+            <input type="text" id="inpGroomName" value="김도윤" />
+          </div>
+          <div class="form-group">
+            <label for="inpGroomPhone">신랑 연락처</label>
+            <input type="text" id="inpGroomPhone" value="010-1234-5678" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inpBrideName">신부 이름</label>
+            <input type="text" id="inpBrideName" value="이서연" />
+          </div>
+          <div class="form-group">
+            <label for="inpBridePhone">신부 연락처</label>
+            <input type="text" id="inpBridePhone" value="010-9876-5432" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inpGroomFather">신랑 아버님</label>
+            <input type="text" id="inpGroomFather" value="김건우" />
+          </div>
+          <div class="form-group">
+            <label for="inpGroomMother">신랑 어머님</label>
+            <input type="text" id="inpGroomMother" value="박정숙" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inpBrideFather">신부 아버님</label>
+            <input type="text" id="inpBrideFather" value="이재민" />
+          </div>
+          <div class="form-group">
+            <label for="inpBrideMother">신부 어머님</label>
+            <input type="text" id="inpBrideMother" value="최은영" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Wedding Date & Venue Info -->
+      <section class="editor-section">
+        <div class="editor-section-title">3. 예식 일시 및 웨딩홀 안내</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inpWeddingDate">예식 날짜 (달력/D-Day 자동 연동)</label>
+            <input type="date" id="inpWeddingDate" value="2026-11-28" />
+          </div>
+          <div class="form-group">
+            <label for="inpWeddingTime">시간 표기</label>
+            <input type="text" id="inpWeddingTime" value="토요일 오후 1시 30분" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inpVenueName">예식장 이름</label>
+            <input type="text" id="inpVenueName" value="더채플 앳 청담" />
+          </div>
+          <div class="form-group">
+            <label for="inpVenueHall">층수 / 홀</label>
+            <input type="text" id="inpVenueHall" value="6층 커티지홀" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inpVenueAddr">도로명 주소</label>
+          <input type="text" id="inpVenueAddr" value="서울특별시 강남구 선릉로 757" />
+        </div>
+        <div class="form-group">
+          <label for="inpTransport">교통편 및 주차 안내</label>
+          <textarea id="inpTransport" rows="3">지하철: 7호선·수인분당선 강남구청역 4번 출구 (도보 7분 / 셔틀 수시 운행)
+자가용: 건물 지하 주차장 및 전용 주차타워 2시간 무료 지원</textarea>
+        </div>
+      </section>
+
+      <!-- 4. Greeting Message -->
+      <section class="editor-section">
+        <div class="editor-section-title">4. 감성 초대 인사말</div>
+        <div class="preset-chips">
+          <button type="button" class="chip-btn" data-greeting-preset="warm">따뜻·감성형</button>
+          <button type="button" class="chip-btn" data-greeting-preset="classic">정중·격식형</button>
+          <button type="button" class="chip-btn" data-greeting-preset="modern">담백·트렌디형</button>
+        </div>
+        <div class="form-group" style="margin-top:6px;">
+          <textarea id="inpGreeting" rows="6"></textarea>
+        </div>
+      </section>
+
+      <!-- 5. Photos Management -->
+      <section class="editor-section">
+        <div class="editor-section-title">5. 감성 웨딩 사진 등록</div>
+        <div class="form-group">
+          <label for="inpCoverFile">메인 대표 사진 (전신/메인 커버)</label>
+          <input type="file" id="inpCoverFile" accept="image/*" />
+        </div>
+        <div class="form-group">
+          <label for="inpDetailFile">서브 디테일 사진 (듀오 커버용 손잡은컷/베일컷)</label>
+          <input type="file" id="inpDetailFile" accept="image/*" />
+        </div>
+        <div class="form-group">
+          <label for="inpGalleryFiles">포토 갤러리 사진 (최대 6장)</label>
+          <input type="file" id="inpGalleryFiles" accept="image/*" multiple />
+        </div>
+      </section>
+
+      <!-- 6. Bank Accounts -->
+      <section class="editor-section">
+        <div class="editor-section-title">6. 축의금 계좌번호</div>
+        <div class="form-group">
+          <label for="inpGroomAcc">신랑측 계좌</label>
+          <input type="text" id="inpGroomAcc" value="카카오뱅크 3333-01-2345678 (예금주: 김도윤)" />
+        </div>
+        <div class="form-group">
+          <label for="inpBrideAcc">신부측 계좌</label>
+          <input type="text" id="inpBrideAcc" value="토스뱅크 1000-1234-5678 (예금주: 이서연)" />
+        </div>
+      </section>
+
+      <!-- 7. Standalone Export & Sharing -->
+      <div class="action-bar">
+        <button type="button" class="btn-primary" id="btnOpenShareModal">
+          🚀 내 모바일 청첩장 웹 링크 생성 &amp; 카톡 공유
+        </button>
+        <button type="button" class="btn-secondary" id="btnDownloadHtml">
+          완성된 모바일 청첩장 단독 파일(.html) 다운로드
+        </button>
+        <button type="button" class="btn-secondary" id="btnToggleViewer">
+          하객용 전체화면 보기 모드 전환
+        </button>
+      </div>
+    </aside>
+
+    <!-- RIGHT STAGE: REAL-TIME MOBILE CARD PREVIEW -->
+    <main class="preview-stage" id="previewStage">
+      <div class="phone-mockup" id="phoneMockup">
+        <div class="inv-wrapper" id="invWrapper" data-cover-style="duo">
+          
+          <!-- Floating BGM Player -->
+          <div class="floating-bgm">
+            <button type="button" class="bgm-btn" id="btnToggleBgm" title="배경음악 재생/정지">
+              <span id="bgmIcon">🎵</span>
+            </button>
+          </div>
+
+          <!-- COVER 1: DUO FRAME (MOIITEE SIGNATURE) -->
+          <header class="cover-duo">
+            <div class="cover-duo-heading">WEDDING INVITATION</div>
+            <h2 class="cover-duo-names">
+              <span id="duoGroomName">김도윤</span>
+              <span class="dot">·</span>
+              <span id="duoBrideName">이서연</span>
+            </h2>
+            <div class="cover-duo-grid">
+              <div class="duo-left-col">
+                <img id="duoPrimaryImg" class="duo-img-primary" src="./sample_wedding_cover.jpg" alt="신랑신부 메인 사진" />
+              </div>
+              <div class="duo-right-col">
+                <img id="duoSecondaryImg" class="duo-img-secondary" src="./sample_duo_detail.jpg" alt="웨딩 디테일 컷" />
+                <div class="duo-date-card">
+                  <span class="num-date" id="duoDateDay">28</span>
+                  <span class="mon-year" id="duoDateMonYear">NOV 2026</span>
+                  <span class="time-sub" id="duoDateTime">SAT 1:30 PM</span>
+                </div>
+              </div>
+            </div>
+            <div class="duo-bottom-venue" id="duoVenueSummary">더채플 앳 청담 6층 커티지홀</div>
+          </header>
+
+          <!-- COVER 2: MAGAZINE FULL-BLEED -->
+          <header class="cover-magazine">
+            <img id="magCoverImg" class="cover-magazine-img" src="./sample_wedding_cover.jpg" alt="웨딩 화보 커버" />
+            <div class="cover-magazine-content">
+              <div class="cover-magazine-top">
+                <span class="script-accent">Save the Date</span>
+                <div class="tagline">OUR WEDDING DAY</div>
+              </div>
+              <div class="cover-magazine-bottom">
+                <div class="cover-magazine-names">
+                  <span id="magGroomName">김도윤</span>
+                  <span class="amp">&amp;</span>
+                  <span id="magBrideName">이서연</span>
+                </div>
+                <div class="cover-magazine-date" id="magDateSummary">2026. 11. 28 SAT PM 1:30</div>
+                <div class="cover-magazine-venue" id="magVenueSummary">더채플 앳 청담 6층 커티지홀</div>
+              </div>
+            </div>
+          </header>
+
+          <!-- COVER 3: ARCH & GALLERY MAT FRAME -->
+          <header class="cover-arch">
+            <div class="cover-arch-tagline">THE WEDDING OF</div>
+            <div class="arch-frame-box">
+              <img id="archCoverImg" class="cover-arch-img" src="./sample_wedding_cover.jpg" alt="웨딩 아치 액자" />
+            </div>
+            <div class="cover-arch-caption">
+              <div class="script-cursive">Two lives, one heart</div>
+              <h2 class="arch-names">
+                <span id="archGroomName">김도윤</span>
+                <span class="dot">·</span>
+                <span id="archBrideName">이서연</span>
+              </h2>
+              <div class="arch-date" id="archDateSummary">2026년 11월 28일 토요일 오후 1시 30분</div>
+              <div class="arch-venue" id="archVenueSummary">더채플 앳 청담 6층 커티지홀</div>
+            </div>
+          </header>
+
+          <!-- INVITATION GREETING & PARENTS -->
+          <section class="inv-section">
+            <span class="script-accent-title">Invitation</span>
+            <div class="inv-sec-sub">초대합니다</div>
+            <h3 class="inv-sec-title">소중한 분들을 초대합니다</h3>
+            <p class="inv-greeting-body" id="viewGreetingText"></p>
+            
+            <div class="inv-parents-box" id="viewParentsBox"></div>
+
+            <div class="contact-btn-row">
+              <button type="button" class="btn-contact-pill" id="btnOpenContactModal">
+                📞 신랑 · 신부에게 축하 연락하기
+              </button>
+            </div>
+          </section>
+
+          <!-- CALENDAR & D-DAY -->
+          <section class="inv-section divider">
+            <span class="script-accent-title">Calendar</span>
+            <div class="inv-sec-sub">예식 일정</div>
+            <h3 class="inv-sec-title" id="viewCalDateHeading">2026. 11. 28 토요일</h3>
+            <div class="cal-box" id="viewCalendarContainer"></div>
+            <div class="dday-banner" id="viewDDayText"></div>
+          </section>
+
+          <!-- PHOTO GALLERY -->
+          <section class="inv-section divider">
+            <span class="script-accent-title">Gallery</span>
+            <div class="inv-sec-sub">우리의 순간</div>
+            <h3 class="inv-sec-title">사랑이 머무는 곳</h3>
+            <div class="gallery-container" id="viewGalleryGrid"></div>
+          </section>
+
+          <!-- LOCATION & NAVIGATION -->
+          <section class="inv-section divider">
+            <span class="script-accent-title">Location</span>
+            <div class="inv-sec-sub">오시는 길</div>
+            <h3 class="inv-sec-title">웨딩홀 안내</h3>
+            <div class="location-box">
+              <div class="loc-name" id="viewLocName">더채플 앳 청담 6층 커티지홀</div>
+              <div class="loc-addr-row">
+                <span class="loc-addr" id="viewLocAddr">서울특별시 강남구 선릉로 757</span>
+                <button type="button" class="btn-copy-addr" id="btnCopyAddr">주소복사</button>
+              </div>
+              <div class="map-pills">
+                <a class="map-pill-btn" id="linkNaverMap" target="_blank" rel="noopener">네이버지도</a>
+                <a class="map-pill-btn" id="linkKakaoMap" target="_blank" rel="noopener">카카오맵</a>
+                <a class="map-pill-btn" id="linkTmap" target="_blank" rel="noopener">티맵 길안내</a>
+              </div>
+              <div class="transport-details" id="viewTransportDetails"></div>
+            </div>
+          </section>
+
+          <!-- BANK ACCOUNTS ACCORDION -->
+          <section class="inv-section divider">
+            <span class="script-accent-title">Gift for Couple</span>
+            <div class="inv-sec-sub">마음 전하실 곳</div>
+            <h3 class="inv-sec-title">축복의 마음을 전하세요</h3>
+            <p style="font-size:13px;color:#888176;margin-bottom:20px;line-height:1.6;">
+              참석이 어려우신 분들을 위해 계좌번호를 안내해 드립니다.<br>
+              따뜻한 축하의 마음에 깊이 감사드립니다.
+            </p>
+            <div class="account-accordion-group">
+              <div class="acc-accordion">
+                <button type="button" class="acc-accordion-header" id="btnAccGroomHeader">
+                  <span>신랑측 계좌번호 보기</span>
+                  <span class="arrow">▾</span>
+                </button>
+                <div class="acc-accordion-body" id="bodyAccGroom">
+                  <div class="acc-item">
+                    <div class="acc-info">
+                      <span class="acc-owner">신랑 김도윤</span>
+                      <span class="acc-num" id="viewGroomAccNum">카카오뱅크 3333-01-2345678</span>
+                    </div>
+                    <button type="button" class="btn-copy-acc" id="btnCopyGroomAcc">복사</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="acc-accordion">
+                <button type="button" class="acc-accordion-header" id="btnAccBrideHeader">
+                  <span>신부측 계좌번호 보기</span>
+                  <span class="arrow">▾</span>
+                </button>
+                <div class="acc-accordion-body" id="bodyAccBride">
+                  <div class="acc-item">
+                    <div class="acc-info">
+                      <span class="acc-owner">신부 이서연</span>
+                      <span class="acc-num" id="viewBrideAccNum">토스뱅크 1000-1234-5678</span>
+                    </div>
+                    <button type="button" class="btn-copy-acc" id="btnCopyBrideAcc">복사</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- RSVP ATTENDANCE CARD -->
+          <section class="inv-section divider">
+            <span class="script-accent-title">R.S.V.P</span>
+            <div class="inv-sec-sub">참석 의사 전달</div>
+            <h3 class="inv-sec-title">참석 여부 전달하기</h3>
+            <p style="font-size:13px;color:#888176;margin-bottom:20px;line-height:1.6;">
+              원활한 예식 진행과 정성스러운 식사 대접을 위해<br>
+              참석 여부를 미리 알려주시면 감사하겠습니다.
+            </p>
+            <div class="rsvp-card">
+              <form id="rsvpForm" onsubmit="event.preventDefault(); submitRsvp();">
+                <div class="rsvp-form-row">
+                  <label for="rsvpName">참석자 성함 *</label>
+                  <input type="text" id="rsvpName" placeholder="성함을 입력해 주세요" required />
+                </div>
+                <div class="rsvp-form-row">
+                  <label>참석 구분 *</label>
+                  <div class="rsvp-radio-group">
+                    <label class="rsvp-radio"><input type="radio" name="rsvpSide" value="신랑측" checked /> 신랑측</label>
+                    <label class="rsvp-radio"><input type="radio" name="rsvpSide" value="신부측" /> 신부측</label>
+                  </div>
+                </div>
+                <div class="rsvp-form-row">
+                  <label>참석 여부 *</label>
+                  <div class="rsvp-radio-group">
+                    <label class="rsvp-radio"><input type="radio" name="rsvpAttend" value="참석" checked /> 참석</label>
+                    <label class="rsvp-radio"><input type="radio" name="rsvpAttend" value="마음으로 축하" /> 마음으로 축하</label>
+                  </div>
+                </div>
+                <div class="rsvp-form-row">
+                  <label for="rsvpGuests">동행 인원 (본인 포함)</label>
+                  <select id="rsvpGuests">
+                    <option value="1">1명 (본인)</option>
+                    <option value="2">2명</option>
+                    <option value="3">3명</option>
+                    <option value="4">4명 이상</option>
+                  </select>
+                </div>
+                <div class="rsvp-form-row">
+                  <label>식사 여부</label>
+                  <div class="rsvp-radio-group">
+                    <label class="rsvp-radio"><input type="radio" name="rsvpMeal" value="식사 예정" checked /> 식사 예정</label>
+                    <label class="rsvp-radio"><input type="radio" name="rsvpMeal" value="식사 안함" /> 식사 안함</label>
+                  </div>
+                </div>
+                <div class="rsvp-form-row">
+                  <label for="rsvpMessage">신랑 · 신부에게 전하는 한마디</label>
+                  <input type="text" id="rsvpMessage" placeholder="축하의 메시지를 남겨주세요" />
+                </div>
+                <button type="submit" class="btn-rsvp-submit">참석 정보 전달하기</button>
+              </form>
+              <div id="rsvpConfirm" class="rsvp-confirm-msg" style="display:none;">
+                소중한 참석 정보가 전달되었습니다. 감사합니다!
+              </div>
+            </div>
+          </section>
+
+          <!-- FOOTER -->
+          <footer class="inv-footer">
+            <div class="script-cursive" style="font-size:26px;color:#8c857b;">Doyun &amp; Seoyeon</div>
+            <div style="font-size:11.5px;letter-spacing:0.2em;color:#aba59b;margin-top:4px;">THANK YOU</div>
+          </footer>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==============================================
+       MOBILE BOTTOM DOCK & SLIDE-UP BOTTOM SHEET
+       ============================================== -->
+  <nav class="mobile-dock" id="mobileDock">
+    <button type="button" class="dock-btn active" data-tab="preview" id="dockBtnPreview">
+      <span class="dock-icon">👁️</span>
+      <span class="dock-label">미리보기</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="cover" id="dockBtnCover">
+      <span class="dock-icon">🎨</span>
+      <span class="dock-label">커버선택</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="info" id="dockBtnInfo">
+      <span class="dock-icon">✍️</span>
+      <span class="dock-label">내용편집</span>
+    </button>
+    <button type="button" class="dock-btn" data-tab="photo" id="dockBtnPhoto">
+      <span class="dock-icon">📷</span>
+      <span class="dock-label">사진변경</span>
+    </button>
+    <button type="button" class="dock-btn highlight" data-tab="share" id="dockBtnShare">
+      <span class="dock-icon">🚀</span>
+      <span class="dock-label">링크생성</span>
+    </button>
+  </nav>
+
+  <!-- BOTTOM SHEET MODAL (FOR MOBILE EDITING) -->
+  <div class="bottom-sheet-backdrop" id="bottomSheetBackdrop">
+    <div class="bottom-sheet" id="bottomSheet">
+      <div class="sheet-header">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title-row">
+          <h3 id="sheetTitle">커버 스타일 선택</h3>
+          <button type="button" class="sheet-close-btn" id="btnSheetClose">✕</button>
+        </div>
+      </div>
+      <div class="sheet-body" id="sheetBody">
+        <!-- Dynamically filled according to active tab -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARE & PUBLISH MODAL (WEB LINK & KAKAO SHARE) -->
+  <div class="modal-backdrop" id="shareModal">
+    <div class="modal-content modal-share">
+      <div class="modal-header">
+        <h4>🚀 내 모바일 청첩장 웹 링크 생성</h4>
+        <button type="button" class="modal-close" id="btnCloseShareModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:#666;margin-bottom:14px;line-height:1.5;">
+          두 사람만의 감성 청첩장이 준비되었습니다! 아래 링크를 복사하여 카카오톡이나 문자로 하객 분들에게 바로 전송하세요.
+        </p>
+        <div class="share-url-box">
+          <input type="text" id="shareUrlInput" readonly />
+          <button type="button" class="btn-copy-url" id="btnCopyShareUrl">링크복사</button>
+        </div>
+        <div class="share-actions-row">
+          <button type="button" class="btn-kakao-share" id="btnKakaoShare">
+            💬 카카오톡으로 공유하기
+          </button>
+          <button type="button" class="btn-html-download" id="btnModalDownloadHtml">
+            📥 단독 HTML 백업 다운로드
+          </button>
+        </div>
+        <div class="share-tip">
+          💡 <strong>호스팅 비용 0원</strong>: 영구적으로 열리는 링크이며 추가 서버비가 전혀 들지 않습니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT MODAL -->
+  <div class="modal-backdrop" id="contactModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>축하 연락하기</h4>
+        <button type="button" class="modal-close" id="btnCloseContactModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="contact-item">
+          <div>
+            <span class="role-badge">신랑</span>
+            <span class="person-name" id="modalGroomName">김도윤</span>
+          </div>
+          <div class="contact-actions">
+            <a href="tel:010-1234-5678" id="linkCallGroom" class="btn-action-icon" title="전화걸기">📞 통화</a>
+            <a href="sms:010-1234-5678" id="linkSmsGroom" class="btn-action-icon" title="문자보내기">💬 문자</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div>
+            <span class="role-badge">신부</span>
+            <span class="person-name" id="modalBrideName">이서연</span>
+          </div>
+          <div class="contact-actions">
+            <a href="tel:010-9876-5432" id="linkCallBride" class="btn-action-icon" title="전화걸기">📞 통화</a>
+            <a href="sms:010-9876-5432" id="linkSmsBride" class="btn-action-icon" title="문자보내기">💬 문자</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastMsg" class="toast-msg">복사되었습니다.</div>
+  <script src="./app.js"></script>
+</body>
+</html>

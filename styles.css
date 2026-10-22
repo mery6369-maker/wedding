@@ -1,0 +1,1438 @@
+/* 
+ * Moiitee Style Mobile Wedding Studio Stylesheet
+ * Inspired by: moiitee.com & Instagram @moiitee_official
+ * Core Concept: Warm Ivory & Neutral Tones, Refined Editorial Typography,
+ *               Sensible Asymmetrical Duo Layout, RSVP, Accordion Accounts
+ */
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&display=swap");
+
+:root {
+  --studio-bg: #121417;
+  --studio-panel: #1a1e24;
+  --studio-border: #29303c;
+  --studio-text: #f1f5f9;
+  --studio-muted: #94a3b8;
+  --studio-accent: #e2b38f;
+  --studio-accent-hover: #d49f76;
+
+  /* Card Palette (Moiitee Warm Ivory) */
+  --card-bg: #faf8f5;
+  --card-surface: #ffffff;
+  --card-border: #eee9e0;
+  --card-text-primary: #2b2724;
+  --card-text-secondary: #6e675e;
+  --card-text-muted: #9e978c;
+  --card-accent: #b47a50;
+  --card-divider: #e8e3d8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Pretendard", -apple-system, sans-serif;
+  background-color: var(--studio-bg);
+  color: var(--studio-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===================================================
+   DESKTOP STUDIO WORKSPACE (EDITOR SIDEBAR + PREVIEW)
+   =================================================== */
+.studio-layout {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  min-height: 100dvh;
+}
+
+@media (max-width: 1024px) {
+  .studio-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editor-sidebar {
+  background: var(--studio-panel);
+  border-right: 1px solid var(--studio-border);
+  height: 100dvh;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.studio-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--studio-border);
+}
+
+.studio-brand h1 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.studio-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(226, 179, 143, 0.15);
+  color: var(--studio-accent);
+  border: 1px solid rgba(226, 179, 143, 0.3);
+}
+
+.editor-section {
+  background: rgba(18, 20, 23, 0.65);
+  border: 1px solid var(--studio-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editor-section-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* Style Button Grid */
+.style-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.style-btn {
+  padding: 10px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--studio-border);
+  background: #222731;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.style-btn:hover {
+  border-color: #64748b;
+}
+
+.style-btn.active {
+  background: rgba(226, 179, 143, 0.18);
+  border-color: var(--studio-accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 11.5px;
+  color: var(--studio-muted);
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: #0f1216;
+  border: 1px solid var(--studio-border);
+  border-radius: 8px;
+  padding: 9px 11px;
+  color: #f8fafc;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--studio-accent);
+}
+
+.preset-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip-btn {
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 6px;
+  border: 1px solid var(--studio-border);
+  background: #222731;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.chip-btn:hover {
+  background: #334155;
+  color: #fff;
+}
+
+.action-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.btn-primary {
+  background: var(--studio-accent);
+  color: #1a1612;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--studio-accent-hover);
+}
+
+.btn-secondary {
+  background: #222731;
+  color: #e2e8f0;
+  font-weight: 500;
+  font-size: 12.5px;
+  padding: 11px 16px;
+  border: 1px solid var(--studio-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #2d3442;
+}
+
+/* ===================================================
+   PREVIEW STAGE & PHONE MOCKUP
+   =================================================== */
+.preview-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: #181b20;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+.phone-mockup {
+  width: 420px;
+  max-width: 100%;
+  height: 860px;
+  border-radius: 40px;
+  border: 8px solid #2b313a;
+  background: var(--card-bg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  scrollbar-width: none;
+}
+
+.phone-mockup::-webkit-scrollbar {
+  display: none;
+}
+
+/* Standalone Viewer Mode (Fullscreen View) */
+body.viewer-only {
+  background: var(--card-bg);
+}
+
+body.viewer-only .editor-sidebar {
+  display: none !important;
+}
+
+body.viewer-only .studio-layout {
+  display: block;
+}
+
+body.viewer-only .preview-stage {
+  padding: 0;
+  height: auto;
+  min-height: 100dvh;
+  background: var(--card-bg);
+}
+
+body.viewer-only .phone-mockup {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  min-height: 100dvh;
+  border: none;
+  border-radius: 0;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.06);
+}
+
+/* ===================================================
+   MOIITEE CARD CORE STYLING
+   =================================================== */
+.inv-wrapper {
+  background-color: var(--card-bg);
+  color: var(--card-text-primary);
+  font-family: "Pretendard", -apple-system, sans-serif;
+  line-height: 1.8;
+  position: relative;
+  min-height: 100%;
+  padding-bottom: 60px;
+}
+
+.script-accent {
+  font-family: "Alex Brush", cursive;
+  font-size: 26px;
+  color: #8c857b;
+  display: block;
+  line-height: 1.2;
+}
+
+.script-accent-title {
+  font-family: "Alex Brush", cursive;
+  font-size: 28px;
+  color: #9e978c;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.script-cursive {
+  font-family: "Alex Brush", cursive;
+  font-size: 22px;
+  color: #8c857b;
+}
+
+/* Floating BGM */
+.floating-bgm {
+  position: sticky;
+  top: 14px;
+  right: 14px;
+  z-index: 50;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 16px;
+  height: 0;
+}
+
+.bgm-btn {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.bgm-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ===================================================
+   COVER LAYOUTS (DUO, MAGAZINE, ARCH)
+   =================================================== */
+
+/* State switching */
+.inv-wrapper[data-cover-style="duo"] .cover-duo { display: block; }
+.inv-wrapper[data-cover-style="duo"] .cover-magazine,
+.inv-wrapper[data-cover-style="duo"] .cover-arch { display: none; }
+
+.inv-wrapper[data-cover-style="magazine"] .cover-magazine { display: block; }
+.inv-wrapper[data-cover-style="magazine"] .cover-duo,
+.inv-wrapper[data-cover-style="magazine"] .cover-arch { display: none; }
+
+.inv-wrapper[data-cover-style="arch"] .cover-arch { display: block; }
+.inv-wrapper[data-cover-style="arch"] .cover-duo,
+.inv-wrapper[data-cover-style="arch"] .cover-magazine { display: none; }
+
+/* 1. DUO FRAME (MOIITEE SIGNATURE 2-PHOTO ASYMMETRICAL) */
+.cover-duo {
+  padding: 44px 22px 24px;
+  text-align: center;
+}
+
+.cover-duo-heading {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--card-text-muted);
+  margin-bottom: 8px;
+}
+
+.cover-duo-names {
+  font-family: "Noto Serif KR", serif;
+  font-size: 23px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--card-text-primary);
+  margin-bottom: 24px;
+}
+
+.cover-duo-names .dot {
+  font-size: 18px;
+  margin: 0 4px;
+  color: #bbb;
+}
+
+.cover-duo-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.duo-img-primary {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.duo-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.duo-img-secondary {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.duo-date-card {
+  background: #f1ece4;
+  border-radius: 4px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.duo-date-card .num-date {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--card-text-primary);
+  font-weight: 500;
+}
+
+.duo-date-card .mon-year {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--card-text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.duo-date-card .time-sub {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--card-text-muted);
+  margin-top: 2px;
+}
+
+.duo-bottom-venue {
+  font-family: "Noto Serif KR", serif;
+  font-size: 13.5px;
+  color: var(--card-text-secondary);
+  margin-top: 22px;
+  letter-spacing: 0.05em;
+}
+
+/* 2. MAGAZINE FULL-BLEED */
+.cover-magazine {
+  position: relative;
+  width: 100%;
+  min-height: 580px;
+  background-color: #eae7e1;
+}
+
+.cover-magazine-img {
+  width: 100%;
+  height: 580px;
+  object-fit: cover;
+  display: block;
+}
+
+.cover-magazine-content {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.48) 85%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 38px 24px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.cover-magazine-top .tagline {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.cover-magazine-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cover-magazine-names {
+  font-family: "Noto Serif KR", serif;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+}
+
+.cover-magazine-names .amp {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 20px;
+  margin: 0 4px;
+}
+
+.cover-magazine-date {
+  font-size: 12.5px;
+  letter-spacing: 0.15em;
+  opacity: 0.95;
+  font-weight: 300;
+}
+
+.cover-magazine-venue {
+  font-size: 12.5px;
+  opacity: 0.85;
+}
+
+/* 3. ARCH & GALLERY MAT */
+.cover-arch {
+  padding: 44px 28px 24px;
+  text-align: center;
+}
+
+.cover-arch-tagline {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  color: var(--card-text-muted);
+  margin-bottom: 18px;
+}
+
+.arch-frame-box {
+  background: #ffffff;
+  padding: 14px;
+  border-radius: 180px 180px 4px 4px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--card-border);
+  display: inline-block;
+  width: 100%;
+  max-width: 320px;
+}
+
+.cover-arch-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 170px 170px 2px 2px;
+  display: block;
+}
+
+.cover-arch-caption {
+  margin-top: 24px;
+}
+
+.arch-names {
+  font-family: "Noto Serif KR", serif;
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--card-text-primary);
+  margin: 4px 0 8px;
+}
+
+.arch-date {
+  font-size: 13px;
+  color: var(--card-text-secondary);
+}
+
+.arch-venue {
+  font-size: 12.5px;
+  color: var(--card-text-muted);
+  margin-top: 4px;
+}
+
+/* ===================================================
+   BODY INVITATION SECTIONS
+   =================================================== */
+.inv-section {
+  padding: 50px 26px;
+  text-align: center;
+  position: relative;
+}
+
+.inv-section.divider {
+  border-top: 1px solid var(--card-divider);
+}
+
+.inv-sec-sub {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 11.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--card-text-muted);
+  margin-bottom: 4px;
+}
+
+.inv-sec-title {
+  font-family: "Noto Serif KR", serif;
+  font-size: 18.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--card-text-primary);
+  margin-bottom: 24px;
+}
+
+.inv-greeting-body {
+  font-family: "Noto Serif KR", serif;
+  font-size: 14px;
+  line-height: 2.2;
+  color: #4a453e;
+  white-space: pre-line;
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+
+/* Family Relations */
+.inv-parents-box {
+  margin-bottom: 24px;
+}
+
+.inv-parents-row {
+  font-family: "Noto Serif KR", serif;
+  font-size: 14.5px;
+  color: #3b3732;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.inv-parents-row .parents {
+  color: #55504a;
+}
+
+.inv-parents-row .role {
+  font-size: 12px;
+  color: var(--card-text-muted);
+}
+
+.inv-parents-row .child-name {
+  font-weight: 500;
+  color: var(--card-text-primary);
+}
+
+.contact-btn-row {
+  margin-top: 16px;
+}
+
+.btn-contact-pill {
+  background: var(--card-surface);
+  border: 1px solid #ddd7cc;
+  border-radius: 999px;
+  padding: 9px 20px;
+  font-size: 12.5px;
+  color: #4e4840;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
+}
+
+.btn-contact-pill:hover {
+  background: #f3efe6;
+}
+
+/* ===================================================
+   CALENDAR & D-DAY
+   =================================================== */
+.cal-box {
+  background: var(--card-surface);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 24px 18px;
+  max-width: 330px;
+  margin: 0 auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.cal-month-title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  color: var(--card-text-primary);
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 8px;
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.cal-day-head {
+  font-size: 11px;
+  color: var(--card-text-muted);
+  font-weight: 500;
+  padding-bottom: 6px;
+}
+
+.cal-cell {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #4b453e;
+}
+
+.cal-cell.sun {
+  color: #c26155;
+}
+
+.cal-cell.wedding-day {
+  background: var(--card-text-primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.dday-banner {
+  margin-top: 20px;
+  font-size: 13.5px;
+  color: var(--card-text-secondary);
+  font-family: "Noto Serif KR", serif;
+}
+
+.dday-banner strong {
+  color: var(--card-accent);
+  font-weight: 600;
+}
+
+/* ===================================================
+   PHOTO GALLERY
+   =================================================== */
+.gallery-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.gallery-item {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #ede9e1;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.03);
+}
+
+/* ===================================================
+   LOCATION & MAPS
+   =================================================== */
+.location-box {
+  background: var(--card-surface);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 24px 20px;
+  text-align: left;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.loc-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--card-text-primary);
+  margin-bottom: 4px;
+}
+
+.loc-addr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.loc-addr {
+  font-size: 13px;
+  color: var(--card-text-secondary);
+}
+
+.btn-copy-addr {
+  background: #f3efe6;
+  border: 1px solid #ddd7cc;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #55504a;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.map-pills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.map-pill-btn {
+  display: inline-block;
+  text-align: center;
+  padding: 9px 4px;
+  border-radius: 6px;
+  border: 1px solid #ddd7cc;
+  background: #faf8f5;
+  color: #4a453e;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+
+.map-pill-btn:hover {
+  background: #ede8dc;
+}
+
+.transport-details {
+  border-top: 1px dashed var(--card-divider);
+  padding-top: 16px;
+  font-size: 12.5px;
+  color: #6e675e;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+/* ===================================================
+   BANK ACCOUNTS (ACCORDION)
+   =================================================== */
+.account-accordion-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.acc-accordion {
+  background: var(--card-surface);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.acc-accordion-header {
+  width: 100%;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--card-text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.acc-accordion-header:hover {
+  background: #faf8f5;
+}
+
+.acc-accordion-header .arrow {
+  font-size: 12px;
+  color: var(--card-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.acc-accordion.open .arrow {
+  transform: rotate(180deg);
+}
+
+.acc-accordion-body {
+  display: none;
+  padding: 14px 18px;
+  border-top: 1px solid #f0eae0;
+  background: #faf8f5;
+}
+
+.acc-accordion.open .acc-accordion-body {
+  display: block;
+}
+
+.acc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+
+.acc-owner {
+  display: block;
+  font-size: 12px;
+  color: var(--card-text-muted);
+  margin-bottom: 2px;
+}
+
+.acc-num {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--card-text-primary);
+}
+
+.btn-copy-acc {
+  background: #ffffff;
+  border: 1px solid #ddd7cc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #4a453e;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-copy-acc:hover {
+  background: #f5f1e8;
+}
+
+/* ===================================================
+   RSVP ATTENDANCE FORM
+   =================================================== */
+.rsvp-card {
+  background: var(--card-surface);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 24px 20px;
+  text-align: left;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.rsvp-form-row {
+  margin-bottom: 14px;
+}
+
+.rsvp-form-row label {
+  display: block;
+  font-size: 12px;
+  color: var(--card-text-secondary);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.rsvp-form-row input[type="text"],
+.rsvp-form-row select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd7cc;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #faf8f5;
+  color: #333;
+  outline: none;
+}
+
+.rsvp-form-row input[type="text"]:focus,
+.rsvp-form-row select:focus {
+  border-color: var(--card-accent);
+}
+
+.rsvp-radio-group {
+  display: flex;
+  gap: 18px;
+  padding: 4px 0;
+}
+
+.rsvp-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #4b453e;
+  cursor: pointer;
+}
+
+.btn-rsvp-submit {
+  width: 100%;
+  background: var(--card-text-primary);
+  color: #ffffff;
+  padding: 13px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.15s ease;
+}
+
+.btn-rsvp-submit:hover {
+  background: #403b37;
+}
+
+.rsvp-confirm-msg {
+  background: #f1ece4;
+  color: #55504a;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* ===================================================
+   FOOTER
+   =================================================== */
+.inv-footer {
+  padding: 40px 20px 20px;
+  text-align: center;
+  border-top: 1px solid var(--card-divider);
+}
+
+/* ===================================================
+   CONTACT MODAL & TOAST
+   =================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-backdrop.show {
+  display: flex;
+}
+
+.modal-content {
+  background: #ffffff;
+  width: 100%;
+  max-width: 340px;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: modalPop 0.2s ease-out;
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0eae0;
+}
+
+.modal-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2b2724;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #999;
+  cursor: pointer;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px dashed #f0eae0;
+}
+
+.contact-item:last-child {
+  border-bottom: none;
+}
+
+.role-badge {
+  font-size: 11px;
+  color: #9e978c;
+  display: block;
+}
+
+.person-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #2b2724;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action-icon {
+  background: #faf8f5;
+  border: 1px solid #ddd7cc;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #4a453e;
+  text-decoration: none;
+}
+
+.btn-action-icon:hover {
+  background: #ede8dc;
+}
+
+.toast-msg {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(35, 32, 30, 0.94);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast-msg.show {
+  opacity: 1;
+}
+
+/* ===================================================
+   MOBILE-FIRST BOTTOM DOCK & BOTTOM SHEET STYLES
+   =================================================== */
+.mobile-dock {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  padding: 6px 8px;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.dock-btn {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  color: #787168;
+  font-family: inherit;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  flex: 1;
+}
+
+.dock-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.dock-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.dock-btn.active {
+  color: #2b2724;
+  font-weight: 600;
+}
+
+.dock-btn.highlight {
+  background: #2b2724;
+  color: #ffffff;
+  padding: 6px 8px;
+  border-radius: 12px;
+}
+.dock-btn.highlight .dock-label {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Bottom Sheet */
+.bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: none;
+  align-items: flex-end;
+}
+
+.bottom-sheet-backdrop.show {
+  display: flex;
+}
+
+.bottom-sheet {
+  width: 100%;
+  max-height: 82vh;
+  background: #1a1e24;
+  color: #f1f5f9;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.45);
+}
+
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sheet-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid #29303c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheet-handle {
+  width: 38px;
+  height: 4px;
+  border-radius: 2px;
+  background: #475569;
+}
+
+.sheet-title-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sheet-title-row h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.sheet-close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.sheet-body {
+  padding: 18px 20px 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Share Modal */
+.modal-share {
+  max-width: 380px;
+}
+
+.share-url-box {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.share-url-box input {
+  flex: 1;
+  padding: 10px 12px;
+  background: #faf8f5;
+  border: 1px solid #ddd7cc;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #333;
+}
+
+.btn-copy-url {
+  background: #2b2724;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.share-actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.btn-kakao-share {
+  background: #fee500;
+  color: #191919;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-html-download {
+  background: #f4f0e8;
+  border: 1px solid #ddd7cc;
+  color: #4a453e;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 11px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.share-tip {
+  font-size: 11.5px;
+  color: #8c857b;
+  line-height: 1.5;
+  background: #faf8f5;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+/* Responsive Overrides */
+@media (max-width: 860px) {
+  .studio-layout {
+    display: block;
+  }
+  .editor-sidebar {
+    display: none !important;
+  }
+  .preview-stage {
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    background: var(--card-bg) !important;
+  }
+  .phone-mockup {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding-bottom: 74px !important;
+  }
+  .mobile-dock {
+    display: flex !important;
+  }
+}
+
+/* Guest View Mode (When shared as final invitation link) */
+body.guest-mode .mobile-dock,
+body.guest-mode .editor-sidebar {
+  display: none !important;
+}
+body.guest-mode .phone-mockup {
+  padding-bottom: 0 !important;
+}
+
