@@ -220,6 +220,15 @@ function applySampleState() {
   state.brideFatherAccount = "하나은행 111-222-3333 (예금주: 이재민)";
   state.brideMotherAccount = "우리은행 444-555-6666 (예금주: 최은영)";
 
+  state.coverPhoto = "./sample_wedding_cover.jpg";
+  state.detailPhoto = "./sample_duo_detail.jpg";
+  state.galleryPhotos = [
+    "./sample_wedding_cover.jpg",
+    "./sample_duo_detail.jpg",
+    "./sample_wedding_running.jpg",
+    "./sample_wedding_cover.jpg"
+  ];
+
   state.guestbookList = [
     {
       id: "gb_sample_1",
