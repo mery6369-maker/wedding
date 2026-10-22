@@ -450,7 +450,7 @@ function renderAll() {
   const archCoverImg = document.getElementById("archCoverImg");
   if (archCoverImg) archCoverImg.src = state.coverPhoto;
 
-  // 4. Cover 4: Editorial Poster (Moiitee Style)
+  // 4. Cover 4: Editorial Poster (Season of Us Signature)
   const posterGroom = document.getElementById("posterGroomName");
   const posterBride = document.getElementById("posterBrideName");
   if (posterGroom) posterGroom.textContent = groomDisplayName;
@@ -488,7 +488,7 @@ function renderAll() {
     greetingEl.innerHTML = (state.greeting || GREETING_PRESETS.warm).replace(/\n/g, "<br>");
   }
 
-  // Parents Box (Moiitee / Love-wins-all style)
+  // Parents Box (Season of Us Clean Style)
   const parentsBox = document.getElementById("viewParentsBox");
   if (parentsBox) {
     const groomFatherText = (state.groomFatherDeceased ? '<span class="deceased-badge">故</span>' : '') + (state.groomFather || '');
@@ -1093,7 +1093,7 @@ function openBottomSheet(tabType) {
             </div>
           </div>
           <div class="cover-card-info">
-            <span class="cover-card-title">02. 에디토리얼 감성 포스터 (모이티 감성)</span>
+            <span class="cover-card-title">02. 에디토리얼 감성 포스터</span>
             <span class="cover-card-desc">전시회 포스터 감성의 고딕·세리프 타이포와 티켓 바코드</span>
           </div>
         </div>

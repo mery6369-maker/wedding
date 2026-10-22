@@ -1,8 +1,7 @@
 /* 
- * Moiitee Style Mobile Wedding Studio Stylesheet (Bright Wedding Mode)
- * Inspired by: moiitee.com & Instagram @moiitee_official
- * Core Concept: Clean Warm Ivory, Bright Editorial Typography,
- *               Mobile-First Bottom Sheet & Visual Cover Thumbnails
+ * 우리의 계절 (Season of Us) Mobile Wedding Studio Stylesheet (Bright Wedding Mode)
+ * Brand Concept: Clean Warm Ivory, Bright Editorial Typography,
+ *                Mobile-First Bottom Sheet & Visual Cover Thumbnails
  */
 
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
@@ -19,7 +18,7 @@
   --studio-accent-hover: #45403c;
   --studio-subtle: #fbf9f6;
 
-  /* Card Palette (Moiitee Warm Ivory) */
+  /* Card Palette (Season of Us Warm Ivory) */
   --card-bg: #faf8f5;
   --card-surface: #ffffff;
   --card-border: #eee9e0;
@@ -586,7 +585,7 @@ body.viewer-only .phone-mockup {
 }
 
 /* ===================================================
-   MOIITEE CARD CORE STYLING
+   SEASON OF US CARD CORE STYLING
    =================================================== */
 .inv-wrapper {
   background-color: var(--card-bg);
@@ -675,7 +674,7 @@ body.viewer-only .phone-mockup {
 .inv-wrapper[data-cover-style="arch"] .cover-poster,
 .inv-wrapper[data-cover-style="arch"] .cover-magazine { display: none; }
 
-/* 1. DUO FRAME (MOIITEE SIGNATURE 2-PHOTO ASYMMETRICAL) */
+/* 1. DUO FRAME (SIGNATURE 2-PHOTO ASYMMETRICAL) */
 .cover-duo {
   padding: 44px 22px 24px;
   text-align: center;
@@ -902,7 +901,7 @@ body.viewer-only .phone-mockup {
   margin-top: 4px;
 }
 
-/* 4. EDITORIAL POSTER (MOIITEE LOVE WINS ALL INSPIRATION) */
+/* 4. EDITORIAL POSTER (SEASON OF US SIGNATURE) */
 .cover-poster {
   padding: 30px 18px 24px;
   background-color: #f7f5f0;
