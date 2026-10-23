@@ -2038,7 +2038,7 @@ async function shareToKakaoOrNative() {
 }
 
 /* ===================================================
-   STANDALONE HTML EXPORT
+   STANDALONE HTML EXPORT (100% SELF-CONTAINED WITH BASE64 IMAGES)
    =================================================== */
 
 async function downloadStandaloneInvitation() {
@@ -2048,28 +2048,85 @@ async function downloadStandaloneInvitation() {
     });
     return;
   }
-  showToast("완성된 청첩장을 패키징하고 있습니다...");
+  showToast("청첩장과 모든 사진을 단독 파일로 패키징하고 있습니다 (약 2~3초)...");
 
-  async function urlToBase64(url) {
-    if (url.startsWith("data:")) return url;
+  // Robust converter: Canvas -> Fetch -> Absolute URL fallback
+  async function convertSrcToBase64(srcOrImg) {
+    if (!srcOrImg) return "";
+    let src = typeof srcOrImg === "string" ? srcOrImg : (srcOrImg.src || srcOrImg.getAttribute("src") || "");
+    if (!src) return "";
+    if (src.startsWith("data:")) return src;
+
+    // 1. Try Canvas (fastest & reliable for already-loaded images)
+    if (typeof srcOrImg !== "string" && srcOrImg.nodeName === "IMG") {
+      try {
+        if (srcOrImg.complete && srcOrImg.naturalWidth > 0) {
+          const canvas = document.createElement("canvas");
+          canvas.width = srcOrImg.naturalWidth;
+          canvas.height = srcOrImg.naturalHeight;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(srcOrImg, 0, 0);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+          if (dataUrl && dataUrl.startsWith("data:image")) return dataUrl;
+        }
+      } catch (e) {}
+    }
+
+    // 2. Try Fetch + FileReader
     try {
-      const resp = await fetch(url);
+      const resp = await fetch(src);
       const blob = await resp.blob();
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => resolve(new URL(src, window.location.href).href);
         reader.readAsDataURL(blob);
       });
     } catch (e) {
-      return url;
+      // 3. Fallback: Absolute URL to live GitHub Pages so it NEVER breaks offline/locally
+      try {
+        return new URL(src, window.location.href).href;
+      } catch (err) {
+        return src;
+      }
     }
   }
 
-  const inlinedCover = await urlToBase64(state.coverPhoto);
-  const inlinedDetail = await urlToBase64(state.detailPhoto);
-  const inlinedGallery = await Promise.all(state.galleryPhotos.map(urlToBase64));
+  // 1. Clone Phone Mockup DOM
+  const originalPhone = document.getElementById("phoneMockup");
+  const clone = originalPhone.cloneNode(true);
 
-  const phoneInner = document.getElementById("phoneMockup").innerHTML;
+  // 2. Convert all <img> tags inside clone into inline Base64 Data URLs
+  const origImgs = Array.from(originalPhone.querySelectorAll("img"));
+  const cloneImgs = Array.from(clone.querySelectorAll("img"));
+  for (let i = 0; i < cloneImgs.length; i++) {
+    const origImg = origImgs[i];
+    const cloneImg = cloneImgs[i];
+    const base64 = await convertSrcToBase64(origImg || cloneImg);
+    if (base64) {
+      cloneImg.src = base64;
+      cloneImg.setAttribute("src", base64);
+    }
+  }
+
+  // 3. Embed full gallery photos as Base64 in clone
+  const cloneGallery = clone.querySelector("#viewGalleryGrid");
+  if (cloneGallery && state.galleryPhotos && state.galleryPhotos.length > 0) {
+    const inlinedGalleryItems = await Promise.all(state.galleryPhotos.map(async (pUrl, pIdx) => {
+      const b64 = await convertSrcToBase64(pUrl);
+      return `
+        <div class="gallery-item" onclick="openLightbox('${b64}')">
+          <img src="${b64}" alt="웨딩 갤러리 사진 ${pIdx + 1}" />
+        </div>
+      `;
+    }));
+    cloneGallery.innerHTML = inlinedGalleryItems.join("");
+    const cloneExpand = clone.querySelector("#galleryExpandWrap");
+    if (cloneExpand) cloneExpand.style.display = "none";
+  }
+
+  const inlinedCover = await convertSrcToBase64(state.coverPhoto);
+  const phoneInner = clone.innerHTML;
   const groomDisplayName = state.groomName.trim() || "신랑";
   const brideDisplayName = state.brideName.trim() || "신부";
   const pageTitle = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다`;
@@ -2101,12 +2158,82 @@ ${cssContent}
 body { background: #faf8f5; margin:0; padding:0; }
 .phone-mockup { border:none !important; width:100% !important; max-width:480px; margin:0 auto; box-shadow:none !important; border-radius:0 !important; }
 .floating-bgm { position: fixed; top: 16px; right: 16px; }
+.lightbox-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; align-items:center; justify-content:center; }
+.lightbox-modal.show { display:flex; }
+.lightbox-modal img { max-width:92%; max-height:88vh; object-fit:contain; border-radius:8px; }
+.lightbox-close { position:absolute; top:20px; right:20px; color:#fff; font-size:28px; background:none; border:none; cursor:pointer; }
+.toast-msg { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:rgba(30,30,30,0.92); color:#fff; padding:12px 24px; border-radius:30px; font-size:13px; z-index:99999; opacity:0; transition:all 0.3s ease; pointer-events:none; }
+.toast-msg.show { transform:translateX(-50%) translateY(0); opacity:1; }
   </style>
 </head>
 <body class="guest-mode">
   <div style="max-width:460px;margin:0 auto;min-height:100vh;background:#ffffff;">
     ${phoneInner}
   </div>
+
+  <!-- LIGHTBOX & TOAST FOR OFFLINE / STANDALONE VIEW -->
+  <div class="lightbox-modal" id="lightboxModal">
+    <button type="button" class="lightbox-close" id="btnLightboxClose" onclick="closeLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="확대 사진" />
+  </div>
+  <div id="toastMsg" class="toast-msg">복사되었습니다.</div>
+
+  <script>
+    // Accordion Toggle
+    document.querySelectorAll(".accordion-header").forEach(btn => {
+      btn.addEventListener("click", () => {
+        btn.parentElement.classList.toggle("open");
+      });
+    });
+
+    // Account & Address Copy
+    function copyText(txt, msg = "복사되었습니다!") {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(txt).then(() => showToast(msg));
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = txt;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast(msg);
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toastMsg");
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2200);
+    }
+
+    // Lightbox Zoom
+    function openLightbox(src) {
+      const lb = document.getElementById("lightboxModal");
+      const img = document.getElementById("lightboxImg");
+      if (lb && img) {
+        img.src = src;
+        lb.classList.add("show");
+      }
+    }
+    function closeLightbox() {
+      document.getElementById("lightboxModal")?.classList.remove("show");
+    }
+    document.getElementById("lightboxModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "lightboxModal") closeLightbox();
+    });
+
+    // Hook copy buttons inside standalone HTML
+    document.querySelectorAll(".btn-copy").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const p = e.target.closest(".account-item") || e.target.parentElement;
+        const text = p ? p.innerText.replace(/복사/g, "").trim() : "";
+        if (text) copyText(text, "계좌번호가 복사되었습니다!");
+      });
+    });
+  </script>
 </body>
 </html>`;
 
@@ -2117,7 +2244,7 @@ body { background: #faf8f5; margin:0; padding:0; }
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  showToast("단독 HTML 파일이 다운로드되었습니다!");
+  showToast("단독 완전체 HTML 파일이 다운로드되었습니다!");
 }
 
 /* ===================================================
