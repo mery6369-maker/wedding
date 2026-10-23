@@ -387,8 +387,8 @@ function isWeddingExpired(weddingDateStr) {
   const parts = str.split("-").map(Number);
   if (parts.length < 3 || isNaN(parts[0])) return false;
   const wDate = new Date(parts[0], parts[1] - 1, parts[2], 23, 59, 59);
-  // 30 days after wedding date, automatically expired for privacy protection
-  const expireDate = new Date(wDate.getTime() + (30 * 24 * 60 * 60 * 1000));
+  // 90 days (3 months) after wedding date, automatically expired for privacy protection
+  const expireDate = new Date(wDate.getTime() + (90 * 24 * 60 * 60 * 1000));
   return new Date() > expireDate;
 }
 
@@ -403,15 +403,15 @@ function renderAll() {
   const groomDisplayName = state.groomName.trim() || "신랑";
   const brideDisplayName = state.brideName.trim() || "신부";
 
-  // PRIVACY PROTECTION GATE: If past wedding + 30 days, mask personal info and show graceful finish
+  // PRIVACY PROTECTION GATE: If past wedding + 90 days (3 months), mask personal info and show graceful finish
   if (isGuestMode && isExpired) {
     wrapper.innerHTML = `
       <div class="wedding-expired-screen">
         <div class="expired-badge">🛡️ 개인정보 안심 보호 시스템</div>
         <h2 class="expired-title">예식이 종료되었습니다</h2>
         <p class="expired-desc">
-          본 모바일 청첩장은 예식이 성황리에 마무리되어<br>
-          <strong>신랑·신부 및 혼주 분들의 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>
+          본 모바일 청첩장은 예식 성료 후 3개월(90일)이 경과하여<br>
+          <strong>신랑·신부 및 혼주 분들의 소중한 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>
           안전하게 비공개 전환되었습니다.
         </p>
         <div class="expired-card">
