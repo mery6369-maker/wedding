@@ -1927,11 +1927,15 @@ function updateKakaoPreviewCard() {
 
   // Update DOM OpenGraph meta tags as well
   const ogTitle = document.getElementById("metaOgTitle");
-  if (ogTitle) ogTitle.content = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다`;
+  if (ogTitle) ogTitle.content = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다 💌`;
   const ogDesc = document.getElementById("metaOgDesc");
   if (ogDesc) ogDesc.content = `${dateFormatted} ${venue} · 소중한 분들을 초대합니다.`;
   const ogImage = document.getElementById("metaOgImage");
-  if (ogImage && state.coverPhoto) ogImage.content = state.coverPhoto;
+  if (ogImage) {
+    const rawCover = state.coverPhoto || "./sample_wedding_cover.jpg";
+    const absUrl = rawCover.startsWith("http") ? rawCover : new URL(rawCover, window.location.href).href;
+    ogImage.content = absUrl;
+  }
 }
 
 let currentShortUrl = "";
@@ -2023,7 +2027,7 @@ async function shareToKakaoOrNative() {
     try {
       const fullImgUrl = (state.coverPhoto && !state.coverPhoto.startsWith("data:"))
         ? (state.coverPhoto.startsWith("http") ? state.coverPhoto : `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}${state.coverPhoto.replace(/^\.?\//, '')}`)
-        : "https://mery6369-maker.github.io/wedding/photos/sample_picnic1.jpg";
+        : "https://mery6369-maker.github.io/wedding/sample_wedding_cover.jpg";
 
       window.Kakao.Share.sendDefault({
         objectType: "feed",
