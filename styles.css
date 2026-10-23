@@ -2015,9 +2015,104 @@ body.guest-preview .mobile-dock {
   box-sizing: border-box !important;
 }
 
-/* Share Modal */
+/* Share Modal & Kakao Preview Card */
 .modal-share {
-  max-width: 380px;
+  max-width: 440px;
+  width: 92%;
+  border-radius: 14px;
+}
+
+.kakao-preview-container {
+  background: #f8f6f2;
+  border: 1px solid #e7e0d5;
+  border-radius: 12px;
+  padding: 13px;
+  margin-bottom: 15px;
+}
+
+.kakao-preview-badge {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #7a7065;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.kakao-card-mockup {
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+  border: 1px solid #ebe4d8;
+}
+
+.kakao-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 175px;
+  background: #ebe5dc;
+  overflow: hidden;
+}
+
+.kakao-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.kakao-card-pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(25, 25, 25, 0.78);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+}
+
+.kakao-card-body {
+  padding: 13px 15px;
+  text-align: left;
+}
+
+.kakao-card-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #191919;
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+
+.kakao-card-desc {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b8694d;
+  margin-bottom: 5px;
+}
+
+.kakao-card-msg {
+  font-size: 11.5px;
+  color: #777066;
+  line-height: 1.4;
+  margin-bottom: 11px;
+}
+
+.kakao-card-btn {
+  background: #f7f4ee;
+  border: 1px solid #e2dad0;
+  color: #3b352e;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 6px;
 }
 
 .share-url-box {
@@ -2068,6 +2163,31 @@ body.guest-preview .mobile-dock {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  box-shadow: 0 2px 6px rgba(254, 229, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-kakao-share:active {
+  transform: scale(0.98);
+}
+
+.btn-kakao-msg-copy {
+  background: #ffffff;
+  border: 1.5px solid #2b2724;
+  color: #2b2724;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.btn-kakao-msg-copy:hover {
+  background: #2b2724;
+  color: #ffffff;
 }
 
 .btn-html-download {

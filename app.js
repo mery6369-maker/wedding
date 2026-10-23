@@ -1898,6 +1898,39 @@ function verifyLicenseCode(code) {
 const shareModal = document.getElementById("shareModal");
 const shareUrlInput = document.getElementById("shareUrlInput");
 
+function updateKakaoPreviewCard() {
+  const groomDisplayName = state.groomName.trim() || "신랑";
+  const brideDisplayName = state.brideName.trim() || "신부";
+  const parts = state.weddingDate.split("-").map(Number);
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  let dayStr = "";
+  if (parts.length >= 3 && !isNaN(parts[0])) {
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    dayStr = ` (${days[d.getDay()]})`;
+  }
+  const dateFormatted = `${state.weddingDate.replace(/-/g, ". ")}${dayStr} ${state.weddingTime}`;
+  const venue = `${state.venueName} ${state.venueHall}`.trim();
+
+  const titleEl = document.getElementById("kakaoCardTitle");
+  if (titleEl) titleEl.textContent = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다`;
+
+  const descEl = document.getElementById("kakaoCardDesc");
+  if (descEl) descEl.textContent = `${dateFormatted} | ${venue}`;
+
+  const imgEl = document.getElementById("kakaoCardImg");
+  if (imgEl) {
+    imgEl.src = state.coverPhoto || state.detailPhoto || "./photos/sample_picnic1.jpg";
+  }
+
+  // Update DOM OpenGraph meta tags as well
+  const ogTitle = document.getElementById("metaOgTitle");
+  if (ogTitle) ogTitle.content = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다`;
+  const ogDesc = document.getElementById("metaOgDesc");
+  if (ogDesc) ogDesc.content = `${dateFormatted} ${venue} · 소중한 분들을 초대합니다.`;
+  const ogImage = document.getElementById("metaOgImage");
+  if (ogImage && state.coverPhoto) ogImage.content = state.coverPhoto;
+}
+
 function openShareModal() {
   if (!isLicensed()) {
     openLicenseModal(() => {
@@ -1907,6 +1940,7 @@ function openShareModal() {
   }
   const publicUrl = generateShareUrl();
   if (shareUrlInput) shareUrlInput.value = publicUrl;
+  updateKakaoPreviewCard();
   shareModal?.classList.add("show");
 }
 
@@ -1914,24 +1948,93 @@ function closeShareModal() {
   shareModal?.classList.remove("show");
 }
 
+function copyKakaoTemplate() {
+  const publicUrl = generateShareUrl();
+  const groomDisplayName = state.groomName.trim() || "신랑";
+  const brideDisplayName = state.brideName.trim() || "신부";
+  const parts = state.weddingDate.split("-").map(Number);
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  let dayStr = "";
+  if (parts.length >= 3 && !isNaN(parts[0])) {
+    const d = new Date(parts[0], parts[1] - 1, parts[2]);
+    dayStr = ` (${days[d.getDay()]})`;
+  }
+  const dateFormatted = `${parts[0]}년 ${parts[1]}월 ${parts[2]}일${dayStr} ${state.weddingTime}`;
+  const venue = `${state.venueName} ${state.venueHall}`.trim();
+
+  const template = `💌 [${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다]
+
+소중한 분들을 저희의 새로운 시작에 초대합니다.
+참석해 주셔서 자리를 빛내주시면 감사하겠습니다.
+
+📅 일시: ${dateFormatted}
+📍 장소: ${venue}
+
+▼ 모바일 청첩장 열기
+${publicUrl}`;
+
+  copyText(template, "카카오톡 초대 문구와 링크가 함께 복사되었습니다! 카톡에 바로 붙여넣기 하세요 :)");
+}
+
 async function shareToKakaoOrNative() {
   const publicUrl = generateShareUrl();
   const groomDisplayName = state.groomName.trim() || "신랑";
   const brideDisplayName = state.brideName.trim() || "신부";
-  const title = `${groomDisplayName} ♥ ${brideDisplayName}의 모바일 청첩장`;
-  const text = `${state.weddingDate} ${state.weddingTime}\n${state.venueName} ${state.venueHall}\n소중한 분들을 초대합니다.`;
+  const title = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다`;
+  const desc = `${state.weddingDate.replace(/-/g, ". ")} ${state.weddingTime} | ${state.venueName} ${state.venueHall}`.trim();
 
-  if (navigator.share) {
+  // 1. Try Kakao SDK if initialized
+  if (window.Kakao && typeof window.Kakao.isInitialized === "function" && window.Kakao.isInitialized()) {
     try {
-      await navigator.share({ title, text, url: publicUrl });
-      showToast("공유 창이 열렸습니다.");
+      const fullImgUrl = (state.coverPhoto && !state.coverPhoto.startsWith("data:"))
+        ? (state.coverPhoto.startsWith("http") ? state.coverPhoto : `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}${state.coverPhoto.replace(/^\.?\//, '')}`)
+        : "https://mery6369-maker.github.io/wedding/photos/sample_picnic1.jpg";
+
+      window.Kakao.Share.sendDefault({
+        objectType: "feed",
+        content: {
+          title: title,
+          description: desc,
+          imageUrl: fullImgUrl,
+          link: {
+            mobileWebUrl: publicUrl,
+            webUrl: publicUrl
+          }
+        },
+        buttons: [
+          {
+            title: "모바일 청첩장 보기",
+            link: {
+              mobileWebUrl: publicUrl,
+              webUrl: publicUrl
+            }
+          }
+        ]
+      });
+      showToast("카카오톡 공유 창이 열렸습니다.");
       return;
-    } catch (e) {
-      // Cancelled
+    } catch (err) {
+      console.warn("Kakao SDK share failed, falling back", err);
     }
   }
 
-  copyText(publicUrl, "청첩장 링크가 복사되었습니다. 카카오톡에 붙여넣으세요!");
+  // 2. Try Web Share API (native mobile share sheet which includes KakaoTalk)
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: title,
+        text: `${title}\n${desc}\n소중한 분들을 초대합니다.\n`,
+        url: publicUrl
+      });
+      showToast("공유 창이 열렸습니다.");
+      return;
+    } catch (e) {
+      // User cancelled
+    }
+  }
+
+  // 3. Fallback: Copy full formatted Kakao template
+  copyKakaoTemplate();
 }
 
 /* ===================================================
@@ -1985,6 +2088,14 @@ async function downloadStandaloneInvitation() {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>${pageTitle}</title>
+
+  <!-- CUSTOM OPEN GRAPH / KAKAO TALK PREVIEW META TAGS -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="${pageTitle}" />
+  <meta property="og:description" content="${state.weddingDate.replace(/-/g, '. ')} ${state.weddingTime} | ${state.venueName} ${state.venueHall} · 소중한 분들을 초대합니다." />
+  <meta property="og:image" content="${inlinedCover || state.coverPhoto}" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <style>
 ${cssContent}
 body { background: #faf8f5; margin:0; padding:0; }
@@ -2350,6 +2461,7 @@ document.addEventListener("DOMContentLoaded", () => {
     copyText(shareUrlInput?.value || generateShareUrl(), "청첩장 링크가 복사되었습니다!");
   });
   document.getElementById("btnKakaoShare")?.addEventListener("click", shareToKakaoOrNative);
+  document.getElementById("btnCopyKakaoTemplate")?.addEventListener("click", copyKakaoTemplate);
   document.getElementById("btnModalDownloadHtml")?.addEventListener("click", () => {
     closeShareModal();
     downloadStandaloneInvitation();
@@ -2357,6 +2469,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Bottom Share Buttons in Preview
   document.getElementById("btnBottomKakao")?.addEventListener("click", shareToKakaoOrNative);
+  document.getElementById("btnBottomKakaoMsg")?.addEventListener("click", copyKakaoTemplate);
   document.getElementById("btnBottomCopy")?.addEventListener("click", () => {
     copyText(generateShareUrl(), "청첩장 링크가 복사되었습니다!");
   });
