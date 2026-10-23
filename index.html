@@ -811,9 +811,23 @@
           </div>
         </div>
 
-        <div class="share-url-box">
-          <input type="text" id="shareUrlInput" readonly />
-          <button type="button" class="btn-copy-url" id="btnCopyShareUrl">링크복사</button>
+        <!-- SHORT URL (RECOMMENDED FOR KAKAO/SMS) -->
+        <div class="share-url-group" style="margin-bottom: 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label style="font-size:12px;font-weight:700;color:#2b2724;">✨ 초단축 깔끔 링크 (카톡·문자 전송용)</label>
+            <span id="shortUrlStatus" style="font-size:11px;color:#b8694d;font-weight:600;">⚡ 초단축 생성됨</span>
+          </div>
+          <div class="share-url-box" style="margin-bottom:6px;">
+            <input type="text" id="shareShortUrlInput" readonly placeholder="단축 링크 생성 중..." style="font-weight:600;color:#2b2724;" />
+            <button type="button" class="btn-copy-url" id="btnCopyShortUrl" style="background:#2b2724;">단축링크 복사</button>
+          </div>
+          <details style="font-size:11.5px;color:#8c857b;">
+            <summary style="cursor:pointer;padding:2px 0;user-select:none;">원본 긴 링크 보기 (서버 100% 무관)</summary>
+            <div class="share-url-box" style="margin-top:6px;margin-bottom:0;">
+              <input type="text" id="shareUrlInput" readonly style="font-size:11px;color:#777;" />
+              <button type="button" class="btn-copy-url" id="btnCopyShareUrl" style="background:#777;">복사</button>
+            </div>
+          </details>
         </div>
 
         <div class="share-actions-row">

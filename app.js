@@ -250,53 +250,54 @@ function applySampleState() {
    =================================================== */
 
 function serializeState() {
-  const minimalData = {
-    c: state.coverStyle,
-    gn: state.groomName,
-    gp: state.groomPhone,
-    gf: state.groomFather,
-    gfd: state.groomFatherDeceased ? 1 : 0,
-    gm: state.groomMother,
-    gmd: state.groomMotherDeceased ? 1 : 0,
-    grl: state.groomRelation,
-    grc: state.groomRelationCustom,
-    gfp: state.groomFatherPhone,
-    gmp: state.groomMotherPhone,
+  const d = {};
+  if (state.coverStyle && state.coverStyle !== "duo") d.c = state.coverStyle;
+  if (state.groomName) d.gn = state.groomName;
+  if (state.groomPhone) d.gp = state.groomPhone;
+  if (state.groomFather) d.gf = state.groomFather;
+  if (state.groomFatherDeceased) d.gfd = 1;
+  if (state.groomMother) d.gm = state.groomMother;
+  if (state.groomMotherDeceased) d.gmd = 1;
+  if (state.groomRelation && state.groomRelation !== "장남") d.grl = state.groomRelation;
+  if (state.groomRelationCustom) d.grc = state.groomRelationCustom;
+  if (state.groomFatherPhone) d.gfp = state.groomFatherPhone;
+  if (state.groomMotherPhone) d.gmp = state.groomMotherPhone;
 
-    bn: state.brideName,
-    bp: state.bridePhone,
-    bf: state.brideFather,
-    bfd: state.brideFatherDeceased ? 1 : 0,
-    bm: state.brideMother,
-    bmd: state.brideMotherDeceased ? 1 : 0,
-    brl: state.brideRelation,
-    brc: state.brideRelationCustom,
-    bfp: state.brideFatherPhone,
-    bmp: state.brideMotherPhone,
+  if (state.brideName) d.bn = state.brideName;
+  if (state.bridePhone) d.bp = state.bridePhone;
+  if (state.brideFather) d.bf = state.brideFather;
+  if (state.brideFatherDeceased) d.bfd = 1;
+  if (state.brideMother) d.bm = state.brideMother;
+  if (state.brideMotherDeceased) d.bmd = 1;
+  if (state.brideRelation && state.brideRelation !== "장녀") d.brl = state.brideRelation;
+  if (state.brideRelationCustom) d.brc = state.brideRelationCustom;
+  if (state.brideFatherPhone) d.bfp = state.brideFatherPhone;
+  if (state.brideMotherPhone) d.bmp = state.brideMotherPhone;
 
-    d: state.weddingDate,
-    t: state.weddingTime,
-    vn: state.venueName,
-    vh: state.venueHall,
-    va: state.venueAddress,
-    tp: state.transportParking,
-    ts: state.transportSubway,
-    tb: state.transportBus,
+  if (state.weddingDate) d.d = state.weddingDate;
+  if (state.weddingTime) d.t = state.weddingTime;
+  if (state.venueName) d.vn = state.venueName;
+  if (state.venueHall) d.vh = state.venueHall;
+  if (state.venueAddress) d.va = state.venueAddress;
+  if (state.transportParking) d.tp = state.transportParking;
+  if (state.transportSubway) d.ts = state.transportSubway;
+  if (state.transportBus) d.tb = state.transportBus;
 
-    gr: state.greeting,
+  if (state.greeting) d.gr = state.greeting;
 
-    ga: state.groomAccount,
-    gfa: state.groomFatherAccount,
-    gma: state.groomMotherAccount,
-    ba: state.brideAccount,
-    bfa: state.brideFatherAccount,
-    bma: state.brideMotherAccount,
+  if (state.groomAccount) d.ga = state.groomAccount;
+  if (state.groomFatherAccount) d.gfa = state.groomFatherAccount;
+  if (state.groomMotherAccount) d.gma = state.groomMotherAccount;
+  if (state.brideAccount) d.ba = state.brideAccount;
+  if (state.brideFatherAccount) d.bfa = state.brideFatherAccount;
+  if (state.brideMotherAccount) d.bma = state.brideMotherAccount;
 
-    bgm: state.sections.bgm ? 1 : 0,
-    sec: state.sections
-  };
+  // Disabled sections only
+  const disabled = Object.keys(state.sections || {}).filter(k => state.sections[k] === false);
+  if (disabled.length > 0) d.secOff = disabled;
+
   try {
-    return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(minimalData)))));
+    return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(d)))));
   } catch (e) {
     return "";
   }
@@ -349,6 +350,8 @@ function deserializeState(encodedStr) {
 
     if (d.sec && typeof d.sec === "object") {
       Object.assign(state.sections, d.sec);
+    } else if (d.secOff && Array.isArray(d.secOff)) {
+      d.secOff.forEach(k => { state.sections[k] = false; });
     }
     return true;
   } catch (e) {
@@ -1931,6 +1934,37 @@ function updateKakaoPreviewCard() {
   if (ogImage && state.coverPhoto) ogImage.content = state.coverPhoto;
 }
 
+let currentShortUrl = "";
+
+async function requestShortUrl(longUrl) {
+  const shortInput = document.getElementById("shareShortUrlInput");
+  const statusEl = document.getElementById("shortUrlStatus");
+  if (!shortInput) return longUrl;
+
+  shortInput.value = "⚡ 깔끔한 초단축 링크 생성 중...";
+  if (statusEl) statusEl.textContent = "생성 중...";
+
+  try {
+    const apiUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`;
+    const resp = await fetch(apiUrl);
+    const data = await resp.json();
+    if (data && data.shorturl) {
+      currentShortUrl = data.shorturl;
+      shortInput.value = data.shorturl;
+      if (statusEl) statusEl.textContent = "⚡ 초단축 생성됨";
+      return data.shorturl;
+    }
+  } catch (e) {
+    console.warn("Short URL service unavailable", e);
+  }
+
+  // Fallback to longUrl if offline or API blocked
+  currentShortUrl = longUrl;
+  shortInput.value = longUrl;
+  if (statusEl) statusEl.textContent = "안심 원본 링크";
+  return longUrl;
+}
+
 function openShareModal() {
   if (!isLicensed()) {
     openLicenseModal(() => {
@@ -1941,6 +1975,7 @@ function openShareModal() {
   const publicUrl = generateShareUrl();
   if (shareUrlInput) shareUrlInput.value = publicUrl;
   updateKakaoPreviewCard();
+  requestShortUrl(publicUrl);
   shareModal?.classList.add("show");
 }
 
@@ -1949,7 +1984,7 @@ function closeShareModal() {
 }
 
 function copyKakaoTemplate() {
-  const publicUrl = generateShareUrl();
+  const targetUrl = currentShortUrl || generateShareUrl();
   const groomDisplayName = state.groomName.trim() || "신랑";
   const brideDisplayName = state.brideName.trim() || "신부";
   const parts = state.weddingDate.split("-").map(Number);
@@ -1971,13 +2006,13 @@ function copyKakaoTemplate() {
 📍 장소: ${venue}
 
 ▼ 모바일 청첩장 열기
-${publicUrl}`;
+${targetUrl}`;
 
-  copyText(template, "카카오톡 초대 문구와 링크가 함께 복사되었습니다! 카톡에 바로 붙여넣기 하세요 :)");
+  copyText(template, "카카오톡 초대 문구와 깔끔한 링크가 함께 복사되었습니다! 카톡에 바로 붙여넣기 하세요 :)");
 }
 
 async function shareToKakaoOrNative() {
-  const publicUrl = generateShareUrl();
+  const targetUrl = currentShortUrl || generateShareUrl();
   const groomDisplayName = state.groomName.trim() || "신랑";
   const brideDisplayName = state.brideName.trim() || "신부";
   const title = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다`;
@@ -1997,16 +2032,16 @@ async function shareToKakaoOrNative() {
           description: desc,
           imageUrl: fullImgUrl,
           link: {
-            mobileWebUrl: publicUrl,
-            webUrl: publicUrl
+            mobileWebUrl: targetUrl,
+            webUrl: targetUrl
           }
         },
         buttons: [
           {
             title: "모바일 청첩장 보기",
             link: {
-              mobileWebUrl: publicUrl,
-              webUrl: publicUrl
+              mobileWebUrl: targetUrl,
+              webUrl: targetUrl
             }
           }
         ]
@@ -2024,7 +2059,7 @@ async function shareToKakaoOrNative() {
       await navigator.share({
         title: title,
         text: `${title}\n${desc}\n소중한 분들을 초대합니다.\n`,
-        url: publicUrl
+        url: targetUrl
       });
       showToast("공유 창이 열렸습니다.");
       return;
@@ -2586,6 +2621,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("btnCopyShareUrl")?.addEventListener("click", () => {
     copyText(shareUrlInput?.value || generateShareUrl(), "청첩장 링크가 복사되었습니다!");
+  });
+  document.getElementById("btnCopyShortUrl")?.addEventListener("click", () => {
+    const shortVal = document.getElementById("shareShortUrlInput")?.value || currentShortUrl || generateShareUrl();
+    copyText(shortVal, "✨ 초단축 청첩장 링크가 복사되었습니다!");
   });
   document.getElementById("btnKakaoShare")?.addEventListener("click", shareToKakaoOrNative);
   document.getElementById("btnCopyKakaoTemplate")?.addEventListener("click", copyKakaoTemplate);
