@@ -419,6 +419,93 @@ body {
   background: #f1ece4;
 }
 
+.slot-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-slot-url {
+  background: #fdfbf7;
+  border: 1px solid #dcd7ce;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 11.5px;
+  color: #4a453e;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-slot-url:hover {
+  background: #f0ece3;
+  border-color: #c8bfb0;
+}
+
+.slot-url-box {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.slot-url-box input {
+  flex: 1;
+  padding: 7px 10px;
+  border: 1px solid #dcd7ce;
+  border-radius: 6px;
+  font-size: 11.5px;
+  background: #ffffff;
+  color: #2b2724;
+  box-sizing: border-box;
+}
+
+.btn-apply-url {
+  background: #2b2724;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.btn-apply-url:hover {
+  background: #443e39;
+}
+
+.photo-guide-banner {
+  margin-top: 10px;
+  background: #f7f4ee;
+  border: 1px solid #e8e1d5;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.share-photo-alert {
+  padding: 10px 13px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.share-photo-alert.success {
+  background: #edf7ed;
+  border: 1px solid #c8e6c9;
+  color: #1e4620;
+}
+
+.share-photo-alert.notice {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  color: #6d4c00;
+}
+
 /* Form Styles */
 .form-row {
   display: grid;

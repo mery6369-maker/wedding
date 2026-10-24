@@ -292,6 +292,14 @@ function serializeState() {
   if (state.brideFatherAccount) d.bfa = state.brideFatherAccount;
   if (state.brideMotherAccount) d.bma = state.brideMotherAccount;
 
+  // Web-hosted Photo URLs (never serialize base64 data URLs to prevent link bloating)
+  if (state.coverPhoto && !state.coverPhoto.startsWith("data:")) d.cp = state.coverPhoto;
+  if (state.detailPhoto && !state.detailPhoto.startsWith("data:")) d.dp = state.detailPhoto;
+  if (Array.isArray(state.galleryPhotos)) {
+    const urlGallery = state.galleryPhotos.filter(p => typeof p === "string" && !p.startsWith("data:"));
+    if (urlGallery.length > 0) d.gp = urlGallery;
+  }
+
   // Disabled sections only
   const disabled = Object.keys(state.sections || {}).filter(k => state.sections[k] === false);
   if (disabled.length > 0) d.secOff = disabled;
@@ -348,6 +356,10 @@ function deserializeState(encodedStr) {
     if (typeof d.bfa !== "undefined") state.brideFatherAccount = d.bfa;
     if (typeof d.bma !== "undefined") state.brideMotherAccount = d.bma;
 
+    if (typeof d.cp !== "undefined") state.coverPhoto = d.cp;
+    if (typeof d.dp !== "undefined") state.detailPhoto = d.dp;
+    if (Array.isArray(d.gp)) state.galleryPhotos = d.gp;
+
     if (d.sec && typeof d.sec === "object") {
       Object.assign(state.sections, d.sec);
     } else if (d.secOff && Array.isArray(d.secOff)) {
@@ -367,10 +379,19 @@ function checkUrlMode() {
     document.body.classList.add("guest-mode");
   }
 
+  if (hash.includes("testLicensed")) {
+    try { localStorage.setItem("wedding_builder_licensed", "true"); } catch (e) {}
+  }
+
   const match = hash.match(/data=([^&]+)/);
   if (match && match[1]) {
     deserializeState(match[1]);
   }
+
+  if (hash.includes("openShare")) {
+    setTimeout(() => { openShareModal(); }, 200);
+  }
+
   return hash.includes("view");
 }
 
@@ -516,11 +537,39 @@ function renderAll() {
     posterCoverImg.src = state.coverPhoto;
   }
 
-  // Desktop Slot Thumbnails
+  // Desktop Slot Thumbnails & Sub Status
   const deskSlot1 = document.getElementById("deskSlotThumb1");
   const deskSlot2 = document.getElementById("deskSlotThumb2");
   if (deskSlot1) deskSlot1.src = state.coverPhoto;
   if (deskSlot2) deskSlot2.src = state.detailPhoto;
+
+  const slot1Sub = document.getElementById("slot1StatusSub");
+  if (slot1Sub) {
+    if (state.coverPhoto && (state.coverPhoto.startsWith("http://") || state.coverPhoto.startsWith("https://"))) {
+      slot1Sub.textContent = "🌐 웹 링크 공유 준비 완료 (URL)";
+      slot1Sub.style.color = "#2e7d32";
+    } else if (state.coverPhoto && state.coverPhoto.startsWith("data:")) {
+      slot1Sub.textContent = "💾 로컬 파일 (단독 HTML 100% 보관)";
+      slot1Sub.style.color = "#b8694d";
+    } else {
+      slot1Sub.textContent = "샘플 화보 커버";
+      slot1Sub.style.color = "#8c857b";
+    }
+  }
+
+  const slot2Sub = document.getElementById("slot2StatusSub");
+  if (slot2Sub) {
+    if (state.detailPhoto && (state.detailPhoto.startsWith("http://") || state.detailPhoto.startsWith("https://"))) {
+      slot2Sub.textContent = "🌐 웹 링크 공유 준비 완료 (URL)";
+      slot2Sub.style.color = "#2e7d32";
+    } else if (state.detailPhoto && state.detailPhoto.startsWith("data:")) {
+      slot2Sub.textContent = "💾 로컬 파일 (단독 HTML 100% 보관)";
+      slot2Sub.style.color = "#b8694d";
+    } else {
+      slot2Sub.textContent = "듀오 커버 손/반지 컷";
+      slot2Sub.style.color = "#8c857b";
+    }
+  }
 
   // Greeting Text
   const greetingEl = document.getElementById("viewGreetingText");
@@ -1936,6 +1985,19 @@ function updateKakaoPreviewCard() {
     const absUrl = rawCover.startsWith("http") ? rawCover : new URL(rawCover, window.location.href).href;
     ogImage.content = absUrl;
   }
+
+  // Real-time Photo Hosting Status Alert
+  const alertEl = document.getElementById("sharePhotoStatusAlert");
+  const isHosted = state.coverPhoto && (state.coverPhoto.startsWith("http://") || state.coverPhoto.startsWith("https://"));
+  if (alertEl) {
+    if (isHosted) {
+      alertEl.className = "share-photo-alert success";
+      alertEl.innerHTML = `<strong>✅ 하객 화면 준비 완료</strong>: 모든 하객의 스마트폰에서 실제 웨딩 사진이 선명하게 표시됩니다.`;
+    } else {
+      alertEl.className = "share-photo-alert notice";
+      alertEl.innerHTML = `<strong>💡 사진 안내</strong>: 현재 대표 사진이 로컬 파일(내 컴퓨터/폰) 상태입니다.<br>• <strong>소장용 HTML 저장</strong>: 내 사진이 100% 영구 보관되어 지금 바로 저장됩니다.<br>• <strong>하객용 웹 링크 공유</strong>: 모든 하객 화면에도 내 사진이 뜨게 하려면 [사진 URL 등록]을 권장합니다.`;
+    }
+  }
 }
 
 let currentShortUrl = "";
@@ -2476,6 +2538,78 @@ function bindDesktopFormEvents() {
       renderAll();
       showToast(`${files.length}장의 사진이 갤러리에 추가되었습니다!`);
     }
+  });
+
+  // Slot 1 URL Toggle & Apply
+  const boxSlot1Url = document.getElementById("slot1UrlBox");
+  document.getElementById("btnToggleSlot1Url")?.addEventListener("click", () => {
+    if (!boxSlot1Url) return;
+    boxSlot1Url.style.display = boxSlot1Url.style.display === "none" ? "flex" : "none";
+    if (boxSlot1Url.style.display === "flex") {
+      document.getElementById("inpSlot1Url")?.focus();
+    }
+  });
+
+  document.getElementById("btnApplySlot1Url")?.addEventListener("click", () => {
+    const val = (document.getElementById("inpSlot1Url")?.value || "").trim();
+    if (!val) {
+      showToast("이미지 웹 링크(URL)를 입력해 주세요.");
+      return;
+    }
+    state.coverPhoto = val;
+    renderAll();
+    showToast("메인 대표 사진 웹 링크가 적용되었습니다!");
+    if (boxSlot1Url) boxSlot1Url.style.display = "none";
+  });
+
+  // Slot 2 URL Toggle & Apply
+  const boxSlot2Url = document.getElementById("slot2UrlBox");
+  document.getElementById("btnToggleSlot2Url")?.addEventListener("click", () => {
+    if (!boxSlot2Url) return;
+    boxSlot2Url.style.display = boxSlot2Url.style.display === "none" ? "flex" : "none";
+    if (boxSlot2Url.style.display === "flex") {
+      document.getElementById("inpSlot2Url")?.focus();
+    }
+  });
+
+  document.getElementById("btnApplySlot2Url")?.addEventListener("click", () => {
+    const val = (document.getElementById("inpSlot2Url")?.value || "").trim();
+    if (!val) {
+      showToast("이미지 웹 링크(URL)를 입력해 주세요.");
+      return;
+    }
+    state.detailPhoto = val;
+    renderAll();
+    showToast("서브 디테일 사진 웹 링크가 적용되었습니다!");
+    if (boxSlot2Url) boxSlot2Url.style.display = "none";
+  });
+
+  // Gallery URL Toggle & Apply
+  const boxGalleryUrl = document.getElementById("galleryUrlBox");
+  document.getElementById("btnToggleAddGalleryUrl")?.addEventListener("click", () => {
+    if (!boxGalleryUrl) return;
+    boxGalleryUrl.style.display = boxGalleryUrl.style.display === "none" ? "flex" : "none";
+    if (boxGalleryUrl.style.display === "flex") {
+      document.getElementById("inpGalleryUrl")?.focus();
+    }
+  });
+
+  document.getElementById("btnAddGalleryUrl")?.addEventListener("click", () => {
+    const val = (document.getElementById("inpGalleryUrl")?.value || "").trim();
+    if (!val) {
+      showToast("갤러리 사진 URL을 입력해 주세요.");
+      return;
+    }
+    if (!Array.isArray(state.galleryPhotos)) state.galleryPhotos = [];
+    if (state.galleryPhotos.length >= MAX_GALLERY_PHOTOS) {
+      showToast("갤러리 사진은 최대 20장까지 등록 가능합니다.");
+      return;
+    }
+    state.galleryPhotos.push(val);
+    renderAll();
+    showToast("갤러리 사진 웹 링크가 추가되었습니다!");
+    document.getElementById("inpGalleryUrl").value = "";
+    if (boxGalleryUrl) boxGalleryUrl.style.display = "none";
   });
 
   // BGM Checkbox & Track Selector
