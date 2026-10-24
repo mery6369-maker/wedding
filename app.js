@@ -433,9 +433,51 @@ function isWeddingExpired(weddingDateStr) {
   return new Date() > expireDate;
 }
 
+function parseKoreanNameEn(str) {
+  if (!str) return { full: "", given: "" };
+  if (/[a-zA-Z]/.test(str)) {
+    const trimmed = str.trim().toUpperCase();
+    return { full: trimmed, given: trimmed.split(" ")[0] };
+  }
+  const chosung = ["G", "KK", "N", "D", "TT", "R", "M", "B", "PP", "S", "SS", "", "J", "JJ", "CH", "K", "T", "P", "H"];
+  const jungsung = ["A", "AE", "YA", "YAE", "EO", "E", "YEO", "YE", "O", "WA", "WAE", "OE", "YO", "U", "WEO", "WE", "WI", "YU", "EU", "UI", "I"];
+  const jongsung = ["", "K", "K", "KS", "N", "NJ", "NH", "T", "L", "LG", "LM", "LB", "LS", "LT", "LP", "LH", "M", "P", "PS", "T", "T", "NG", "T", "T", "K", "T", "P", "H"];
+  const familyOverrides = {
+    "김": "KIM", "이": "LEE", "박": "PARK", "최": "CHOI", "정": "JUNG", "강": "KANG",
+    "조": "CHO", "윤": "YOON", "장": "JANG", "임": "LIM", "한": "HAN", "오": "OH",
+    "서": "SEO", "신": "SHIN", "권": "KWON", "황": "HWANG", "안": "AHN", "송": "SONG",
+    "전": "JEON", "홍": "HONG", "유": "YOO", "고": "KO", "문": "MOON", "양": "YANG",
+    "손": "SON", "배": "BAE", "백": "BAEK", "허": "HUH", "류": "RYU"
+  };
+  let syllables = [];
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+    if (i === 0 && familyOverrides[char] && str.length > 1) {
+      syllables.push({ type: "family", val: familyOverrides[char] });
+      continue;
+    }
+    const code = char.charCodeAt(0) - 0xAC00;
+    if (code >= 0 && code <= 11171) {
+      const cho = Math.floor(code / (21 * 28));
+      const jung = Math.floor((code % (21 * 28)) / 28);
+      const jong = code % 28;
+      let syl = (chosung[cho] || "") + (jungsung[jung] || "") + (jongsung[jong] || "");
+      syllables.push({ type: "given", val: syl });
+    }
+  }
+  if (syllables.length === 0) return { full: str.toUpperCase(), given: str.toUpperCase() };
+  if (syllables.length === 1) return { full: syllables[0].val, given: syllables[0].val };
+  const fam = syllables[0].val;
+  const given = syllables.slice(1).map(s => s.val).join("");
+  return { full: fam + " " + given, given: given };
+}
+
 function renderAll() {
   const wrapper = document.getElementById("invWrapper");
   if (!wrapper) return;
+
+  const groomDisplayName = (state.groomName || "").trim() || "신랑";
+  const brideDisplayName = (state.brideName || "").trim() || "신부";
 
   const isGuestMode = document.body.classList.contains("guest-mode");
   const isWeddingExpiredFlag = isWeddingExpired(state.weddingDate);
@@ -552,6 +594,87 @@ function renderAll() {
   if (posterCoverImg) {
     posterCoverImg.src = state.coverPhoto;
   }
+
+  // English romanized names for luxury contemporary covers
+  const groomEn = parseKoreanNameEn(groomDisplayName);
+  const brideEn = parseKoreanNameEn(brideDisplayName);
+
+  // 5. Cover 5: Film Polaroid & Snap
+  const polaroidCoverImg = document.getElementById("polaroidCoverImg");
+  if (polaroidCoverImg) polaroidCoverImg.src = state.coverPhoto;
+  const polaroidGroom = document.getElementById("polaroidGroomName");
+  const polaroidBride = document.getElementById("polaroidBrideName");
+  if (polaroidGroom) polaroidGroom.textContent = groomDisplayName;
+  if (polaroidBride) polaroidBride.textContent = brideDisplayName;
+  const polaroidDateStamp = document.getElementById("polaroidDateStamp");
+  if (polaroidDateStamp) polaroidDateStamp.textContent = `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} / ${dayNameEn}`;
+  const polaroidDateDetails = document.getElementById("polaroidDateDetails");
+  if (polaroidDateDetails) polaroidDateDetails.textContent = `${year}년 ${month}월 ${day}일 ${state.weddingTime || ""}`.trim();
+  const polaroidVenue = document.getElementById("polaroidVenueSummary");
+  if (polaroidVenue) polaroidVenue.textContent = venueSummary;
+
+  // 6. Cover 6: Wide Termina Split
+  const splitCoverImg = document.getElementById("splitCoverImg");
+  if (splitCoverImg) splitCoverImg.src = state.coverPhoto;
+  const splitGroomEn = document.getElementById("splitGroomEn");
+  const splitBrideEn = document.getElementById("splitBrideEn");
+  if (splitGroomEn) splitGroomEn.textContent = groomEn.given || groomEn.full || "GROOM";
+  if (splitBrideEn) splitBrideEn.textContent = brideEn.given || brideEn.full || "BRIDE";
+  const splitGroomKr = document.getElementById("splitGroomKr");
+  const splitBrideKr = document.getElementById("splitBrideKr");
+  if (splitGroomKr) splitGroomKr.textContent = groomDisplayName;
+  if (splitBrideKr) splitBrideKr.textContent = brideDisplayName;
+  const splitDateSum = document.getElementById("splitDateSummary");
+  if (splitDateSum) splitDateSum.textContent = `${monNameEn} ${day}, ${year}`;
+  const splitMetaSum = document.getElementById("splitMetaSummary");
+  if (splitMetaSum) splitMetaSum.textContent = `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} ${dayNameEn} ${state.weddingTime || ""} · ${venueSummary}`.trim();
+
+  // 7. Cover 7: Bilbo Swash Calligraphy
+  const bilboCoverImg = document.getElementById("bilboCoverImg");
+  if (bilboCoverImg) bilboCoverImg.src = state.coverPhoto;
+  const bilboGroom = document.getElementById("bilboGroomName");
+  const bilboBride = document.getElementById("bilboBrideName");
+  if (bilboGroom) bilboGroom.textContent = groomDisplayName;
+  if (bilboBride) bilboBride.textContent = brideDisplayName;
+  const bilboNamesEn = document.getElementById("bilboNamesEn");
+  if (bilboNamesEn) bilboNamesEn.textContent = `${groomEn.given || "DOYUN"} & ${brideEn.given || "SEOYEON"}`;
+  const bilboSubDate = document.getElementById("bilboSubDate");
+  const daySuffix = (day === 1 || day === 21 || day === 31) ? "st" : (day === 2 || day === 22) ? "nd" : (day === 3 || day === 23) ? "rd" : "th";
+  if (bilboSubDate) bilboSubDate.textContent = `Forever Begins on ${monNameEn} ${day}${daySuffix}`;
+  const bilboDateDetails = document.getElementById("bilboDateDetails");
+  if (bilboDateDetails) bilboDateDetails.textContent = `${year}년 ${month}월 ${day}일 ${dayNameEn} ${state.weddingTime || ""}`.trim();
+  const bilboVenue = document.getElementById("bilboVenueSummary");
+  if (bilboVenue) bilboVenue.textContent = venueSummary;
+
+  // 8. Cover 8: Modern Swiss Bold
+  const swissCoverImg = document.getElementById("swissCoverImg");
+  if (swissCoverImg) swissCoverImg.src = state.coverPhoto;
+  const swissIssueTag = document.getElementById("swissIssueTag");
+  if (swissIssueTag) swissIssueTag.textContent = `ISSUE NO. ${String(year).slice(-2)} · ${String(month).padStart(2, "0")} / ${String(day).padStart(2, "0")}`;
+  const swissNamesEn = document.getElementById("swissNamesEn");
+  if (swissNamesEn) swissNamesEn.textContent = `${groomEn.given || "DOYUN"} & ${brideEn.given || "SEOYEON"}`;
+  const swissGroom = document.getElementById("swissGroomName");
+  const swissBride = document.getElementById("swissBrideName");
+  if (swissGroom) swissGroom.textContent = groomDisplayName;
+  if (swissBride) swissBride.textContent = brideDisplayName;
+  const swissDateTimeSum = document.getElementById("swissDateTimeSummary");
+  if (swissDateTimeSum) swissDateTimeSum.textContent = `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} ${dayNameEn} ${state.weddingTime || ""}`.trim();
+  const swissVenueSum = document.getElementById("swissVenueSummary");
+  if (swissVenueSum) swissVenueSum.textContent = venueSummary;
+
+  // 9. Cover 9: Wonderful Script Fullscreen
+  const wonderfulCoverImg = document.getElementById("wonderfulCoverImg");
+  if (wonderfulCoverImg) wonderfulCoverImg.src = state.coverPhoto;
+  const wonderfulNamesEn = document.getElementById("wonderfulNamesEn");
+  if (wonderfulNamesEn) wonderfulNamesEn.textContent = `${groomEn.full || "KIM DOYUN"} & ${brideEn.full || "LEE SEOYEON"}`;
+  const wonderfulGroom = document.getElementById("wonderfulGroomName");
+  const wonderfulBride = document.getElementById("wonderfulBrideName");
+  if (wonderfulGroom) wonderfulGroom.textContent = groomDisplayName;
+  if (wonderfulBride) wonderfulBride.textContent = brideDisplayName;
+  const wonderfulDateSum = document.getElementById("wonderfulDateSummary");
+  if (wonderfulDateSum) wonderfulDateSum.textContent = `${year}. ${String(month).padStart(2, "0")}. ${String(day).padStart(2, "0")} ${dayNameEn} ${state.weddingTime || ""}`.trim();
+  const wonderfulVenueSum = document.getElementById("wonderfulVenueSummary");
+  if (wonderfulVenueSum) wonderfulVenueSum.textContent = venueSummary;
 
   // Desktop Slot Thumbnails & Sub Status
   const deskSlot1 = document.getElementById("deskSlotThumb1");
@@ -1229,6 +1352,85 @@ function openBottomSheet(tabType) {
           <div class="cover-card-info">
             <span class="cover-card-title">04. 아치 &amp; 갤러리 액자</span>
             <span class="cover-card-desc">미니멀 화이트 여백과 아치형 곡선 프레임</span>
+          </div>
+        </div>
+
+        <!-- 05. Polaroid Snap -->
+        <div class="cover-card ${state.coverStyle === 'polaroid' ? 'active' : ''}" data-sheet-cover="polaroid">
+          <div class="cover-mini-thumb">
+            <div class="mini-polaroid-box">
+              <div class="mini-polaroid-tape"></div>
+              <div class="mini-polaroid-img"></div>
+              <div class="mini-polaroid-foot">Always</div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">05. 필름 폴라로이드 &amp; 스냅</span>
+            <span class="cover-card-desc">35mm 필름 감성과 손글씨 영문 캘리그라피</span>
+            <span class="cover-card-badge" style="background:#fef3c7;color:#92400e;">인기 스냅</span>
+          </div>
+        </div>
+
+        <!-- 06. Wide Termina Split -->
+        <div class="cover-card ${state.coverStyle === 'split' ? 'active' : ''}" data-sheet-cover="split">
+          <div class="cover-mini-thumb">
+            <div class="mini-split-box">
+              <div class="mini-split-top">
+                <span>G</span><span>B</span>
+              </div>
+              <div class="mini-split-title">— The Wedding —</div>
+              <div class="mini-split-img"></div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">06. 와이드 스플릿 룩</span>
+            <span class="cover-card-desc">상단 신랑·신부 영문/한글 분할과 The Wedding of Two 세리프</span>
+            <span class="cover-card-badge" style="background:#e0f2fe;color:#0369a1;">모던 시그니처</span>
+          </div>
+        </div>
+
+        <!-- 07. Bilbo Swash Calligraphy -->
+        <div class="cover-card ${state.coverStyle === 'bilbo' ? 'active' : ''}" data-sheet-cover="bilbo">
+          <div class="cover-mini-thumb">
+            <div class="mini-bilbo-box">
+              <div class="mini-bilbo-title">Our Day</div>
+              <div class="mini-bilbo-img"></div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">07. 빌보 스워시 캘리</span>
+            <span class="cover-card-desc">드라마틱한 스워시 영문 서명과 부드러운 고운돋움 한글</span>
+            <span class="cover-card-badge" style="background:#fce7f3;color:#9d174d;">감성 캘리</span>
+          </div>
+        </div>
+
+        <!-- 08. Modern Swiss Bold -->
+        <div class="cover-card ${state.coverStyle === 'swiss' ? 'active' : ''}" data-sheet-cover="swiss">
+          <div class="cover-mini-thumb">
+            <div class="mini-swiss-box">
+              <div class="mini-swiss-head">WE'RE<br>MARRIED.</div>
+              <div class="mini-swiss-bar">|||||</div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">08. 모던 스위스 볼드</span>
+            <span class="cover-card-desc">성수·한남 힙스터 감성의 볼드 타이포와 바코드 디테일</span>
+            <span class="cover-card-badge" style="background:#fef9c3;color:#854d0e;">힙스터 볼드</span>
+          </div>
+        </div>
+
+        <!-- 09. Wonderful Script Fullscreen -->
+        <div class="cover-card ${state.coverStyle === 'wonderful' ? 'active' : ''}" data-sheet-cover="wonderful">
+          <div class="cover-mini-thumb">
+            <div class="mini-wonderful-box">
+              <div class="mini-wonderful-title">Wonderful Day</div>
+              <div class="mini-wonderful-img"></div>
+            </div>
+          </div>
+          <div class="cover-card-info">
+            <span class="cover-card-title">09. 원더풀 스크립트 풀스크린</span>
+            <span class="cover-card-desc">100% 풀스크린 사진과 감성적인 캘리그라피·하트 드로잉</span>
+            <span class="cover-card-badge" style="background:#fdf2f8;color:#be185d;">원더풀 풀스크린</span>
           </div>
         </div>
       </div>

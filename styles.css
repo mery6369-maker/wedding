@@ -5,7 +5,7 @@
  */
 
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
-@import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Noto+Serif+KR:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Bilbo+Swash+Caps&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Gowun+Dodum&family=Italiana&family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@300;400;500;600&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Syncopate:wght@400;700&family=Syne:wght@700;800&display=swap");
 
 :root {
   /* Bright Editorial Wedding Palette */
@@ -296,6 +296,191 @@ body {
   height: 100%;
   background: url('./sample_wedding_cover.jpg') center/cover no-repeat;
   border-radius: 30px 30px 2px 2px;
+}
+
+/* 05. Mini Polaroid */
+.mini-polaroid-box {
+  width: 100%;
+  height: 100%;
+  background: #f7f3ed;
+  padding: 8px 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.mini-polaroid-tape {
+  position: absolute;
+  top: 1px;
+  width: 24px;
+  height: 6px;
+  background: rgba(226, 218, 203, 0.9);
+  border-radius: 1px;
+}
+.mini-polaroid-img {
+  width: 100%;
+  height: 52px;
+  background: url('./sample_wedding_cover.jpg') center/cover no-repeat;
+  border-radius: 1px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.mini-polaroid-foot {
+  font-family: 'Alex Brush', cursive;
+  font-size: 9px;
+  color: #4a4239;
+  margin-top: 3px;
+  text-align: center;
+}
+
+/* 06. Mini Split */
+.mini-split-box {
+  width: 100%;
+  height: 100%;
+  background: #111;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px 4px;
+  overflow: hidden;
+}
+.mini-split-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('./sample_wedding_cover.jpg') center/cover no-repeat;
+  opacity: 0.6;
+}
+.mini-split-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Syncopate', sans-serif;
+  font-size: 6px;
+  font-weight: 700;
+  color: #fff;
+  border-bottom: 0.5px solid rgba(255,255,255,0.4);
+  padding-bottom: 2px;
+}
+.mini-split-title {
+  position: relative;
+  z-index: 1;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 6px;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+}
+.mini-split-img {
+  display: none;
+}
+
+/* 07. Mini Bilbo */
+.mini-bilbo-box {
+  width: 100%;
+  height: 100%;
+  background: #111;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  overflow: hidden;
+}
+.mini-bilbo-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('./sample_wedding_cover.jpg') center/cover no-repeat;
+  opacity: 0.6;
+}
+.mini-bilbo-title {
+  position: relative;
+  z-index: 1;
+  font-family: 'Bilbo Swash Caps', cursive;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  line-height: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+.mini-bilbo-img {
+  display: none;
+}
+
+/* 08. Mini Swiss */
+.mini-swiss-box {
+  width: 100%;
+  height: 100%;
+  background: #0d1117;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px 4px;
+  overflow: hidden;
+}
+.mini-swiss-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('./sample_wedding_cover.jpg') center/cover no-repeat;
+  opacity: 0.5;
+}
+.mini-swiss-head {
+  position: relative;
+  z-index: 1;
+  font-family: 'Syne', sans-serif;
+  font-size: 7.5px;
+  font-weight: 800;
+  line-height: 0.95;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.mini-swiss-bar {
+  position: relative;
+  z-index: 1;
+  font-size: 6px;
+  letter-spacing: -1px;
+  color: rgba(255,255,255,0.7);
+  text-align: right;
+}
+
+/* 09. Mini Wonderful */
+.mini-wonderful-box {
+  width: 100%;
+  height: 100%;
+  background: #111;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  overflow: hidden;
+}
+.mini-wonderful-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('./sample_wedding_cover.jpg') center/cover no-repeat;
+  opacity: 0.6;
+}
+.mini-wonderful-title {
+  position: relative;
+  z-index: 1;
+  font-family: 'Alex Brush', cursive;
+  font-size: 11px;
+  color: #fff;
+  text-align: center;
+  line-height: 1.1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+.mini-wonderful-img {
+  display: none;
 }
 
 .cover-card-info {
@@ -739,27 +924,29 @@ body.viewer-only .phone-mockup {
 }
 
 /* ===================================================
-   COVER LAYOUTS (DUO, POSTER, MAGAZINE, ARCH)
+   COVER LAYOUTS (9 LUXURY SIGNATURE STYLES)
    =================================================== */
-.inv-wrapper[data-cover-style="duo"] .cover-duo { display: block; }
-.inv-wrapper[data-cover-style="duo"] .cover-poster,
-.inv-wrapper[data-cover-style="duo"] .cover-magazine,
-.inv-wrapper[data-cover-style="duo"] .cover-arch { display: none; }
+.cover-duo,
+.cover-poster,
+.cover-magazine,
+.cover-arch,
+.cover-polaroid,
+.cover-split,
+.cover-bilbo,
+.cover-swiss,
+.cover-wonderful {
+  display: none !important;
+}
 
-.inv-wrapper[data-cover-style="poster"] .cover-poster { display: block; }
-.inv-wrapper[data-cover-style="poster"] .cover-duo,
-.inv-wrapper[data-cover-style="poster"] .cover-magazine,
-.inv-wrapper[data-cover-style="poster"] .cover-arch { display: none; }
-
-.inv-wrapper[data-cover-style="magazine"] .cover-magazine { display: block; }
-.inv-wrapper[data-cover-style="magazine"] .cover-duo,
-.inv-wrapper[data-cover-style="magazine"] .cover-poster,
-.inv-wrapper[data-cover-style="magazine"] .cover-arch { display: none; }
-
-.inv-wrapper[data-cover-style="arch"] .cover-arch { display: block; }
-.inv-wrapper[data-cover-style="arch"] .cover-duo,
-.inv-wrapper[data-cover-style="arch"] .cover-poster,
-.inv-wrapper[data-cover-style="arch"] .cover-magazine { display: none; }
+.inv-wrapper[data-cover-style="duo"] .cover-duo { display: block !important; }
+.inv-wrapper[data-cover-style="poster"] .cover-poster { display: block !important; }
+.inv-wrapper[data-cover-style="magazine"] .cover-magazine { display: block !important; }
+.inv-wrapper[data-cover-style="arch"] .cover-arch { display: block !important; }
+.inv-wrapper[data-cover-style="polaroid"] .cover-polaroid { display: flex !important; }
+.inv-wrapper[data-cover-style="split"] .cover-split { display: flex !important; }
+.inv-wrapper[data-cover-style="bilbo"] .cover-bilbo { display: flex !important; }
+.inv-wrapper[data-cover-style="swiss"] .cover-swiss { display: flex !important; }
+.inv-wrapper[data-cover-style="wonderful"] .cover-wonderful { display: flex !important; }
 
 /* 1. DUO FRAME (SIGNATURE 2-PHOTO ASYMMETRICAL) */
 .cover-duo {
@@ -1168,6 +1355,432 @@ body.viewer-only .phone-mockup {
 .poster-barcode span:nth-child(10) { width: 3px; }
 .poster-barcode span:nth-child(11) { width: 1.5px; }
 .poster-barcode span:nth-child(12) { width: 2px; }
+
+/* SHARED FULL-BLEED POSTER BASE */
+.cover-fullscreen-poster {
+  position: relative;
+  width: 100%;
+  min-height: 740px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 56px 22px 28px;
+}
+.poster-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+  transform: scale(1.02);
+}
+.scroll-indicator-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.85;
+  animation: floatPulse 2s infinite ease-in-out;
+}
+.scroll-indicator-text {
+  font-family: 'Syncopate', 'Montserrat', sans-serif;
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+}
+@keyframes floatPulse {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(5px); opacity: 1; }
+}
+
+/* 5. FILM POLAROID SNAP */
+.cover-polaroid {
+  min-height: 720px;
+  background: #f7f3ed;
+  padding: 44px 20px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.polaroid-badge-top {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #9c9388;
+  margin-bottom: 20px;
+  margin-top: 6px;
+}
+.polaroid-card {
+  background: #ffffff;
+  padding: 14px 14px 22px;
+  box-shadow: 0 16px 36px rgba(60, 45, 30, 0.12), 0 2px 6px rgba(0,0,0,0.04);
+  border-radius: 2px;
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  transform: rotate(-1.5deg);
+  transition: transform 0.3s ease;
+}
+.polaroid-card:hover { transform: rotate(0deg); }
+.washi-tape {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%) rotate(2deg);
+  width: 100px;
+  height: 26px;
+  background: rgba(226, 218, 203, 0.82);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  backdrop-filter: blur(2px);
+  z-index: 5;
+}
+.polaroid-img-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 4.8;
+  background: #e8e3dc;
+  overflow: hidden;
+  position: relative;
+}
+.polaroid-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1.05) contrast(0.98);
+}
+.polaroid-caption {
+  margin-top: 16px;
+  text-align: center;
+  font-family: 'Alex Brush', cursive;
+  font-size: 27px;
+  color: #4a4239;
+  letter-spacing: 0.5px;
+}
+.polaroid-date-stamp {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 2px;
+  color: #b0a89d;
+  text-align: center;
+  margin-top: 2px;
+}
+.polaroid-info-block {
+  margin-top: 32px;
+  text-align: center;
+  width: 100%;
+}
+.polaroid-names {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2b2724;
+  letter-spacing: 2px;
+}
+.polaroid-names span { color: var(--card-accent); margin: 0 6px; }
+.polaroid-divider {
+  width: 30px;
+  height: 1px;
+  background: #cfc7bc;
+  margin: 12px auto;
+}
+.polaroid-details {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 13px;
+  color: #696259;
+  letter-spacing: 0.3px;
+  line-height: 1.6;
+}
+.polaroid-venue {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 12.5px;
+  color: #8c8378;
+  margin-top: 2px;
+}
+
+/* 6. WIDE TERMINA SPLIT */
+.scrim-split {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 12, 16, 0.6) 0%,
+    rgba(10, 12, 16, 0.05) 28%,
+    rgba(10, 12, 16, 0.18) 58%,
+    rgba(10, 12, 16, 0.88) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+.split-top-bar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 10px;
+}
+.split-side-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.split-side-name.right {
+  align-items: flex-end;
+  text-align: right;
+}
+.split-role-tag {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+}
+.split-en-name {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+}
+.split-kr-name {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 1px;
+}
+.split-center-title-box {
+  position: relative;
+  z-index: 3;
+  margin-top: 24px;
+  text-align: center;
+}
+.split-line-flank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.split-line-flank::before,
+.split-line-flank::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.5);
+}
+.split-title-serif {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  white-space: nowrap;
+}
+.split-sub-date {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: rgba(255, 240, 220, 0.95);
+  margin-top: 8px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.split-content-bottom {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: #ffffff;
+}
+.split-bottom-quote {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+}
+.split-bottom-meta {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 8px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+/* 7. BILBO SWASH CALLIGRAPHY */
+.scrim-bilbo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 16, 20, 0.6) 0%,
+    rgba(18, 16, 20, 0.08) 30%,
+    rgba(18, 16, 20, 0.2) 60%,
+    rgba(18, 16, 20, 0.88) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+.bilbo-content-top {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  margin-top: 10px;
+}
+.bilbo-eyebrow {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+}
+.bilbo-swash-title {
+  font-family: 'Bilbo Swash Caps', cursive;
+  font-size: 64px;
+  line-height: 0.95;
+  color: #ffffff;
+  margin-top: 8px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  letter-spacing: 2px;
+}
+.bilbo-sub-serif {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: rgba(255, 240, 220, 0.95);
+  margin-top: 4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.bilbo-content-bottom {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: #ffffff;
+  padding-bottom: 4px;
+}
+.bilbo-names-gowun {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 22px;
+  letter-spacing: 4px;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.bilbo-names-syncopate {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.bilbo-meta-text {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+}
+.bilbo-venue-text {
+  font-family: 'Gowun Dodum', sans-serif;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 2px;
+}
+
+/* 8. MODERN SWISS BOLD */
+.poster-scrim-swiss {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(12,14,18,0.6) 0%, rgba(12,14,18,0.05) 30%, rgba(12,14,18,0.2) 58%, rgba(12,14,18,0.88) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+.swiss-content-top { position: relative; z-index: 3; margin-top: 10px; }
+.swiss-top-tagline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-family: 'Syncopate', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: rgba(255,255,255,0.85);
+  text-transform: uppercase;
+}
+.swiss-top-tagline span:last-child {
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(8px);
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+}
+.swiss-stacked-headline {
+  font-family: 'Syne', sans-serif;
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 0.90;
+  letter-spacing: -1.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.55);
+}
+.swiss-stacked-headline span { color: #e5a770; }
+.swiss-content-bottom { position: relative; z-index: 3; color: #ffffff; padding-bottom: 4px; }
+.swiss-names-stacked { display: flex; flex-direction: column; gap: 3px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.22); }
+.swiss-couple-en { font-family: 'Syncopate', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; color: #ffffff; }
+.swiss-couple-kr { font-family: 'Gowun Dodum', sans-serif; font-size: 15px; color: rgba(255,255,255,0.9); letter-spacing: 2px; }
+.swiss-details-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; }
+.swiss-info-text { font-family: 'Pretendard', sans-serif; font-size: 12.5px; line-height: 1.5; }
+.swiss-info-text strong { font-family: 'Syncopate', sans-serif; font-size: 11px; font-weight: 700; color: #ffffff; letter-spacing: 1px; display: block; }
+.swiss-info-text span { font-family: 'Gowun Dodum', sans-serif; color: rgba(255,255,255,0.8); display: block; }
+.swiss-barcode-decor { display: flex; gap: 2px; align-items: flex-end; height: 24px; }
+.s-bar { background: rgba(255,255,255,0.85); height: 100%; border-radius: 1px; }
+
+/* 9. WONDERFUL SCRIPT FULLSCREEN */
+.poster-scrim-wonderful {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15,23,42,0.48) 0%, rgba(15,23,42,0.05) 28%, rgba(15,23,42,0.18) 55%, rgba(15,23,42,0.85) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+.wonderful-content-top { position: relative; z-index: 3; text-align: center; margin-top: 10px; }
+.wonderful-subhead {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.9);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.wonderful-subhead::before, .wonderful-subhead::after { content: ''; width: 20px; height: 1px; background: rgba(255,255,255,0.7); }
+.wonderful-title { font-family: 'Alex Brush', cursive; font-size: 46px; line-height: 1.15; color: #ffffff; margin-top: 8px; text-shadow: 0 3px 16px rgba(0,0,0,0.45); }
+.wonderful-doodle-wrap { display: flex; justify-content: center; margin-top: 4px; }
+.wonderful-doodle { width: 44px; height: 24px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); }
+.wonderful-content-bottom { position: relative; z-index: 3; text-align: center; color: #ffffff; }
+.wonderful-couple-en { font-family: 'Syncopate', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.9); }
+.wonderful-couple-kr { font-family: 'Gowun Dodum', sans-serif; font-size: 21px; color: #ffffff; margin-top: 6px; letter-spacing: 3px; }
+.wonderful-date-text { font-family: 'Syncopate', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.95); margin-top: 8px; }
+.wonderful-venue-text { font-family: 'Gowun Dodum', sans-serif; font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 3px; }
 
 /* ===================================================
    BODY INVITATION SECTIONS
