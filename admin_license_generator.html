@@ -92,12 +92,11 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="selChannel">판매 채널</label>
+            <label for="selChannel">기본 판매 채널</label>
             <select id="selChannel">
-              <option value="스마트스토어">네이버 스마트스토어</option>
-              <option value="크몽">크몽 (Kmong)</option>
-              <option value="아이디어스">아이디어스 / 숨고</option>
-              <option value="오프라인">기타 / 직접 발송</option>
+              <option value="크몽" selected>크몽 (Kmong) - 주황색</option>
+              <option value="스마트스토어">네이버 스마트스토어 - 초록색</option>
+              <option value="기타">기타 / 직접 발송</option>
             </select>
           </div>
           <button type="button" class="btn-main" id="btnGenerate">고유 라이선스 코드 즉시 생성</button>
@@ -273,26 +272,30 @@
         generatedBatch.push({
           no: i,
           code: code,
-          issueDate: dateVal,
-          expireDate: expStr,
+          issueDate: "", // 미판매 재고이므로 빈 칸
+          expireDate: `=IF(ISBLANK(B${i+1}), "", B${i+1}+90)`,
           channel: channel,
-          status: "미사용"
+          status: "미사용(대기)"
         });
+
+        const badgeStyle = channel === "크몽"
+          ? "background:#ffe0b2;color:#bf360c;font-weight:700;padding:3px 8px;border-radius:4px;"
+          : "background:#dcfce7;color:#166534;font-weight:700;padding:3px 8px;border-radius:4px;";
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${i}</td>
           <td class="code-cell">${code}</td>
-          <td>${dateVal}</td>
-          <td>${expStr}</td>
-          <td>${channel}</td>
-          <td><span class="status-badge valid">발급완료</span></td>
+          <td style="color:#a8a29e;">(결제 시 기입)</td>
+          <td style="color:#a8a29e;">(자동 계산)</td>
+          <td><span style="${badgeStyle}">${channel}</span></td>
+          <td><span class="status-badge valid">재고대기</span></td>
         `;
         tbody.appendChild(tr);
       }
 
-      document.getElementById("statIssueDate").textContent = dateVal;
-      document.getElementById("statExpireDate").textContent = expStr;
+      document.getElementById("statIssueDate").textContent = "결제 시 자동 계산";
+      document.getElementById("statExpireDate").textContent = "결제일 + 90일";
       document.getElementById("lblTotalCount").textContent = `총 ${qty}건 생성됨`;
       showToast(`고유 코드 ${qty}건이 생성되었습니다!`);
     });
