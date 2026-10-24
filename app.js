@@ -130,7 +130,8 @@ const state = {
       text: "두 사람 함께 있는 모습이 정말 아름답네요. 예식날 기쁜 마음으로 찾아뵙겠습니다!",
       password: "1234"
     }
-  ]
+  ],
+  licenseCode: ""
 };
 window.state = state;
 
@@ -300,6 +301,9 @@ function serializeState() {
     if (urlGallery.length > 0) d.gp = urlGallery;
   }
 
+  // Cryptographic License Token for 90-day guest mode protection
+  if (state.licenseCode) d.lic = state.licenseCode;
+
   // Disabled sections only
   const disabled = Object.keys(state.sections || {}).filter(k => state.sections[k] === false);
   if (disabled.length > 0) d.secOff = disabled;
@@ -359,6 +363,7 @@ function deserializeState(encodedStr) {
     if (typeof d.cp !== "undefined") state.coverPhoto = d.cp;
     if (typeof d.dp !== "undefined") state.detailPhoto = d.dp;
     if (Array.isArray(d.gp)) state.galleryPhotos = d.gp;
+    if (d.lic) state.licenseCode = d.lic;
 
     if (d.sec && typeof d.sec === "object") {
       Object.assign(state.sections, d.sec);
@@ -380,7 +385,15 @@ function checkUrlMode() {
   }
 
   if (hash.includes("testLicensed")) {
-    try { localStorage.setItem("wedding_builder_licensed", "true"); } catch (e) {}
+    const d = new Date();
+    const yy = String(d.getFullYear()).slice(-2);
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const base = `WD-${yy}${mm}${dd}-TEST`;
+    const sig = computeLicenseChecksum(base, LICENSE_SECRET_SALT);
+    const validTestCode = `${base}-${sig}`;
+    state.licenseCode = validTestCode;
+    try { localStorage.setItem(LICENSE_STORAGE_KEY, validTestCode); } catch (e) {}
   }
 
   const match = hash.match(/data=([^&]+)/);
@@ -390,6 +403,10 @@ function checkUrlMode() {
 
   if (hash.includes("openShare")) {
     setTimeout(() => { openShareModal(); }, 200);
+  }
+
+  if (hash.includes("openLicense")) {
+    setTimeout(() => { openLicenseModal(); }, 200);
   }
 
   return hash.includes("view");
@@ -421,22 +438,21 @@ function renderAll() {
   if (!wrapper) return;
 
   const isGuestMode = document.body.classList.contains("guest-mode");
-  const isExpired = isWeddingExpired(state.weddingDate);
+  const isWeddingExpiredFlag = isWeddingExpired(state.weddingDate);
+  const isLicenseExpiredFlag = isLicenseCodeExpired(state.licenseCode);
 
-  // Clean Fallback Strings for Pure State Display
-  const groomDisplayName = state.groomName.trim() || "신랑";
-  const brideDisplayName = state.brideName.trim() || "신부";
+  // PRIVACY PROTECTION GATE: If past wedding + 90 days (3 months) OR past payment date + 90 days
+  if (isGuestMode && (isWeddingExpiredFlag || isLicenseExpiredFlag)) {
+    const expiredDesc = isLicenseExpiredFlag
+      ? `본 모바일 청첩장은 서비스 제공 기한(결제일 기준 3개월)이 만료되어<br><strong>신랑·신부 및 혼주 분들의 소중한 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>안전하게 비공개 전환되었습니다.`
+      : `본 모바일 청첩장은 예식 성료 후 3개월(90일)이 경과하여<br><strong>신랑·신부 및 혼주 분들의 소중한 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>안전하게 비공개 전환되었습니다.`;
 
-  // PRIVACY PROTECTION GATE: If past wedding + 90 days (3 months), mask personal info and show graceful finish
-  if (isGuestMode && isExpired) {
     wrapper.innerHTML = `
       <div class="wedding-expired-screen">
         <div class="expired-badge">🛡️ 개인정보 안심 보호 시스템</div>
-        <h2 class="expired-title">예식이 종료되었습니다</h2>
+        <h2 class="expired-title">청첩장 서비스가 종료되었습니다</h2>
         <p class="expired-desc">
-          본 모바일 청첩장은 예식 성료 후 3개월(90일)이 경과하여<br>
-          <strong>신랑·신부 및 혼주 분들의 소중한 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>
-          안전하게 비공개 전환되었습니다.
+          ${expiredDesc}
         </p>
         <div class="expired-card">
           <div class="expired-couple">${groomDisplayName} · ${brideDisplayName}</div>
@@ -1897,13 +1913,94 @@ function renderContactModal() {
 }
 
 /* ===================================================
-   LICENSE & ORDER VERIFICATION SYSTEM
+   CRYPTOGRAPHIC 1-ORDER-1-CODE & 90-DAY EXPOSURE SYSTEM
    =================================================== */
 
-const LICENSE_STORAGE_KEY = "wedding_builder_licensed";
+const LICENSE_STORAGE_KEY = "wedding_builder_licensed_code";
+const LICENSE_SECRET_SALT = "SEASON_OF_US_SECURE_2026_ATELIER";
+
+function computeLicenseChecksum(dataStr, salt) {
+  let h = 0x811c9dc5;
+  const s = dataStr + "::" + salt;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return ((h >>> 16) ^ (h & 0xffff)).toString(16).toUpperCase().padStart(4, "0");
+}
+
+function verifyLicenseCode(codeStr, checkDateObj) {
+  if (!codeStr || typeof codeStr !== "string") return { valid: false, reason: "EMPTY" };
+  const clean = codeStr.trim().toUpperCase();
+  const parts = clean.split("-");
+  if (parts.length !== 4 || parts[0] !== "WD") {
+    return { valid: false, reason: "INVALID_FORMAT" };
+  }
+
+  const [prefix, dateStr, randStr, sig] = parts;
+  if (dateStr.length !== 6 || randStr.length !== 4 || sig.length !== 4) {
+    return { valid: false, reason: "INVALID_LENGTH" };
+  }
+
+  const base = `WD-${dateStr}-${randStr}`;
+  const expectedSig = computeLicenseChecksum(base, LICENSE_SECRET_SALT);
+  if (sig !== expectedSig) {
+    return { valid: false, reason: "FORGED_SIGNATURE" };
+  }
+
+  const y = 2000 + parseInt(dateStr.slice(0, 2), 10);
+  const m = parseInt(dateStr.slice(2, 4), 10) - 1;
+  const d = parseInt(dateStr.slice(4, 6), 10);
+  const issueDate = new Date(y, m, d, 0, 0, 0);
+
+  if (isNaN(issueDate.getTime())) {
+    return { valid: false, reason: "INVALID_DATE" };
+  }
+
+  const now = checkDateObj || new Date();
+  const diffMs = now.getTime() - issueDate.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    return { valid: false, reason: "FUTURE_DATE" };
+  }
+
+  const issueFormatted = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const expDate = new Date(y, m, d + 90);
+  const expFormatted = `${expDate.getFullYear()}-${String(expDate.getMonth() + 1).padStart(2, "0")}-${String(expDate.getDate()).padStart(2, "0")}`;
+
+  if (diffDays > 90) {
+    return {
+      valid: false,
+      expired: true,
+      reason: "EXPIRED_AFTER_90_DAYS",
+      issueDate: issueFormatted,
+      expireDate: expFormatted,
+      diffDays
+    };
+  }
+
+  return {
+    valid: true,
+    expired: false,
+    code: clean,
+    issueDate: issueFormatted,
+    expireDate: expFormatted,
+    daysRemaining: 90 - diffDays
+  };
+}
+
+function isLicenseCodeExpired(codeStr) {
+  if (!codeStr) return false;
+  const res = verifyLicenseCode(codeStr);
+  return res.expired === true;
+}
 
 function isLicensed() {
-  return !!localStorage.getItem(LICENSE_STORAGE_KEY);
+  const code = state.licenseCode || localStorage.getItem(LICENSE_STORAGE_KEY);
+  if (!code) return false;
+  const res = verifyLicenseCode(code);
+  return res.valid === true;
 }
 
 let pendingLicenseAction = null;
@@ -1911,14 +2008,27 @@ let pendingLicenseAction = null;
 function updateLicenseBadge() {
   const badge = document.getElementById("deskLicenseBadge");
   if (!badge) return;
-  if (isLicensed()) {
+  const code = state.licenseCode || localStorage.getItem(LICENSE_STORAGE_KEY);
+  if (!code) {
+    badge.className = "license-status-badge unverified";
+    badge.textContent = "🔒 정품 인증 필요";
+    badge.title = "스마트스토어/크몽에서 발급받은 고유 라이선스 코드(WD-...)를 입력하세요.";
+    return;
+  }
+
+  const res = verifyLicenseCode(code);
+  if (res.valid) {
     badge.className = "license-status-badge verified";
-    badge.textContent = "✨ 정식 라이선스 인증됨";
-    badge.title = "정식 인증이 완료되었습니다. 무제한 배포 가능!";
+    badge.textContent = `🔑 정품 인증 (${res.daysRemaining}일 남음)`;
+    badge.title = `발행일: ${res.issueDate} / 만료일: ${res.expireDate} (결제일 기준 3개월 보장)`;
+  } else if (res.expired) {
+    badge.className = "license-status-badge expired";
+    badge.textContent = "⚠️ 3개월 이용 만료";
+    badge.title = `발행일: ${res.issueDate} / 만료일: ${res.expireDate} (서비스가 폐쇄되었습니다)`;
   } else {
     badge.className = "license-status-badge unverified";
-    badge.textContent = "🔒 배포 잠김 (체험중)";
-    badge.title = "클릭하여 크몽/스마트스토어 주문번호 인증";
+    badge.textContent = "🔒 인증 실패 (재입력)";
+    badge.title = "유효하지 않은 코드입니다.";
   }
 }
 
@@ -1932,15 +2042,6 @@ function closeLicenseModal() {
   const modal = document.getElementById("licenseModal");
   if (modal) modal.classList.remove("show");
   pendingLicenseAction = null;
-}
-
-function verifyLicenseCode(code) {
-  if (!code) return false;
-  const clean = code.trim().toUpperCase();
-  if (clean === "WEDDING2026" || clean === "DEMO" || clean === "ADMIN" || clean.length >= 6) {
-    return true;
-  }
-  return false;
 }
 
 /* ===================================================
@@ -2662,6 +2763,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   syncFormInputsFromState();
   bindDesktopFormEvents();
+
+  const savedCode = localStorage.getItem(LICENSE_STORAGE_KEY);
+  if (savedCode) {
+    const res = verifyLicenseCode(savedCode);
+    if (res.valid) {
+      state.licenseCode = savedCode;
+    }
+  }
   updateLicenseBadge();
 
   // Floating BGM toggle (Manual click only - no sudden autoplay)
@@ -2669,16 +2778,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // License Modal Controls
   document.getElementById("btnSubmitLicense")?.addEventListener("click", () => {
-    const code = document.getElementById("inpLicenseCode")?.value || "";
-    if (!verifyLicenseCode(code)) {
-      showToast("⚠️ 올바른 주문번호(8자리 이상) 또는 인증 코드를 입력해 주세요.");
+    const raw = (document.getElementById("inpLicenseCode")?.value || "").trim().toUpperCase();
+    const res = verifyLicenseCode(raw);
+    if (!res.valid) {
+      if (res.expired) {
+        showToast(`⚠️ 결제일(${res.issueDate}) 기준 3개월(90일) 이용 기간이 만료된 코드입니다.`);
+      } else {
+        showToast("⚠️ 올바른 고유 라이선스 코드(WD-YYMMDD-...)를 입력해 주세요.");
+      }
       return;
     }
     const act = pendingLicenseAction;
-    localStorage.setItem(LICENSE_STORAGE_KEY, code.trim());
+    state.licenseCode = raw;
+    localStorage.setItem(LICENSE_STORAGE_KEY, raw);
     updateLicenseBadge();
     closeLicenseModal();
-    showToast("🎉 정식 라이선스가 인증되었습니다! 하객 공유 링크가 잠금 해제되었습니다.");
+    showToast(`🔑 정품 인증 완료! (결제일 기준 ${res.daysRemaining}일간 안심 이용 가능)`);
     if (act) {
       act();
     }
