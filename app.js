@@ -428,8 +428,8 @@ function isWeddingExpired(weddingDateStr) {
   const parts = str.split("-").map(Number);
   if (parts.length < 3 || isNaN(parts[0])) return false;
   const wDate = new Date(parts[0], parts[1] - 1, parts[2], 23, 59, 59);
-  // 90 days (3 months) after wedding date, automatically expired for privacy protection
-  const expireDate = new Date(wDate.getTime() + (90 * 24 * 60 * 60 * 1000));
+  // 7 days (1 week) after wedding date, automatically expired for privacy protection
+  const expireDate = new Date(wDate.getTime() + (7 * 24 * 60 * 60 * 1000));
   return new Date() > expireDate;
 }
 
@@ -483,11 +483,11 @@ function renderAll() {
   const isWeddingExpiredFlag = isWeddingExpired(state.weddingDate);
   const isLicenseExpiredFlag = isLicenseCodeExpired(state.licenseCode);
 
-  // PRIVACY PROTECTION GATE: If past wedding + 90 days (3 months) OR past payment date + 90 days
+  // PRIVACY PROTECTION GATE: If past wedding + 7 days (1 week) OR past payment date + 90 days (3 months)
   if (isGuestMode && (isWeddingExpiredFlag || isLicenseExpiredFlag)) {
     const expiredDesc = isLicenseExpiredFlag
-      ? `본 모바일 청첩장은 서비스 제공 기한(결제일 기준 3개월)이 만료되어<br><strong>신랑·신부 및 혼주 분들의 소중한 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>안전하게 비공개 전환되었습니다.`
-      : `본 모바일 청첩장은 예식 성료 후 3개월(90일)이 경과하여<br><strong>신랑·신부 및 혼주 분들의 소중한 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>안전하게 비공개 전환되었습니다.`;
+      ? `본 모바일 청첩장은 서비스 제공 기한(구매일 기준 3개월)이 만료되어<br><strong>신랑·신부 및 혼주 분들의 소중한 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>안전하게 비공개 전환되었습니다.`
+      : `본 모바일 청첩장은 예식 성료 후 1주일(7일)이 경과하여<br><strong>신랑·신부 및 혼주 분들의 소중한 개인정보(연락처, 계좌번호) 보호</strong>를 위해<br>안전하게 비공개 전환되었습니다.`;
 
     wrapper.innerHTML = `
       <div class="wedding-expired-screen">
