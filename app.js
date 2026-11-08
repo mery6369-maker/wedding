@@ -2274,7 +2274,7 @@ function updateKakaoPreviewCard() {
 
   const imgEl = document.getElementById("kakaoCardImg");
   if (imgEl) {
-    imgEl.src = state.coverPhoto || state.detailPhoto || "./photos/sample_picnic1.jpg";
+    imgEl.src = state.coverPhoto || state.detailPhoto || "./sample_wedding_cover.jpg";
   }
 
   // Update DOM OpenGraph meta tags as well
