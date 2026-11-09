@@ -3365,7 +3365,7 @@ body.guest-preview .mobile-dock {
 
 .guestbook-date {
   font-size: 11px;
-  color: #aba59b;
+  color: #766e65;
 }
 
 .guestbook-text {
@@ -3378,7 +3378,7 @@ body.guest-preview .mobile-dock {
 .btn-del-gb {
   background: none;
   border: none;
-  color: #aba59b;
+  color: #766e65;
   font-size: 12px;
   cursor: pointer;
   padding: 2px 4px;
@@ -3557,4 +3557,70 @@ body.guest-mode .phone-mockup {
   font-size: 13px;
   color: #787168;
   line-height: 1.6;
+}
+
+/* ===================================================
+   LEGAL FOOTER & POLICY MODALS
+   =================================================== */
+.studio-legal-footer {
+  margin-top: 24px;
+  padding: 16px 14px;
+  background: #f7f4ee;
+  border-radius: 8px;
+  border: 1px solid #ebe5dc;
+  font-size: 11px;
+  color: #635c54;
+  text-align: center;
+  line-height: 1.6;
+}
+.studio-legal-footer .legal-brand {
+  font-weight: 700;
+  color: #2b2724;
+  font-size: 11.5px;
+  margin-bottom: 3px;
+}
+.studio-legal-footer .legal-info a {
+  color: #635c54;
+  text-decoration: underline;
+}
+.studio-legal-footer .legal-links {
+  margin-top: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.studio-legal-footer .legal-links a {
+  color: #4a453e;
+  text-decoration: none;
+}
+.studio-legal-footer .legal-links a:hover {
+  text-decoration: underline;
+}
+.studio-legal-footer .legal-links .sep {
+  color: #c4bcb1;
+}
+.studio-legal-footer .legal-copy {
+  margin-top: 6px;
+  color: #8c857b;
+  font-size: 10px;
+}
+.modal-policy h5 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #2b2724;
+  margin: 16px 0 6px;
+}
+.modal-policy h5:first-child {
+  margin-top: 0;
+}
+.modal-policy p, .modal-policy ul {
+  margin: 0 0 10px;
+}
+.modal-policy ul {
+  padding-left: 18px;
+}
+.modal-policy li {
+  margin-bottom: 4px;
 }

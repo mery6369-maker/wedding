@@ -114,18 +114,18 @@ const state = {
     bgm: true
   },
 
-  // Interactive Guestbook List
+  // Interactive Guestbook List (Sample placeholder clearly marked)
   guestbookList: [
     {
       id: "gb_sample_1",
-      author: "지은 & 민호",
+      author: "[예시] 지은 & 민호",
       date: "2026. 10. 20",
       text: "도윤아 서연아 결혼 진심으로 축하해! 세상에서 제일 행복하고 다정한 부부가 되길 응원할게.",
       password: "1234"
     },
     {
       id: "gb_sample_2",
-      author: "선배 재원",
+      author: "[예시] 선배 재원",
       date: "2026. 10. 21",
       text: "두 사람 함께 있는 모습이 정말 아름답네요. 예식날 기쁜 마음으로 찾아뵙겠습니다!",
       password: "1234"
@@ -2980,6 +2980,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // License Modal Controls
   document.getElementById("btnSubmitLicense")?.addEventListener("click", () => {
+    const refundChk = document.getElementById("chkLicenseRefundNotice");
+    if (refundChk && !refundChk.checked) {
+      showToast("⚠️ 디지털 콘텐츠 환불 제한 안내에 동의 후 진행해 주세요.");
+      return;
+    }
     const raw = (document.getElementById("inpLicenseCode")?.value || "").trim().toUpperCase();
     const res = verifyLicenseCode(raw);
     if (!res.valid) {
@@ -3151,7 +3156,15 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("contactModal")?.classList.remove("show");
       document.getElementById("guestbookModal")?.classList.remove("show");
       document.getElementById("shareModal")?.classList.remove("show");
+      document.getElementById("licenseModal")?.classList.remove("show");
+      document.getElementById("policyModal")?.classList.remove("show");
     }
+  });
+
+  // Policy Modal Controls
+  document.getElementById("btnClosePolicyModal")?.addEventListener("click", closePolicyModal);
+  document.getElementById("policyModal")?.addEventListener("click", (e) => {
+    if (e.target === document.getElementById("policyModal")) closePolicyModal();
   });
 
   // Initial Render
@@ -3177,3 +3190,90 @@ window.openBottomSheet = openBottomSheet;
 window.closeBottomSheet = closeBottomSheet;
 window.state = state;
 window.renderAll = renderAll;
+window.openPolicyModal = openPolicyModal;
+window.closePolicyModal = closePolicyModal;
+
+/* ===================================================
+   LEGAL TERMS, PRIVACY POLICY & REFUND MODAL
+   =================================================== */
+
+const POLICY_DATA = {
+  terms: {
+    title: "우리의 계절 이용약관",
+    body: `
+      <h5>제1조 (목적)</h5>
+      <p>본 약관은 '우리의 계절'(이하 '서비스')이 제공하는 모바일 청첩장 셀프 제작 웹 스튜디오 및 디지털 라이선스 이용 조건 및 절차를 규정함을 목적으로 합니다.</p>
+      <h5>제2조 (서비스 이용 및 라이선스)</h5>
+      <p>1. 이용자는 크몽, 네이버 스마트스토어 등 공식 제휴 마켓에서 1회용 정품 라이선스 코드(PIN)를 발급받아 본 스튜디오의 유료 기능(하객 공유 링크 생성, 오프라인 HTML 다운로드)을 활성화할 수 있습니다.</p>
+      <p>2. 라이선스 코드는 결제일 기준 3개월(90일)간 유효하며, 1개의 코드는 1회의 예식(동일 신랑·신부)에 한해 횟수 제한 없이 자유롭게 수정 및 배포가 가능합니다.</p>
+      <h5>제3조 (지식재산권 및 이용 제한)</h5>
+      <p>1. 서비스가 제공하는 템플릿 디자인, 폰트, 프리셋 BGM의 저작권은 서비스 또는 원저작자에게 귀속됩니다.</p>
+      <p>2. 이용자가 직접 업로드한 사진 및 작성한 텍스트의 저작권은 이용자 본인에게 있습니다.</p>
+      <p>3. 이용자는 사적 용도(본인 또는 지인의 결혼 축하 전달) 외에 본 템플릿을 무단 복제하여 재판매하거나 상업적으로 재배포할 수 없습니다.</p>
+      <h5>제4조 (이용 자격)</h5>
+      <p>본 서비스는 성인 예비부부를 대상으로 하며, 만 14세 미만 아동의 라이선스 등록 및 단독 이용은 제한됩니다.</p>
+      <h5>제5조 (면책 조항)</h5>
+      <p>서비스는 호스팅사(GitHub), 외부 통신망 장애 등 불가항력적 사유로 인한 일시적인 접속 지연에 대해 고의 또는 중과실이 없는 한 책임을 지지 않습니다.</p>
+    `
+  },
+  privacy: {
+    title: "우리의 계절 개인정보 처리방침",
+    body: `
+      <h5>제1조 (개인정보 수집 항목 및 목적)</h5>
+      <p>서비스는 별도의 회원가입 없이 이용권을 통해 모바일 청첩장을 셀프 제작하는 도구입니다.</p>
+      <ul>
+        <li><strong>신랑·신부 정보</strong>: 성명, 휴대전화번호 (청첩장 표기 및 하객 직통 연락용)</li>
+        <li><strong>혼주 정보 (선택)</strong>: 부·모 성명, 관계, 고인 여부, 휴대전화번호</li>
+        <li><strong>예식 정보</strong>: 예식 일시, 예식장명, 홀 정보, 주소 (하객 길안내용)</li>
+        <li><strong>축의금 계좌 정보 (선택)</strong>: 은행명, 계좌번호, 예금주명, 송금 링크 (하객 축의금 전달용)</li>
+        <li><strong>하객 입력 정보</strong>: 참석 여부 및 식사 선택 (화면 즉시 전달), 방명록 축하 메시지</li>
+      </ul>
+      <h5>제2조 (개인정보의 보관 및 파기 - 중앙 DB 부존재)</h5>
+      <p>1. <strong>[핵심 고지] 본 서비스는 중앙 데이터베이스(DB) 서버에 고객의 개인정보를 일절 저장하지 않습니다.</strong></p>
+      <p>2. 모든 입력 데이터는 이용자 본인의 웹 브라우저(Local Storage) 및 청첩장 공유 URL의 해시(#) 파라미터 내에만 암호화/인코딩되어 보관됩니다.</p>
+      <p>3. 청첩장 링크는 예식일 기준 7일이 경과하면 개인정보 보호를 위해 시스템 렌더러에 의해 자동으로 열람 만료(파기) 처리됩니다. 이용자는 언제든지 브라우저 방문 기록 및 캐시를 삭제하여 기기에서 즉시 파기할 수 있습니다.</p>
+      <h5>제3조 (개인정보의 제3자 제공 및 국외 이전)</h5>
+      <p>서비스는 원칙적으로 개인정보를 외부에 제공하지 않습니다. 다만, '초단축 링크' 생성 기능 이용 시 다음과 같이 이전됩니다.</p>
+      <ul>
+        <li><strong>이전받는 자</strong>: is.gd (Memset Ltd, 영국)</li>
+        <li><strong>목적 및 항목</strong>: 초단축 링크 생성을 위한 암호화된 URL 파라미터 전송</li>
+        <li><strong>대안</strong>: 축의금 계좌 등 민감정보 보호를 위해 [카카오톡 카드 공유] 또는 [원본 긴 링크]를 이용하시면 제3자 이전이 발생하지 않습니다.</li>
+      </ul>
+      <h5>제4조 (개인정보 보호책임자 및 문의)</h5>
+      <p>상호: 우리의 계절 | 대표자: 차예인 (개인 판매자) | 고객문의: <a href="mailto:myfavdayss@gmail.com">myfavdayss@gmail.com</a></p>
+    `
+  },
+  refund: {
+    title: "우리의 계절 취소 및 환불정책",
+    body: `
+      <h5>제1조 (청약철회 및 환불 가능 기준)</h5>
+      <p>1. <strong>전액 환불 (결제일로부터 7일 이내)</strong>:</p>
+      <ul>
+        <li>크몽 또는 스마트스토어에서 이용권(PIN 코드)을 구매하였으나, 스튜디오 에디터에 <strong>코드를 등록(인증)하지 않은 미사용 상태</strong>인 경우 구매 마켓을 통해 100% 환불이 가능합니다.</li>
+        <li>시스템의 기술적 치명 오류로 인해 HTML 저장이나 청첩장 생성이 불가능함을 증명한 경우.</li>
+      </ul>
+      <h5>제2조 (청약철회 제한 - 환불 불가 기준)</h5>
+      <p>「전자상거래 등에서의 소비자보호에 관한 법률」 제17조 제2항 제5호(디지털 콘텐츠의 제공이 개시된 경우)에 따라 다음과 같은 경우 환불이 불가합니다.</p>
+      <ul>
+        <li>스튜디오 에디터에 <strong>정품 PIN 코드를 입력하여 '정식 인증 및 잠금 해제'를 완료한 경우</strong> (디지털 재화의 효용 가치가 즉시 발휘된 것으로 간주).</li>
+        <li>단순 변심, 예식 일정 변경, 타 청첩장 업체로의 변경 등 고객의 귀책사유로 인한 경우.</li>
+      </ul>
+      <h5>제3조 (환불 신청 절차)</h5>
+      <p>환불은 구매하신 플랫폼(네이버 스마트스토어 / 크몽)의 주문 내역에서 '취소/반품 요청'을 접수해 주시면 판매자 확인 후 규정에 따라 신속히 처리됩니다. 문의사항은 <a href="mailto:myfavdayss@gmail.com">myfavdayss@gmail.com</a>으로 접수해 주세요.</p>
+    `
+  }
+};
+
+function openPolicyModal(type) {
+  const data = POLICY_DATA[type] || POLICY_DATA.terms;
+  const titleEl = document.getElementById("policyModalTitle");
+  const bodyEl = document.getElementById("policyModalBody");
+  const modal = document.getElementById("policyModal");
+  if (titleEl) titleEl.textContent = data.title;
+  if (bodyEl) bodyEl.innerHTML = data.body;
+  modal?.classList.add("show");
+}
+
+function closePolicyModal() {
+  document.getElementById("policyModal")?.classList.remove("show");
+}

@@ -540,6 +540,20 @@
           💾 (선택) 백업용 단독 HTML 파일 저장
         </button>
       </div>
+
+      <!-- SERVICE INFO & LEGAL FOOTER (DESKTOP) -->
+      <div class="studio-legal-footer">
+        <div class="legal-brand">우리의 계절</div>
+        <div class="legal-info">대표자: 차예인 (개인 판매자) · 문의: <a href="mailto:myfavdayss@gmail.com">myfavdayss@gmail.com</a></div>
+        <div class="legal-links">
+          <a href="#terms" onclick="event.preventDefault(); openPolicyModal('terms');">이용약관</a>
+          <span class="sep">·</span>
+          <a href="#privacy" onclick="event.preventDefault(); openPolicyModal('privacy');"><strong>개인정보처리방침</strong></a>
+          <span class="sep">·</span>
+          <a href="#refund" onclick="event.preventDefault(); openPolicyModal('refund');">환불정책</a>
+        </div>
+        <div class="legal-copy">© 2026 Season of Us. All rights reserved.</div>
+      </div>
     </aside>
 
     <!-- RIGHT STAGE: REAL-TIME MOBILE CARD PREVIEW -->
@@ -998,7 +1012,7 @@
           <!-- FOOTER -->
           <footer class="inv-footer">
             <div class="script-cursive" id="footerCoupleNames" style="font-size:26px;color:#8c857b;">Groom &amp; Bride</div>
-            <div style="font-size:11.5px;letter-spacing:0.2em;color:#aba59b;margin-top:4px;">THANK YOU</div>
+            <div style="font-size:11.5px;letter-spacing:0.2em;color:#766e65;margin-top:4px;">THANK YOU</div>
           </footer>
 
         </div>
@@ -1069,7 +1083,7 @@
           <div class="kakao-preview-badge">💬 카카오톡 전송 시 하객에게 보이는 화면</div>
           <div class="kakao-card-mockup">
             <div class="kakao-card-img-wrap">
-              <img id="kakaoCardImg" src="./photos/sample_picnic1.jpg" alt="대표 웨딩사진" />
+              <img id="kakaoCardImg" src="./sample_wedding_cover.jpg" alt="대표 웨딩사진" />
               <span class="kakao-card-pill">WEDDING INVITATION</span>
             </div>
             <div class="kakao-card-body">
@@ -1096,6 +1110,7 @@
             <input type="text" id="shareShortUrlInput" readonly placeholder="단축 링크 생성 중..." style="font-weight:600;color:#2b2724;" />
             <button type="button" class="btn-copy-url" id="btnCopyShortUrl" style="background:#2b2724;">단축링크 복사</button>
           </div>
+          <div style="font-size:11px;color:#766e65;margin-bottom:8px;line-height:1.4;">※ 초단축 링크는 공개 단축기(is.gd)를 통해 생성됩니다. 축의금 계좌 등 민감정보 보호를 위해 [카카오톡 카드 공유] 또는 아래 [원본 긴 링크] 사용을 권장합니다.</div>
           <details style="font-size:11.5px;color:#8c857b;">
             <summary style="cursor:pointer;padding:2px 0;user-select:none;">원본 긴 링크 보기 (서버 100% 무관)</summary>
             <div class="share-url-box" style="margin-top:6px;margin-bottom:0;">
@@ -1196,6 +1211,11 @@
           <input type="text" id="inpLicenseCode" placeholder="예: WD-261024-A8F3-7K2M" style="width:100%;padding:10px 12px;border:1px solid #dcd7ce;border-radius:6px;font-size:13px;box-sizing:border-box;font-family:monospace;font-weight:600;" />
         </div>
 
+        <label style="display:flex;align-items:flex-start;gap:6px;font-size:11.5px;color:#6b655d;margin-bottom:14px;cursor:pointer;line-height:1.5;">
+          <input type="checkbox" id="chkLicenseRefundNotice" style="margin-top:2px;" checked />
+          <span>[필수] 본 정품 코드를 등록하면 전자상거래법 제17조 제2항에 따라 디지털 콘텐츠 제공이 즉시 개시되어 단순 변심에 의한 환불이 제한됨에 동의합니다. (<a href="#refund" onclick="event.preventDefault(); openPolicyModal('refund');" style="color:#b8694d;text-decoration:underline;">환불정책 보기</a>)</span>
+        </label>
+
         <div style="display:flex;flex-direction:column;gap:8px;">
           <button type="button" class="btn-primary" id="btnSubmitLicense" style="width:100%;padding:12px;font-size:13.5px;font-weight:600;">🔑 정식 인증 및 잠금 해제</button>
           <a href="https://kmong.com" target="_blank" rel="noopener" class="btn-secondary" style="width:100%;padding:11px;font-size:12.5px;text-align:center;text-decoration:none;display:block;box-sizing:border-box;">🛒 아직 구매 전이신가요? 크몽에서 1초 구매하기</a>
@@ -1204,6 +1224,19 @@
         <div style="margin-top:14px;padding-top:12px;border-top:1px dashed #e5dfd5;font-size:11px;color:#a39b91;line-height:1.5;">
           💡 <strong>결제일 기준 3개월(90일) 안심 보장</strong>: 1결제당 1개의 고유 코드가 부여되며, 결제일로부터 3개월간 자유롭게 수정 및 배포가 가능합니다.
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POLICY MODAL (TERMS / PRIVACY / REFUND) -->
+  <div class="modal-backdrop" id="policyModal">
+    <div class="modal-content modal-policy" style="max-width:560px;max-height:85vh;display:flex;flex-direction:column;">
+      <div class="modal-header">
+        <h4 id="policyModalTitle" style="margin:0;font-size:16px;color:#2b2724;font-weight:700;">약관 및 정책</h4>
+        <button type="button" class="modal-close" id="btnClosePolicyModal">✕</button>
+      </div>
+      <div class="modal-body" id="policyModalBody" style="padding:20px;overflow-y:auto;font-size:12.5px;line-height:1.75;color:#4b453e;flex:1;">
+        <!-- Dynamically rendered via openPolicyModal() -->
       </div>
     </div>
   </div>
