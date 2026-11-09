@@ -131,7 +131,8 @@ const state = {
       password: "1234"
     }
   ],
-  licenseCode: ""
+  licenseCode: "",
+  invitationId: ""
 };
 window.state = state;
 
@@ -377,7 +378,38 @@ function deserializeState(encodedStr) {
   }
 }
 
-function checkUrlMode() {
+async function checkUrlMode() {
+  const params = new URLSearchParams(window.location.search);
+  const invId = params.get("id");
+  if (invId) {
+    const isEditParam = params.get("edit") === "true";
+    if (!isEditParam) {
+      document.body.classList.add("guest-mode");
+    }
+    try {
+      const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/invitations?id=eq.${encodeURIComponent(invId)}&select=*`, {
+        headers: {
+          "apikey": SUPABASE_CONFIG.key,
+          "Authorization": `Bearer ${SUPABASE_CONFIG.key}`
+        }
+      });
+      if (res.ok) {
+        const rows = await res.json();
+        if (rows && rows.length > 0 && rows[0].data) {
+          Object.assign(state, rows[0].data);
+          state.invitationId = invId;
+          if (rows[0].license_code && !state.licenseCode) {
+            state.licenseCode = rows[0].license_code;
+          }
+          renderAll();
+          return !isEditParam;
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to load invitation from Supabase:", e);
+    }
+  }
+
   const hash = window.location.hash;
   if (!hash) return false;
 
@@ -414,6 +446,9 @@ function checkUrlMode() {
 }
 
 function generateShareUrl() {
+  if (state.invitationId) {
+    return `${window.location.origin}${window.location.pathname}?id=${state.invitationId}`;
+  }
   const base = window.location.origin + window.location.pathname;
   const data = serializeState();
   return `${base}#view&data=${data}`;
@@ -1234,6 +1269,147 @@ function compressImageFile(file, maxWidth = 1200, quality = 0.82) {
 }
 
 /* ===================================================
+   SUPABASE CLOUD STORAGE & CLEAN 1-LINE LINK ENGINE
+   =================================================== */
+
+const SUPABASE_CONFIG = {
+  url: "https://imbfnzonrhenevxzgbcl.supabase.co",
+  key: "sb_publishable_TX66aLtZDW_JsW-H6zjyyg_A0DTpXEZ",
+  bucket: "wedding_photos"
+};
+
+function dataUrlToBlob(dataUrl) {
+  const parts = dataUrl.split(",");
+  const mime = parts[0].match(/:(.*?);/)[1];
+  const bstr = atob(parts[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+}
+
+async function uploadToSupabaseStorage(dataUrl, prefix = "photo") {
+  if (!dataUrl || typeof dataUrl !== "string" || !dataUrl.startsWith("data:")) {
+    return dataUrl; // Already a hosted URL or empty
+  }
+  try {
+    const blob = dataUrlToBlob(dataUrl);
+    const ext = "jpg";
+    const randStr = Math.random().toString(36).substring(2, 9);
+    const dateStr = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+    const fileName = `${prefix}_${dateStr}_${randStr}.${ext}`;
+
+    const uploadUrl = `${SUPABASE_CONFIG.url}/storage/v1/object/${SUPABASE_CONFIG.bucket}/${fileName}`;
+    const res = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_CONFIG.key,
+        "Authorization": `Bearer ${SUPABASE_CONFIG.key}`,
+        "Content-Type": "image/jpeg"
+      },
+      body: blob
+    });
+
+    if (!res.ok) {
+      console.warn("Supabase upload failed, using local copy");
+      return null;
+    }
+
+    return `${SUPABASE_CONFIG.url}/storage/v1/object/public/${SUPABASE_CONFIG.bucket}/${fileName}`;
+  } catch (err) {
+    console.warn("Supabase upload error:", err);
+    return null;
+  }
+}
+
+function generateCleanInvitationId() {
+  const groomGiven = (state.groomName || "").trim();
+  const brideGiven = (state.brideName || "").trim();
+  const gEn = parseKoreanNameEn(groomGiven).given || "groom";
+  const bEn = parseKoreanNameEn(brideGiven).given || "bride";
+  const rand = Math.random().toString(36).substring(2, 6);
+  return `${gEn.toLowerCase()}-${bEn.toLowerCase()}-${rand}`;
+}
+
+async function saveInvitationToSupabase(invId) {
+  try {
+    const invData = {
+      coverStyle: state.coverStyle,
+      groomName: state.groomName,
+      groomPhone: state.groomPhone,
+      groomFather: state.groomFather,
+      groomFatherDeceased: state.groomFatherDeceased,
+      groomMother: state.groomMother,
+      groomMotherDeceased: state.groomMotherDeceased,
+      groomRelation: state.groomRelation,
+      groomRelationCustom: state.groomRelationCustom,
+      groomFatherPhone: state.groomFatherPhone,
+      groomMotherPhone: state.groomMotherPhone,
+
+      brideName: state.brideName,
+      bridePhone: state.bridePhone,
+      brideFather: state.brideFather,
+      brideFatherDeceased: state.brideFatherDeceased,
+      brideMother: state.brideMother,
+      brideMotherDeceased: state.brideMotherDeceased,
+      brideRelation: state.brideRelation,
+      brideRelationCustom: state.brideRelationCustom,
+      brideFatherPhone: state.brideFatherPhone,
+      brideMotherPhone: state.brideMotherPhone,
+
+      weddingDate: state.weddingDate,
+      weddingTime: state.weddingTime,
+      venueName: state.venueName,
+      venueHall: state.venueHall,
+      venueAddress: state.venueAddress,
+      transportParking: state.transportParking,
+      transportSubway: state.transportSubway,
+      transportBus: state.transportBus,
+
+      greeting: state.greeting,
+
+      groomAccount: state.groomAccount,
+      groomFatherAccount: state.groomFatherAccount,
+      groomMotherAccount: state.groomMotherAccount,
+      brideAccount: state.brideAccount,
+      brideFatherAccount: state.brideFatherAccount,
+      brideMotherAccount: state.brideMotherAccount,
+
+      sections: Object.assign({}, state.sections),
+      coverPhoto: state.coverPhoto,
+      detailPhoto: state.detailPhoto,
+      galleryPhotos: state.galleryPhotos,
+      bgmEnabled: state.bgmEnabled,
+      bgmTrackType: state.bgmTrackType,
+      bgmTrackUrl: state.bgmTrackUrl,
+      licenseCode: state.licenseCode
+    };
+
+    const res = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/invitations`, {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_CONFIG.key,
+        "Authorization": `Bearer ${SUPABASE_CONFIG.key}`,
+        "Content-Type": "application/json",
+        "Prefer": "resolution=merge-duplicates"
+      },
+      body: JSON.stringify({
+        id: invId,
+        slug: invId,
+        data: invData,
+        license_code: state.licenseCode
+      })
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn("saveInvitationToSupabase error:", e);
+    return false;
+  }
+}
+
+/* ===================================================
    BGM AUDIO ENGINE & AUTOPLAY POLICY HANDLER
    =================================================== */
 
@@ -1990,21 +2166,41 @@ function renderMobilePhotoSheet() {
 
   document.getElementById("mSlot1")?.addEventListener("change", async (e) => {
     if (e.target.files && e.target.files[0]) {
-      showToast("1번 메인 사진을 압축 중입니다...");
-      state.coverPhoto = await compressImageFile(e.target.files[0]);
+      showToast("1번 메인 사진을 고화질 압축 중입니다...");
+      const compressedDataUrl = await compressImageFile(e.target.files[0]);
+      state.coverPhoto = compressedDataUrl;
       renderAll();
       renderMobilePhotoSheet();
-      showToast("1번 메인 사진이 교체되었습니다.");
+      showToast("☁️ 클라우드에 안전하게 보관 중입니다...");
+      const cloudUrl = await uploadToSupabaseStorage(compressedDataUrl, "cover");
+      if (cloudUrl) {
+        state.coverPhoto = cloudUrl;
+        renderAll();
+        renderMobilePhotoSheet();
+        showToast("✨ 1번 메인 사진이 안전하게 보관되었습니다 (카톡 미리보기 반영)");
+      } else {
+        showToast("1번 메인 사진이 교체되었습니다.");
+      }
     }
   });
 
   document.getElementById("mSlot2")?.addEventListener("change", async (e) => {
     if (e.target.files && e.target.files[0]) {
-      showToast("2번 서브 사진을 압축 중입니다...");
-      state.detailPhoto = await compressImageFile(e.target.files[0]);
+      showToast("2번 서브 사진을 고화질 압축 중입니다...");
+      const compressedDataUrl = await compressImageFile(e.target.files[0]);
+      state.detailPhoto = compressedDataUrl;
       renderAll();
       renderMobilePhotoSheet();
-      showToast("2번 서브 사진이 교체되었습니다.");
+      showToast("☁️ 클라우드에 안전하게 보관 중입니다...");
+      const cloudUrl = await uploadToSupabaseStorage(compressedDataUrl, "detail");
+      if (cloudUrl) {
+        state.detailPhoto = cloudUrl;
+        renderAll();
+        renderMobilePhotoSheet();
+        showToast("✨ 2번 서브 사진이 안전하게 보관되었습니다.");
+      } else {
+        showToast("2번 서브 사진이 교체되었습니다.");
+      }
     }
   });
 
@@ -2017,13 +2213,17 @@ function renderMobilePhotoSheet() {
       }
 
       const files = Array.from(e.target.files).slice(0, remainingSlots);
-      showToast(`사진 ${files.length}장을 고화질 압축 중입니다...`);
+      showToast(`사진 ${files.length}장을 최적화 및 클라우드 업로드 중입니다...`);
       const compressedList = await Promise.all(files.map(f => compressImageFile(f).catch(() => null)));
       const validOnes = compressedList.filter(Boolean);
-      state.galleryPhotos.push(...validOnes);
+
+      const cloudUrls = await Promise.all(validOnes.map((dUrl, idx) => 
+        uploadToSupabaseStorage(dUrl, `gallery_${idx}`).then(res => res || dUrl)
+      ));
+      state.galleryPhotos.push(...cloudUrls);
       renderAll();
       renderMobilePhotoSheet();
-      showToast(`${validOnes.length}장의 사진이 갤러리에 추가되었습니다!`);
+      showToast(`✨ ${validOnes.length}장의 사진이 갤러리에 추가되었습니다!`);
     }
   });
 }
@@ -2145,6 +2345,9 @@ function scheduleAutoSave() {
   clearTimeout(autoSaveTimer);
   autoSaveTimer = setTimeout(() => {
     saveDraftToStorage();
+    if (state.invitationId) {
+      saveInvitationToSupabase(state.invitationId);
+    }
   }, 400);
 }
 
@@ -2152,6 +2355,7 @@ function saveDraftToStorage() {
   if (document.body.classList.contains("guest-mode")) return;
   try {
     const draft = {
+      invitationId: state.invitationId,
       coverStyle: state.coverStyle,
       groomName: state.groomName,
       groomPhone: state.groomPhone,
@@ -2283,6 +2487,7 @@ function loadDraftFromStorage() {
     if (typeof d.bgmEnabled !== "undefined") state.bgmEnabled = d.bgmEnabled;
     if (d.bgmTrackType) state.bgmTrackType = d.bgmTrackType;
     if (d.bgmTrackUrl) state.bgmTrackUrl = d.bgmTrackUrl;
+    if (d.invitationId) state.invitationId = d.invitationId;
 
     return true;
   } catch (e) {
@@ -2465,10 +2670,10 @@ function updateKakaoPreviewCard() {
   if (alertEl) {
     if (isHosted) {
       alertEl.className = "share-photo-alert success";
-      alertEl.innerHTML = `<strong>✅ 하객 화면 준비 완료</strong>: 모든 하객의 스마트폰에서 실제 웨딩 사진이 선명하게 표시됩니다.`;
+      alertEl.innerHTML = `<strong>✅ 클라우드 보관 완료</strong>: 모든 하객의 스마트폰과 카카오톡 미리보기에 실제 웨딩 사진이 선명하게 표시됩니다.`;
     } else {
       alertEl.className = "share-photo-alert notice";
-      alertEl.innerHTML = `<strong>💡 사진 안내</strong>: 현재 대표 사진이 로컬 파일(내 컴퓨터/폰) 상태입니다.<br>• <strong>소장용 HTML 저장</strong>: 내 사진이 100% 영구 보관되어 지금 바로 저장됩니다.<br>• <strong>하객용 웹 링크 공유</strong>: 모든 하객 화면에도 내 사진이 뜨게 하려면 [사진 URL 등록]을 권장합니다.`;
+      alertEl.innerHTML = `<strong>💡 사진 동기화 안내</strong>: 대표 사진을 등록하시면 카카오톡 미리보기 카드와 하객 청첩장에 실제 웨딩 사진이 자동 동기화됩니다.`;
     }
   }
 }
@@ -2504,18 +2709,44 @@ async function requestShortUrl(longUrl) {
   return longUrl;
 }
 
-function openShareModal() {
+async function openShareModal() {
   if (!isLicensed()) {
     openLicenseModal(() => {
       openShareModal();
     });
     return;
   }
+
+  shareModal?.classList.add("show");
+  updateKakaoPreviewCard();
+
+  const shortInput = document.getElementById("shareShortUrlInput");
+  const statusEl = document.getElementById("shortUrlStatus");
+  if (shortInput) shortInput.value = "⚡ 1줄 초단축 안심 링크 발행 중...";
+  if (statusEl) statusEl.textContent = "클라우드 저장 중...";
+
+  try {
+    if (!state.invitationId) {
+      state.invitationId = generateCleanInvitationId();
+    }
+    const saved = await saveInvitationToSupabase(state.invitationId);
+    if (saved) {
+      const cleanUrl = `${window.location.origin}${window.location.pathname}?id=${state.invitationId}`;
+      currentShortUrl = cleanUrl;
+      if (shortInput) shortInput.value = cleanUrl;
+      if (shareUrlInput) shareUrlInput.value = cleanUrl;
+      if (statusEl) statusEl.textContent = "⚡ 1줄 안심 링크 발급됨";
+      saveDraftToStorage();
+      return;
+    }
+  } catch (err) {
+    console.warn("Supabase 1-line link creation failed, falling back to URL hash:", err);
+  }
+
+  // Fallback to URL hash if offline or Supabase error
   const publicUrl = generateShareUrl();
   if (shareUrlInput) shareUrlInput.value = publicUrl;
-  updateKakaoPreviewCard();
   requestShortUrl(publicUrl);
-  shareModal?.classList.add("show");
 }
 
 function closeShareModal() {
@@ -2976,27 +3207,45 @@ function bindDesktopFormEvents() {
     });
   });
 
-  // Desktop Slot 1 Upload
+  // Desktop Slot 1 Upload (Auto Cloud Upload + Kakao Preview Sync)
   document.getElementById("inpSlot1")?.addEventListener("change", async (e) => {
     if (e.target.files && e.target.files[0]) {
-      showToast("메인 대표 사진을 압축 중입니다...");
-      state.coverPhoto = await compressImageFile(e.target.files[0]);
+      showToast("메인 대표 사진을 고화질 최적화 중입니다...");
+      const compressedDataUrl = await compressImageFile(e.target.files[0]);
+      state.coverPhoto = compressedDataUrl;
       renderAll();
-      showToast("메인 사진이 변경되었습니다.");
+      showToast("☁️ 사진을 클라우드에 안전하게 보관 중입니다...");
+      const cloudUrl = await uploadToSupabaseStorage(compressedDataUrl, "cover");
+      if (cloudUrl) {
+        state.coverPhoto = cloudUrl;
+        renderAll();
+        showToast("✨ 메인 사진이 안전하게 보관되었습니다 (카톡 미리보기에 반영)");
+      } else {
+        showToast("메인 사진이 적용되었습니다.");
+      }
     }
   });
 
-  // Desktop Slot 2 Upload
+  // Desktop Slot 2 Upload (Auto Cloud Upload)
   document.getElementById("inpSlot2")?.addEventListener("change", async (e) => {
     if (e.target.files && e.target.files[0]) {
-      showToast("서브 디테일 사진을 압축 중입니다...");
-      state.detailPhoto = await compressImageFile(e.target.files[0]);
+      showToast("서브 디테일 사진을 고화질 최적화 중입니다...");
+      const compressedDataUrl = await compressImageFile(e.target.files[0]);
+      state.detailPhoto = compressedDataUrl;
       renderAll();
-      showToast("서브 사진이 변경되었습니다.");
+      showToast("☁️ 사진을 클라우드에 안전하게 보관 중입니다...");
+      const cloudUrl = await uploadToSupabaseStorage(compressedDataUrl, "detail");
+      if (cloudUrl) {
+        state.detailPhoto = cloudUrl;
+        renderAll();
+        showToast("✨ 서브 사진이 안전하게 보관되었습니다.");
+      } else {
+        showToast("서브 사진이 적용되었습니다.");
+      }
     }
   });
 
-  // Desktop Gallery Upload
+  // Desktop Gallery Upload (Auto Cloud Upload)
   document.getElementById("inpAddGalleryPhotos")?.addEventListener("change", async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const remainingSlots = MAX_GALLERY_PHOTOS - state.galleryPhotos.length;
@@ -3005,11 +3254,16 @@ function bindDesktopFormEvents() {
         return;
       }
       const files = Array.from(e.target.files).slice(0, remainingSlots);
-      showToast(`사진 ${files.length}장을 압축 중입니다...`);
-      const compressed = await Promise.all(files.map(f => compressImageFile(f).catch(() => null)));
-      state.galleryPhotos.push(...compressed.filter(Boolean));
+      showToast(`사진 ${files.length}장을 최적화 및 클라우드 업로드 중입니다...`);
+      const compressedList = await Promise.all(files.map(f => compressImageFile(f).catch(() => null)));
+      const validOnes = compressedList.filter(Boolean);
+      
+      const cloudUrls = await Promise.all(validOnes.map((dUrl, idx) => 
+        uploadToSupabaseStorage(dUrl, `gallery_${idx}`).then(res => res || dUrl)
+      ));
+      state.galleryPhotos.push(...cloudUrls);
       renderAll();
-      showToast(`${files.length}장의 사진이 갤러리에 추가되었습니다!`);
+      showToast(`✨ ${files.length}장의 사진이 갤러리에 추가되었습니다!`);
     }
   });
 
@@ -3130,8 +3384,8 @@ function bindDesktopFormEvents() {
    INITIALIZATION
    =================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
-  const isGuestMode = checkUrlMode();
+document.addEventListener("DOMContentLoaded", async () => {
+  const isGuestMode = await checkUrlMode();
 
   if (!isGuestMode) {
     const hasDataInUrl = window.location.hash.includes("data=");
@@ -3183,6 +3437,11 @@ document.addEventListener("DOMContentLoaded", () => {
     updateLicenseBadge();
     closeLicenseModal();
     showToast(`🔑 정품 인증 완료! (결제일 기준 ${res.daysRemaining}일간 안심 이용 가능)`);
+    if (!state.invitationId) {
+      state.invitationId = generateCleanInvitationId();
+    }
+    saveInvitationToSupabase(state.invitationId);
+    saveDraftToStorage();
     if (act) {
       act();
     }
