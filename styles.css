@@ -259,6 +259,23 @@ body {
   border: 1px solid #b2f2bb;
 }
 
+.save-status-badge {
+  font-size: 10.5px;
+  padding: 2.5px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  background: #f5f0e8;
+  color: #766e65;
+  border: 1px solid #e5ddd0;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.save-status-badge.saving {
+  background: #fff4e6;
+  color: #b8694d;
+  border-color: #ffd8a8;
+}
+
 .mini-mag-cover {
   width: 100%;
   height: 100%;

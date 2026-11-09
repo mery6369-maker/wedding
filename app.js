@@ -298,7 +298,7 @@ function serializeState() {
   if (state.detailPhoto && !state.detailPhoto.startsWith("data:")) d.dp = state.detailPhoto;
   if (Array.isArray(state.galleryPhotos)) {
     const urlGallery = state.galleryPhotos.filter(p => typeof p === "string" && !p.startsWith("data:"));
-    if (urlGallery.length > 0) d.gp = urlGallery;
+    if (urlGallery.length > 0) d.gl = urlGallery;
   }
 
   // Cryptographic License Token for 90-day guest mode protection
@@ -321,7 +321,7 @@ function deserializeState(encodedStr) {
     const d = JSON.parse(jsonStr);
     if (d.c) state.coverStyle = d.c;
     if (typeof d.gn !== "undefined") state.groomName = d.gn;
-    if (typeof d.gp !== "undefined") state.groomPhone = d.gp;
+    if (typeof d.gp !== "undefined" && !Array.isArray(d.gp)) state.groomPhone = d.gp;
     if (typeof d.gf !== "undefined") state.groomFather = d.gf;
     if (typeof d.gfd !== "undefined") state.groomFatherDeceased = (d.gfd === 1);
     if (typeof d.gm !== "undefined") state.groomMother = d.gm;
@@ -362,7 +362,8 @@ function deserializeState(encodedStr) {
 
     if (typeof d.cp !== "undefined") state.coverPhoto = d.cp;
     if (typeof d.dp !== "undefined") state.detailPhoto = d.dp;
-    if (Array.isArray(d.gp)) state.galleryPhotos = d.gp;
+    if (Array.isArray(d.gl)) state.galleryPhotos = d.gl;
+    else if (Array.isArray(d.gp)) state.galleryPhotos = d.gp;
     if (d.lic) state.licenseCode = d.lic;
 
     if (d.sec && typeof d.sec === "object") {
@@ -526,6 +527,12 @@ function renderAll() {
   const venueSummary = (state.venueName || state.venueHall) 
     ? `${state.venueName} ${state.venueHall}`.trim()
     : "식장 위치를 입력해 주세요";
+
+  if (isGuestMode) {
+    document.title = `${groomDisplayName} ♥ ${brideDisplayName} 결혼합니다 💌`;
+  } else {
+    document.title = `우리의 계절 · ${groomDisplayName} & ${brideDisplayName} 모바일 청첩장`;
+  }
 
   // 1. Cover 1: Duo Frame
   const duoGroom = document.getElementById("duoGroomName");
@@ -843,6 +850,9 @@ function renderAll() {
 
   // Render Section Toggles in Desktop Sidebar
   renderDesktopSectionToggles();
+
+  // Automatic Draft Persistence to Client Storage
+  scheduleAutoSave();
 }
 
 function renderAccountAccordion(containerId, list) {
@@ -922,6 +932,7 @@ function renderDesktopSectionToggles() {
       const key = e.target.getAttribute("data-desk-toggle");
       state.sections[key] = e.target.checked;
       applySectionVisibility();
+      scheduleAutoSave();
       showToast(`${e.target.checked ? '항목이 켜졌습니다.' : '항목이 숨겨졌습니다.'}`);
     });
   });
@@ -2119,7 +2130,166 @@ function renderContactModal() {
    =================================================== */
 
 const LICENSE_STORAGE_KEY = "wedding_builder_licensed_code";
+const DRAFT_STORAGE_KEY = "wedding_builder_draft_state";
 const LICENSE_SECRET_SALT = "SEASON_OF_US_SECURE_2026_ATELIER";
+
+let autoSaveTimer = null;
+
+function scheduleAutoSave() {
+  if (document.body.classList.contains("guest-mode")) return;
+  const badge = document.getElementById("autoSaveBadge");
+  if (badge) {
+    badge.textContent = "💾 저장 중...";
+    badge.classList.add("saving");
+  }
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    saveDraftToStorage();
+  }, 400);
+}
+
+function saveDraftToStorage() {
+  if (document.body.classList.contains("guest-mode")) return;
+  try {
+    const draft = {
+      coverStyle: state.coverStyle,
+      groomName: state.groomName,
+      groomPhone: state.groomPhone,
+      groomFather: state.groomFather,
+      groomFatherDeceased: state.groomFatherDeceased,
+      groomMother: state.groomMother,
+      groomMotherDeceased: state.groomMotherDeceased,
+      groomRelation: state.groomRelation,
+      groomRelationCustom: state.groomRelationCustom,
+      groomFatherPhone: state.groomFatherPhone,
+      groomMotherPhone: state.groomMotherPhone,
+
+      brideName: state.brideName,
+      bridePhone: state.bridePhone,
+      brideFather: state.brideFather,
+      brideFatherDeceased: state.brideFatherDeceased,
+      brideMother: state.brideMother,
+      brideMotherDeceased: state.brideMotherDeceased,
+      brideRelation: state.brideRelation,
+      brideRelationCustom: state.brideRelationCustom,
+      brideFatherPhone: state.brideFatherPhone,
+      brideMotherPhone: state.brideMotherPhone,
+
+      weddingDate: state.weddingDate,
+      weddingTime: state.weddingTime,
+      venueName: state.venueName,
+      venueHall: state.venueHall,
+      venueAddress: state.venueAddress,
+      transportParking: state.transportParking,
+      transportSubway: state.transportSubway,
+      transportBus: state.transportBus,
+
+      greeting: state.greeting,
+
+      groomAccount: state.groomAccount,
+      groomFatherAccount: state.groomFatherAccount,
+      groomMotherAccount: state.groomMotherAccount,
+      brideAccount: state.brideAccount,
+      brideFatherAccount: state.brideFatherAccount,
+      brideMotherAccount: state.brideMotherAccount,
+
+      sections: Object.assign({}, state.sections),
+      bgmEnabled: state.bgmEnabled,
+      bgmTrackType: state.bgmTrackType,
+      bgmTrackUrl: state.bgmTrackUrl,
+      updatedAt: Date.now()
+    };
+
+    // Safely try to save photos if present; fallback to text if quota exceeded
+    try {
+      draft.coverPhoto = state.coverPhoto;
+      draft.detailPhoto = state.detailPhoto;
+      draft.galleryPhotos = state.galleryPhotos;
+      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+    } catch (quotaErr) {
+      delete draft.coverPhoto;
+      delete draft.detailPhoto;
+      delete draft.galleryPhotos;
+      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+    }
+
+    const badge = document.getElementById("autoSaveBadge");
+    if (badge) {
+      badge.textContent = "💾 자동 저장됨";
+      badge.classList.remove("saving");
+    }
+  } catch (e) {
+    console.warn("Local draft save error:", e);
+  }
+}
+
+function loadDraftFromStorage() {
+  if (document.body.classList.contains("guest-mode")) return false;
+  try {
+    const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (!d || typeof d !== "object") return false;
+
+    if (d.coverStyle) state.coverStyle = d.coverStyle;
+    if (typeof d.groomName !== "undefined") state.groomName = d.groomName;
+    if (typeof d.groomPhone !== "undefined") state.groomPhone = d.groomPhone;
+    if (typeof d.groomFather !== "undefined") state.groomFather = d.groomFather;
+    if (typeof d.groomFatherDeceased !== "undefined") state.groomFatherDeceased = d.groomFatherDeceased;
+    if (typeof d.groomMother !== "undefined") state.groomMother = d.groomMother;
+    if (typeof d.groomMotherDeceased !== "undefined") state.groomMotherDeceased = d.groomMotherDeceased;
+    if (typeof d.groomRelation !== "undefined") state.groomRelation = d.groomRelation;
+    if (typeof d.groomRelationCustom !== "undefined") state.groomRelationCustom = d.groomRelationCustom;
+    if (typeof d.groomFatherPhone !== "undefined") state.groomFatherPhone = d.groomFatherPhone;
+    if (typeof d.groomMotherPhone !== "undefined") state.groomMotherPhone = d.groomMotherPhone;
+
+    if (typeof d.brideName !== "undefined") state.brideName = d.brideName;
+    if (typeof d.bridePhone !== "undefined") state.bridePhone = d.bridePhone;
+    if (typeof d.brideFather !== "undefined") state.brideFather = d.brideFather;
+    if (typeof d.brideFatherDeceased !== "undefined") state.brideFatherDeceased = d.brideFatherDeceased;
+    if (typeof d.brideMother !== "undefined") state.brideMother = d.brideMother;
+    if (typeof d.brideMotherDeceased !== "undefined") state.brideMotherDeceased = d.brideMotherDeceased;
+    if (typeof d.brideRelation !== "undefined") state.brideRelation = d.brideRelation;
+    if (typeof d.brideRelationCustom !== "undefined") state.brideRelationCustom = d.brideRelationCustom;
+    if (typeof d.brideFatherPhone !== "undefined") state.brideFatherPhone = d.brideFatherPhone;
+    if (typeof d.brideMotherPhone !== "undefined") state.brideMotherPhone = d.brideMotherPhone;
+
+    if (typeof d.weddingDate !== "undefined") state.weddingDate = d.weddingDate;
+    if (typeof d.weddingTime !== "undefined") state.weddingTime = d.weddingTime;
+    if (typeof d.venueName !== "undefined") state.venueName = d.venueName;
+    if (typeof d.venueHall !== "undefined") state.venueHall = d.venueHall;
+    if (typeof d.venueAddress !== "undefined") state.venueAddress = d.venueAddress;
+    if (typeof d.transportParking !== "undefined") state.transportParking = d.transportParking;
+    if (typeof d.transportSubway !== "undefined") state.transportSubway = d.transportSubway;
+    if (typeof d.transportBus !== "undefined") state.transportBus = d.transportBus;
+
+    if (typeof d.greeting !== "undefined") state.greeting = d.greeting;
+
+    if (typeof d.groomAccount !== "undefined") state.groomAccount = d.groomAccount;
+    if (typeof d.groomFatherAccount !== "undefined") state.groomFatherAccount = d.groomFatherAccount;
+    if (typeof d.groomMotherAccount !== "undefined") state.groomMotherAccount = d.groomMotherAccount;
+    if (typeof d.brideAccount !== "undefined") state.brideAccount = d.brideAccount;
+    if (typeof d.brideFatherAccount !== "undefined") state.brideFatherAccount = d.brideFatherAccount;
+    if (typeof d.brideMotherAccount !== "undefined") state.brideMotherAccount = d.brideMotherAccount;
+
+    if (d.sections && typeof d.sections === "object") {
+      Object.assign(state.sections, d.sections);
+    }
+
+    if (d.coverPhoto) state.coverPhoto = d.coverPhoto;
+    if (d.detailPhoto) state.detailPhoto = d.detailPhoto;
+    if (Array.isArray(d.galleryPhotos)) state.galleryPhotos = d.galleryPhotos;
+
+    if (typeof d.bgmEnabled !== "undefined") state.bgmEnabled = d.bgmEnabled;
+    if (d.bgmTrackType) state.bgmTrackType = d.bgmTrackType;
+    if (d.bgmTrackUrl) state.bgmTrackUrl = d.bgmTrackUrl;
+
+    return true;
+  } catch (e) {
+    console.warn("Failed to load draft:", e);
+    return false;
+  }
+}
 
 function computeLicenseChecksum(dataStr, salt) {
   let h = 0x811c9dc5;
@@ -2962,6 +3132,18 @@ function bindDesktopFormEvents() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const isGuestMode = checkUrlMode();
+
+  if (!isGuestMode) {
+    const hasDataInUrl = window.location.hash.includes("data=");
+    if (!hasDataInUrl) {
+      const restored = loadDraftFromStorage();
+      if (restored) {
+        setTimeout(() => {
+          showToast("💾 이전에 작성 중이던 내용이 자동 복원되었습니다.");
+        }, 500);
+      }
+    }
+  }
 
   syncFormInputsFromState();
   bindDesktopFormEvents();
